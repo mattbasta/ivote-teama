@@ -1,0 +1,78 @@
+read-me.txt
+
+Thank you for choosing to use Team A's iVote system!
+
+NOTICE: To install system requirements, follow the separate installation documentation provided.
+
+To install system, simply move the root directory "ivote", included in this package, to desired location 
+on server that meets system's installation requirements.
+
+**IMPORTANT MySQL DATABASE INFORMATION*************
+
+Included in this package is a .sql file called “ivote_db_schema.sql”. This file contains the system’s db schema, 
+and must be loaded into an active MySQL DBMS instance on whatever server you are hosting this system on. 
+Depending on what system you’re using to manage your MySQL instance, you should easily be able to import 
+this file into your active instance. 
+
+We HIGHLY recommend using an open-source service call PhpMyAdmin to manage your MySQL. However, 
+if you do not have any GUI to handle importing this schema, simply copy-paste the text inside 
+the file from a text-editor and run in the MySQL Command Line Client.
+
+KEY DATABASE IMPORTANCE
+
+For the system’s MySQL database to work with the current system, you must add a new user to your MySQL 
+instance using the exact following credientials:
+
+	MySQL Username:  “iVoteUser”
+	MySQL Password: “Bv4PP12L”
+	MySQL Hostname: “localhost”
+
+	(DO NOT INCLUDE THE DOUBLE QUOTATIONS MARKS)
+
+If these credentials are applied and still the system does NOT have access to a CONFIRMED working  ivote 
+database instance, have a developer look at the “databaseLogic.cs” class and modify the code content from 
+lines 41 to 52 to work with your DBMS.
+
+
+
+**IMPORTANT FIRST-TIME USER INFORMATION*************
+
+If you have installed the system’s MySQL database correctly, there should be 1 administrative user account 
+ready use in the system. The credentials for that account are as follows:
+
+	username:  “admin”
+	password: “adminpassword”
+
+	(DO NOT INCLUDE THE DOUBLE QUOTATIONS MARKS)
+
+NOTE: When the system is run for the first time, we strongly suggest immediately changing this account’s 
+password, for security purposes, as well as the accounts email address your actual email address.
+
+
+
+**IMPORTANT EMAIL FUNCTIONALITY INFORMATION*************
+
+As of late 2011, email is/was being sent from the system via Kenneth Rohlfing’s Arvixe SMTP server. 
+However it can only be assumed that at some point in the future Kenneth will discontinue this service. 
+At that time, please have a developer access the Emailer.cs file inside the “APP_CODE” directory, 
+and change the system’s SMTP information to a new SMTP server you have set up for the system.
+
+That's all folks,
+
+Enjoy!
+Team A
+
+P.S. (Please be sure to give the developers in Team A credit if this system’s 
+      development is continued by a future team. Thanks a million!)
+
+
+Team A:
+Kenneth Rohlfing - Team leader/manager
+Adam Blank - Lead Developer
+Ralph Sharp - Developer
+James Fody - System Analyst 
+Aaron Higgins - Designer
+Rebecca Loux - Tester
+Jeremy Nagy - Tester/Designer
+
+Fall 2011, CSC 354
