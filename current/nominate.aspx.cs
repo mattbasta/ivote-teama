@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -75,7 +75,7 @@ public partial class wwwroot_phase1aSite_nominate : System.Web.UI.Page
             string[] emailAddress = {dbLogic.selectEmailFromID(Convert.ToInt16(e.CommandArgument))};
 
             //send an email to the user nominated
-            emailHelper.sendEmailToList(emailAddress, dbLogic.selectFullName(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)) + " has nominated you for the position of " + HiddenFieldPosition.Value + " for the next voting period!<br /><br />To be fully nominated you must first accept this nomination,<br /> then fill out the digital \"Willingness To Serve\" form.<br />To accept (or reject) this nomination, log into the <a href=\"www.kenneronline.com/testsite/\" target=\"_blank\"> Kutztown iVote website</a>.<br /><br />The iVote System Team", "You've been nominated for " + HiddenFieldPosition.Value);
+            emailHelper.sendEmailToList(emailAddress, dbLogic.selectFullName(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)) + " has nominated you for the position of " + HiddenFieldPosition.Value + " for the next voting period!<br /><br />To be fully nominated you must first accept this nomination,<br /> then fill out the digital \"Willingness To Serve\" form.<br />To accept (or reject) this nomination, log into the <a href=\"ivote.bashtech.net/\" target=\"_blank\"> Kutztown iVote website</a>.<br /><br />The iVote System Team", "You've been nominated for " + HiddenFieldPosition.Value);
         }
     }
 

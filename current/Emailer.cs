@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,13 +10,13 @@ using System.Net.Mail;
 /// Created by: Adam Blank, emailer.cs, 9/23/2011
 /// generic emailer class that sends an email through the server.
 /// 
-/// Last modified: 9/23/2011
+/// Last modified: 2/6/2012
 /// </summary>
 /// 
 
 public class emailer
 {
-    private string host = "localhost";
+    private string host;
     private string fromAddress;
     private string userName;
     private string userPass;
@@ -27,11 +27,11 @@ public class emailer
 
     public emailer()
     {
-        fromAddress = "\"iVote System\" <noreply@ivote.bashtech.net>";
-        host = "localhost";
-        userName = "";
-        userPass = "";
-        portNumber = 25;
+        fromAddress = "\"iVote System\" <" + System.Configuration.ConfigurationManager.AppSettings["fromAddress"] + ">";
+        host = System.Configuration.ConfigurationManager.AppSettings["smtpHost"];
+        userName = System.Configuration.ConfigurationManager.AppSettings["smtpUser"];
+        userPass = System.Configuration.ConfigurationManager.AppSettings["smtpPassword"];
+        portNumber = int.Parse(System.Configuration.ConfigurationManager.AppSettings["smtpPort"]);
         enableSSL = false;
         myCredentials = new System.Net.NetworkCredential(userName, userPass);
     }

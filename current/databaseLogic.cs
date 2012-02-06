@@ -5,7 +5,7 @@ using System;
 /// Created by Adam Blank, 9/17/2011, databaseLogic.cs
 /// Database for iVote system for CSC354
 /// 
-/// Last modified: 11/14/2011 by Adam
+/// Last modified: 2/6/2012 by Adam
 /// 
 /// </summary> 
 
@@ -40,17 +40,12 @@ public class databaseLogic
 
     public databaseLogic()
     {
-        // connection variables, needs to be moved to web.config but will remain here for now
-//        hostname = "localhost";
-//        database = "dev_ivote1"; //for DEVELOPMENT site
-//        user = "dev_ivote";//USE FOR BOTH experimental db AND test db
-//        password = "upa58axj8b8q";//USE FOR BOTH experimental db AND test db 
 
 		//Pull MySQL connection info from web.config
-        hostname = ConfigurationSettings.AppSettings["mysqlHost"];
-        database = ConfigurationSettings.AppSettings["mysqlDB"];
-        user = ConfigurationSettings.AppSettings["mysqlUser"];
-        password = ConfigurationSettings.AppSettings["mysqlPassword"];
+        hostname = System.Configuration.ConfigurationManager.AppSettings["mysqlHost"];
+        database = System.Configuration.ConfigurationManager.AppSettings["mysqlDB"];
+        user = System.Configuration.ConfigurationManager.AppSettings["mysqlUser"];
+        password = System.Configuration.ConfigurationManager.AppSettings["mysqlPassword"];
         
         port = "3306";
         
