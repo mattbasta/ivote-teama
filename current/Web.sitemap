@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0" >
+    <siteMapNode url="ivote.bashtech.net" title=""  description="">
+        <siteMapNode url="~/home.aspx" title="Home"  description="" />
+        <siteMapNode url="~/About.aspx" title="About Us"  description="" />       
+        <siteMapNode url="~/petition.aspx" title="Petition" />
+        <siteMapNode url="~/slate.aspx" title="Slate" />
+        <siteMapNode url="~/CPW.aspx" title="Change Password"/>
+        <siteMapNode url="~/home.aspx/#" title="Admin" >
+            <siteMapNode url="~/Users.aspx" title="All Users"  />
+            <siteMapNode url="~/Register.aspx" title="Add New User"  description="" />
+            <siteMapNode url="~/approvenominations.aspx" title="Approve Eligibility"  />
+            <siteMapNode url="~/set_positions.aspx" title="Set Positions" />
+            <siteMapNode url="~/ManualPhaseChanger.aspx" title="Manually Change Phase"  />
+        </siteMapNode>  
+    </siteMapNode>
+</siteMap>
