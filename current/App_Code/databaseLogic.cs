@@ -40,20 +40,14 @@ public class databaseLogic
 
     public databaseLogic()
     {
-        // connection variables, needs to be moved to web.config but will remain here for now
-//        hostname = "localhost";
-//        database = "dev_ivote1"; //for DEVELOPMENT site
-//        user = "dev_ivote";//USE FOR BOTH experimental db AND test db
-//        password = "upa58axj8b8q";//USE FOR BOTH experimental db AND test db 
+        //Pull MySQL connection info from web.config
+        hostname = System.Configuration.ConfigurationManager.AppSettings["mysqlHost"];
+        database = System.Configuration.ConfigurationManager.AppSettings["mysqlDB"];
+        user = System.Configuration.ConfigurationManager.AppSettings["mysqlUser"];
+        password = System.Configuration.ConfigurationManager.AppSettings["mysqlPassword"];
 
-		//Pull MySQL connection info from web.config
-        hostname = ConfigurationSettings.AppSettings["mysqlHost"];
-        database = ConfigurationSettings.AppSettings["mysqlDB"];
-        user = ConfigurationSettings.AppSettings["mysqlUser"];
-        password = ConfigurationSettings.AppSettings["mysqlPassword"];
-        
         port = "3306";
-        
+
         connectionString = "server=" + hostname + ";user=" + user + ";database=" + database + ";port=" + port + ";password=" + password + ";Allow zero Datetime=true";
         cmd = new MySqlCommand();
     }
@@ -61,6 +55,8 @@ public class databaseLogic
     //replace invalid characters with empty strings
     public string CleanInput(string strIn)
     {
+        // TODO: Test this method.
+        //return MySqlHelper.EscapeString(strIn);
         return Regex.Replace(strIn, @"[^\w\.@-]", @" ");
     }
 
@@ -636,7 +632,7 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^petition methods^^^^^^^^^^
-    
+
     //select all
     public void selectAllPetitions(String id)
     {
@@ -655,7 +651,7 @@ public class databaseLogic
     public bool isUserEnteringPetitionTwice(string[] petition)
     {
         string query = "SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "' AND idum_signedby = " + petition[2] + ";";
-            
+
         if (genericQueryCounter(query) == 0) //if there are no rows in the datadata set created, result is false
             return false;
         else
@@ -766,7 +762,7 @@ public class databaseLogic
     {
         string query = "SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id + ";";
 
-        if(genericQueryCounter(query) == 0)
+        if (genericQueryCounter(query) == 0)
             return true;
         else
             return false;
@@ -862,7 +858,7 @@ public class databaseLogic
         string query = "UPDATE timeline SET datetime_end = STR_TO_DATE('" + date + " " + time + "','%m/%d/%Y %H:%i') WHERE name_phase = '" + phase + "';";
         genericQueryInserter(query);
     }
-    
+
     public void updateVotePhase()
     {
         string query = "UPDATE timeline SET datetime_end =  DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';";
@@ -917,7 +913,7 @@ public class databaseLogic
     }
 
     //******NOTE***** The user will have multiple positions that this can be true for, might want to modify ******NOTE******
-    public bool isUserNominatedPending(string id) 
+    public bool isUserNominatedPending(string id)
     {
         openConnection();
         try
@@ -1001,7 +997,7 @@ public class databaseLogic
             adapter.Fill(ds, "email_verification");
             closeConnection();
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            
+
         }
         catch (Exception e)
         {
@@ -1015,7 +1011,7 @@ public class databaseLogic
     public void userAcceptedNom(string id, string position)
     {
         string query = "UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + id + "' AND position='" + position + "';";
-        genericQueryUpdater(query);     
+        genericQueryUpdater(query);
     }
 
     //user has rejected nomination
@@ -1024,9 +1020,9 @@ public class databaseLogic
         string query = "UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + id + "' AND position='" + position + "';";
         genericQueryUpdater(query);
     }
-    
 
-   //get all nominations that pertain to a user
+
+    //get all nominations that pertain to a user
     public void selectAllUserNoms(string id)
     {
         string query = "SELECT * FROM nomination_accept WHERE idunion_to = " + id + " AND accepted IS NULL;";
@@ -1059,7 +1055,7 @@ public class databaseLogic
             return "";
         }
     }
-    
+
     //^^^^^^^^^^^ballot methods^^^^^^^^^^^^^^^
 
     //get all the info to populate the ballot
@@ -1098,8 +1094,8 @@ public class databaseLogic
         string query = "SELECT * FROM election_position;";
         genericQuerySelector(query);
     }
-    
-    
+
+
     //^^^^^^^^^^^^^^adding positions to an election methods^^^^^^^^^^^^^^^^
 
     //adds the positions to positions table
@@ -1114,7 +1110,7 @@ public class databaseLogic
             genericQueryInserter(query);
         }
     }
-   
+
 
     //^^^^^^^^^^^^^^methods for the results of an election^^^^^^^^^^^^^^^^^^^
 
@@ -1428,7 +1424,7 @@ public class databaseLogic
                 genericQueryUpdater(string query);
 
     }*/
-    
+
 
     //check to see if there are any pending eligibility forms to be completed
     public int returnEligibilityCount()
@@ -1679,7 +1675,7 @@ public class databaseLogic
     {
         string query = "select datetime_end from timeline where name_phase = '" + phase + "';";
         genericQuerySelector(query);
-        
+
         /*//open connection
         openConnection();
 
