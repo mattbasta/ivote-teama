@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <appSettings>
     <!-- Access with System.Configuration.ConfigurationManager.AppSettings["key"]; -->
-    
+
     <!-- URL Configuration -->
-    <add key="baseUrl" value="ivote.bashtech.net/"/>
-    
+    <add key="baseUrl" value=""/>
+
     <!-- Database Configuration -->
     <add key="mysqlHost" value=""/>
     <add key="mysqlUser" value=""/>
@@ -17,5 +17,5 @@
     <add key="smtpPort" value=""/>
     <add key="smtpUser" value=""/>
     <add key="smtpPassword" value=""/>
-    
+
 </appSettings>
