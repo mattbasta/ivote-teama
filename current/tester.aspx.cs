@@ -16,4 +16,11 @@ public partial class tester : System.Web.UI.Page
     {
         DatabaseEntities.NHibernateHelper.CreateSessionFactoryAndGenerateSchema();
     }
+    protected void Button2_Click(object sender, EventArgs e)
+    {
+        emailer emailTest = new emailer();
+        String[] addresses = new String[1];
+        addresses[0] = email.Text;
+        emailTest.sendEmailToList(addresses, "This is a test.", "Test Message");
+    }
 }
