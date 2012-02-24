@@ -231,7 +231,7 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="toHash">The string which requires hashing.</param>
         /// <returns>The hash value of toHash.</returns>
-        private static byte[] Hash(string toHash)
+        public static byte[] Hash(string toHash)
         {
             SHA256 hasher = SHA256.Create();
             // Note: is this the correct encoding to use?  

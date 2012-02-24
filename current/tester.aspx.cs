@@ -40,7 +40,7 @@ public partial class tester : System.Web.UI.Page
         user.FirstName = "FirstTest";
         user.LastName = "LastTest";
         user.Email = "test@btx.me";
-        user.Password = "testpassword";
+        user.Password = DatabaseEntities.User.Hash("testpassword");
         user.PasswordHint = "This is a hint.";
         user.CanVote = true;
         user.CurrentCommittee = -1;
