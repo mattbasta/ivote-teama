@@ -17,6 +17,18 @@
         <asp:Button ID="Button2" runat="server" onclick="Button2_Click" 
             Text="SMTP Test" />
         <asp:TextBox ID="email" runat="server"></asp:TextBox>
+        <br />
+        <br />
+        <asp:Button ID="Button3" runat="server" onclick="Button3_Click" 
+            Text="Create Test User" />
+        <asp:Button ID="Button5" runat="server" onclick="Button5_Click" 
+            Text="Delete Test User" />
+        <br />
+        <br />
+        <asp:Button ID="Button4" runat="server" onclick="Button4_Click" 
+            Text="Dump Users" />
+        <br />
+        <asp:Label ID="Label1" runat="server" Enabled="False" EnableViewState="False"></asp:Label>
     </div>
     </form>
 </body>
