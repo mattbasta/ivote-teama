@@ -10,13 +10,13 @@ using System.Net.Mail;
 /// Created by: Adam Blank, emailer.cs, 9/23/2011
 /// generic emailer class that sends an email through the server.
 /// 
-/// Last modified: 9/23/2011
+/// Last modified: 2/23/2012
 /// </summary>
 /// 
 
 public class emailer
 {
-    private string host = "localhost";
+    private string host;
     private string fromAddress;
     private string userName;
     private string userPass;
@@ -27,11 +27,11 @@ public class emailer
 
     public emailer()
     {
-        fromAddress = "\"iVote System\" <noreply@ivote.bashtech.net>";
-        host = "localhost";
-        userName = "";
-        userPass = "";
-        portNumber = 25;
+        fromAddress = "\"iVote System\" <" + System.Configuration.ConfigurationManager.AppSettings["fromAddress"] + ">";
+        host = System.Configuration.ConfigurationManager.AppSettings["smtpHost"];
+        userName = System.Configuration.ConfigurationManager.AppSettings["smtpUser"];
+        userPass = System.Configuration.ConfigurationManager.AppSettings["smtpPassword"];
+        portNumber = int.Parse(System.Configuration.ConfigurationManager.AppSettings["smtpPort"]);
         enableSSL = false;
         myCredentials = new System.Net.NetworkCredential(userName, userPass);
     }
@@ -47,7 +47,7 @@ public class emailer
             smtp.EnableSsl = false;
             smtp.UseDefaultCredentials = true;
             //System.Net.NetworkCredential myCredentials = new System.Net.NetworkCredential();
-           // myCredentials.UserName = userName;
+            // myCredentials.UserName = userName;
             //myCredentials.Password = userPass;
             //smtp.Credentials = myCredentials;
             smtp.Port = 25;
@@ -66,7 +66,7 @@ public class emailer
         try
         {
             MailMessage mail = new MailMessage();
-            
+
             //adds "to" email addresses from array
             for (int i = 0; i < addresses.Length; i++)
             {

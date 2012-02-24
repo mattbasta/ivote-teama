@@ -28,8 +28,8 @@ namespace DatabaseEntities
     /// <summary>
     /// This type enumerates the different officer positions in APSCUF 
     /// </summary>
-    public enum OfficerPositionType {President, VicePresident, Secretary,
-        Treasurer, Delegate, AlternateDelegate, None};
+   public enum OfficerPositionType {None, President, VicePresident, Secretary,
+        Treasurer, Delegate, AlternateDelegate};
 
     /// <summary>
     /// This class stores all the attributes related to a user, as well as
@@ -231,7 +231,7 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="toHash">The string which requires hashing.</param>
         /// <returns>The hash value of toHash.</returns>
-        private static byte[] Hash(string toHash)
+        public static byte[] Hash(string toHash)
         {
             SHA256 hasher = SHA256.Create();
             // Note: is this the correct encoding to use?  

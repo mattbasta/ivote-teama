@@ -16,12 +16,16 @@ public class VerifyEmail
     String emailQuestions;
     ArrayList allEmails;
 
+    String emailBaseUrl;
+
     public VerifyEmail()
 	{
         emailQuestions = "";
         emailQuestions += "Any questions or comments please email the current APSCUF-KU iVote system administrator.<br /><br />";
         emailQuestions += "Team A<br />CSC 354<br /><br />";
         emailQuestions += "(PLEASE DO NOT REPLY TO THIS EMAIL.)";
+
+        emailBaseUrl = System.Configuration.ConfigurationManager.AppSettings["baseUrl"];
 
         allEmails = new ArrayList();
 	}
@@ -35,9 +39,9 @@ public class VerifyEmail
         
 
         String emailLinks = "";
-        emailLinks += "To proceed with this process, please click <a href=\"http://ivote.bashtech.net/confirm.aspx?x=" + code_confirm + "\">Here</a>.<br />";
+        emailLinks += "To proceed with this process, please click <a href=\"http://" + emailBaseUrl + "/confirm.aspx?x=" + code_confirm + "\">Here</a>.<br />";
         emailLinks += "OR, copy and paste the following URL into your address bar.<br />";
-        emailLinks += "URL to verify your iVote account: http://ivote.bashtech.net/confirm.aspx?x=" + code_confirm + "<br /><br />";
+        emailLinks += "URL to verify your iVote account: http://" + emailBaseUrl + "/confirm.aspx?x=" + code_confirm + "<br /><br />";
 
         emailMessage += emailLinks;
         emailMessage += emailQuestions;
@@ -68,7 +72,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  The election has begun.";
-        emailMessage += " It is now the nomination phase of the voting process.  You are able to log in and nominate yourself or another faculty member for the given positions available.  You may follow this URL to do so: <a href=\"http://ivote.bashtech.net\"> link</a> ";
+        emailMessage += " It is now the nomination phase of the voting process.  You are able to log in and nominate yourself or another faculty member for the given positions available.  You may follow this URL to do so: <a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;      
 
@@ -85,7 +89,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  We are sending you this because you have been nominated to run for the current election, but have yet to accept or reject the nomination.";
-        emailMessage += " Please log into the site <a href=\"http://ivote.bashtech.net\"> here</a> to accept/reject the nomination. <b>If you do not choose to accept or reject this, you will be automatically dropped from the election!</b>";
+        emailMessage += " Please log into the site <a href=\"http://" + emailBaseUrl + "\"> here</a> to accept/reject the nomination. <b>If you do not choose to accept or reject this, you will be automatically dropped from the election!</b>";
         emailMessage += "<br /><br />";
 
         string[] arrayAllEmail = dbLogic.getNullEmails();
@@ -101,7 +105,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system. The slate has been formed and awaiting your approval.";
-        emailMessage += " Please follow the link to approve the slate of nominated users: <a href=\"http://ivote.bashtech.net\"> link</a> ";
+        emailMessage += " Please follow the link to approve the slate of nominated users: <a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
 
@@ -118,7 +122,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  Nominations are over and you can now view the slate.";
-        emailMessage += " The petition phase of the voting process has begun.  You can submit petitions for the given positions available. You may follow this URL to do so: <a href=\"http://ivote.bashtech.net\"> link</a> ";
+        emailMessage += " The petition phase of the voting process has begun.  You can submit petitions for the given positions available. You may follow this URL to do so: <a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
 
@@ -135,7 +139,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  We are sending you this because you have been petitioned to run for the current election, but have yet to accept or reject this petition.";
-        emailMessage += " Please log into the site <a href=\"http://ivote.bashtech.net\"> here</a> to accept/reject the petition. <b>If you do not choose to accept or reject this, you will be automatically dropped from the election!</b>";
+        emailMessage += " Please log into the site <a href=\"http://" + emailBaseUrl + "\"> here</a> to accept/reject the petition. <b>If you do not choose to accept or reject this, you will be automatically dropped from the election!</b>";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
 
@@ -153,7 +157,7 @@ public class VerifyEmail
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  The nominations/petitions are finalized and as an Administrator, we need you to approve or deny all applicants Willingness to Serve forms.";
         emailMessage += " This phase will last until all of the applicants' eligibility have been taken care of, so please do not forget to make these changes.";
-        emailMessage += " Please follow the link to approve/deny the nominated users: <a href=\"http://ivote.bashtech.net\"> link</a> ";
+        emailMessage += " Please follow the link to approve/deny the nominated users: <a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
 
@@ -170,7 +174,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  The Petition phase has ended.  It is now the voting phase of the election process.";
-        emailMessage += " You are able to log in and vote on the candidates for each position.  You may follow this URL to do so: <a href=\"http://ivote.bashtech.net\"> link</a> ";
+        emailMessage += " You are able to log in and vote on the candidates for each position.  You may follow this URL to do so: <a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
 
