@@ -28,7 +28,7 @@ namespace DatabaseEntities
     /// <summary>
     /// This type enumerates the different officer positions in APSCUF 
     /// </summary>
-    public enum OfficerPositionType {President, VicePresident, Secretary,
+    public enum OfficerPositionType {None, President, VicePresident, Secretary,
         Treasurer, Delegate, AlternateDelegate};
 
     /// <summary>
