@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Encoding;
 using System.Security.Cryptography;
 
 using FluentNHibernate;
@@ -210,7 +209,29 @@ namespace DatabaseEntities
             return null;
         }
 
-        public static byte[] Hash(string toHash)
+        /// <summary>
+        /// Hashes and then updates a user's password.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="ID">The ID of the user whose password is to be set.</param>
+        /// <param name="password">The new password.</param>
+        /// <param name="passwordHint">The new password hint.</param>
+        public static void UpdatePassword(ref ISession session, int ID, 
+            string password, string passwordHint)
+        {
+            User user = FindUser(ref session, ID);
+            user.Password = Hash(password);
+            user.PasswordHint = passwordHint;
+            session.SaveOrUpdate(user);
+            session.Flush();
+        }
+
+        /// <summary>
+        /// Hashes a UTF8 string using SHA256. 
+        /// </summary>
+        /// <param name="toHash">The string which requires hashing.</param>
+        /// <returns>The hash value of toHash.</returns>
+        private static byte[] Hash(string toHash)
         {
             SHA256 hasher = SHA256.Create();
             // Note: is this the correct encoding to use?  
