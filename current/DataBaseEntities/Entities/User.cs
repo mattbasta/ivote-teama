@@ -4,12 +4,12 @@
 // TODO:
 // Complete the DepartmentType enumeration.  Not all departments are currently
 // listed.
-// Finish writing static helper functions.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -29,7 +29,7 @@ namespace DatabaseEntities
     /// This type enumerates the different officer positions in APSCUF 
     /// </summary>
     public enum OfficerPositionType {President, VicePresident, Secretary,
-        Treasurer, Delegate, AlternateDelegate};
+        Treasurer, Delegate, AlternateDelegate, None};
 
     /// <summary>
     /// This class stores all the attributes related to a user, as well as
@@ -58,7 +58,7 @@ namespace DatabaseEntities
         /// <summary>
         /// The password this user uses to access the site.
         /// </summary>
-        public virtual string Password { get; set; }
+        public virtual byte[] Password { get; set; }
         /// <summary>
         /// The string which will hopefully remind the user what their password
         /// is.
@@ -203,10 +203,40 @@ namespace DatabaseEntities
             var faculty = session.CreateCriteria(typeof(User)).List<User>();
             for (int i = 0; i < faculty.Count; i++)
             {
-                if (faculty[i].Email == email && faculty[i].Password == password)
+                if (faculty[i].Email == email && faculty[i].Password == Hash(password))
                     return faculty[i];
             }
             return null;
+        }
+
+        /// <summary>
+        /// Hashes and then updates a user's password.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="ID">The ID of the user whose password is to be set.</param>
+        /// <param name="password">The new password.</param>
+        /// <param name="passwordHint">The new password hint.</param>
+        public static void UpdatePassword(ref ISession session, int ID, 
+            string password, string passwordHint)
+        {
+            User user = FindUser(ref session, ID);
+            user.Password = Hash(password);
+            user.PasswordHint = passwordHint;
+            session.SaveOrUpdate(user);
+            session.Flush();
+        }
+
+        /// <summary>
+        /// Hashes a UTF8 string using SHA256. 
+        /// </summary>
+        /// <param name="toHash">The string which requires hashing.</param>
+        /// <returns>The hash value of toHash.</returns>
+        private static byte[] Hash(string toHash)
+        {
+            SHA256 hasher = SHA256.Create();
+            // Note: is this the correct encoding to use?  
+            byte[] bytes = UTF8Encoding.UTF8.GetBytes(toHash);
+            return hasher.ComputeHash(bytes);
         }
     }
 }
