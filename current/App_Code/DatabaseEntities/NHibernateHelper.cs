@@ -1,6 +1,6 @@
 ﻿// NhibernateHelper.cs
 // Written by: Brian Fairservice.
-// Date Modified: 2/17/12
+// Date Modified: 2/23/12
 // TODO: Remove wrapper functions?
 
 using System;
@@ -21,13 +21,15 @@ namespace DatabaseEntities
     /// This static helper class will provide methods to open a session,
     /// as well as to generate the database schema.
     /// </summary>
-    static class NHibernateHelper
+    public static class NHibernateHelper
     {
         /// <summary>
         /// This is the connection string used to connect to the MySQL database.
         /// </summary>
-        public static string ConnectionString
-            = "Server=localhost;Database=testdb;Uid=root;Pwd=password;";
+        public static string ConnectionString = "Server=" + System.Configuration.ConfigurationManager.AppSettings["mysqlHost"] + 
+            ";Database=" + System.Configuration.ConfigurationManager.AppSettings["mysqlDB"] +
+            ";Uid=" + System.Configuration.ConfigurationManager.AppSettings["mysqlUser"] + 
+            ";Pwd=" + System.Configuration.ConfigurationManager.AppSettings["mysqlPassword"] + ";";
 
         /// <summary>
         /// This method acquires a mysql session factory so we can make changes
