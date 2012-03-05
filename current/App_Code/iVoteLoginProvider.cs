@@ -13,7 +13,12 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web.Configuration;
-
+using DatabaseEntities;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
 
 
 /// <summary>
@@ -43,7 +48,7 @@ public class iVoteLoginProvider : MembershipProvider
     public iVoteLoginProvider()
     {
         Configuration config = WebConfigurationManager.OpenWebConfiguration(System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath);
-        machineKey = (MachineKeySection)config.GetSection("system.web/machineKey");
+        //machineKey = (MachineKeySection)config.GetSection("system.web/machineKey");
     }
 
     private string GetConfigValue(string configValue, string defaultValue)
@@ -139,39 +144,6 @@ public class iVoteLoginProvider : MembershipProvider
         
     }
 
-    public void encryptAll()
-    {
-        
-        dblogic.getUsersL();
-        DataSet results = dblogic.getResults();
-        string[] encryptMe = new string[results.Tables[0].Rows.Count];
-        string[] users = new string[encryptMe.Length];
-        for (int i = 0; i < results.Tables[0].Rows.Count; i++)
-        {
-            users[i] = (string)results.Tables[0].Rows[i].ItemArray[0];
-            encryptMe[i] = encrypt((string)results.Tables[0].Rows[i].ItemArray[1]);
-        }
-        dblogic.updateUserPasswords(users, encryptMe);
-    }
-
-    public string encrypt(string what)
-    {
-        string answer = "test";
-
-        answer = Convert.ToBase64String(EncryptPassword(Encoding.Unicode.GetBytes(what)));
-
-        return answer;
-    }
-
-    private string decrypt(string what)
-    {
-        string answer = "";
-
-        answer = Encoding.Unicode.GetString(DecryptPassword(Convert.FromBase64String(what)));
-
-        return answer;
-    }
-
     public override int MinRequiredNonAlphanumericCharacters
     {
         get { return 0; }
@@ -199,27 +171,12 @@ public class iVoteLoginProvider : MembershipProvider
 
 
 
-    public override bool ValidateUser(string username, string password)
+    public override bool ValidateUser(string email, string password)
     {
-        
-        dblogic.getUsersL();
-        string temp;
-        DataSet results = dblogic.getResults();
-        DataTable users = results.Tables[0];
-        for (int i = 0; i < users.Rows.Count; i++)
-        {
-            temp = encrypt(password);
-            if (((string)users.Rows[i].ItemArray[0]).Equals(username) )
-            {
-                //make sure password is not null
-                if (!users.Rows[i].ItemArray[1].Equals(DBNull.Value))
-                {
-                    if (((string)users.Rows[i].ItemArray[1]).Equals(temp))
-                        return true;
-                }
-            }
-        }
-        return false;
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(ref session, email, password);
+
+        return (testUser != null);
     }
 
 
@@ -251,15 +208,7 @@ public class iVoteLoginProvider : MembershipProvider
 
     public override string GetPassword(string userName, string passwordAnswer)
     {
-        DataTable dt =dblogic.getPassword(userName);
-        if (dt != null)
-        {
-            return decrypt((string)dt.Rows[0].ItemArray[0]);
-        }
-        else
-        {
-            return "";
-        }
+        return "";
     }
 
     public override string GetUserNameByEmail(string emailAddress)
@@ -267,9 +216,17 @@ public class iVoteLoginProvider : MembershipProvider
         return "";
     }
 
-    public override bool ChangePassword(string username, string oldPassword, string newPassword)
+    public override bool ChangePassword(string email, string oldPassword, string newPassword)
     {
-        throw new NotImplementedException("membership provider change password not implemented");
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = DatabaseEntities.User.Authenticate(ref session, email, oldPassword);
+
+        if (user == null)
+            return false;
+
+        DatabaseEntities.User.UpdatePassword(ref session, user, newPassword, "");
+
+        return true;
     }
 
     public override bool ChangePasswordQuestionAndAnswer(string username, string password, string newPasswordQuestion, string newPasswordAnswer)

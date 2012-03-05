@@ -5,7 +5,7 @@ using System;
 /// Created by Adam Blank, 9/17/2011, databaseLogic.cs
 /// Database for iVote system for CSC354
 /// 
-/// Last modified: 11/14/2011 by Adam
+/// Last modified: 2/27/2012 by Andrew
 /// 
 /// </summary> 
 
@@ -20,6 +20,12 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 using System.Text.RegularExpressions;
+using DatabaseEntities;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
 
 
 public class databaseLogic
@@ -64,6 +70,7 @@ public class databaseLogic
     private void openConnection()
     {
         connection = new MySqlConnection(connectionString);
+        
         try
         {
             connection.Open();
@@ -223,7 +230,7 @@ public class databaseLogic
         openConnection();
         try
         {
-            commandString = "SELECT idunion_members FROM user WHERE username = '" + username + "';";
+            commandString = "SELECT idunion_members FROM union_members WHERE email = '" + username + "';";
             adapter = new MySqlDataAdapter(commandString, connection);
             ds = new DataSet();
             adapter.Fill(ds, "id");
@@ -605,7 +612,7 @@ public class databaseLogic
         return "";
     }
 
-    //checks if email exists in the database already (when adding a new user)
+/*    //checks if email exists in the database already (when adding a new user)
     //returns true if email is found in db
     public bool checkIfEmailExists(string newEmail)
     {
@@ -630,6 +637,7 @@ public class databaseLogic
         }
 
     }
+*/
 
     //^^^^^^^^^^petition methods^^^^^^^^^^
 

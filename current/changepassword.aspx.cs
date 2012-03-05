@@ -32,15 +32,19 @@ public partial class CPW : System.Web.UI.Page
             bool pw_correct = logger.ValidateUser(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text);
             if (pw_correct)
             {
-                lblConfirm.Text = "Your password has been successfully changed.";
-                string e_pw = logger.encrypt(newPW.Text);
-                dblogic.updatePassword2(HttpContext.Current.User.Identity.Name.ToString(), e_pw);
-                
+                bool changePasswordSuccess = logger.ChangePassword(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text, newPW.Text);
+                if (changePasswordSuccess)
+                {
+                    lblConfirm.Text = "Your password has been successfully changed.";
+                }
+                else
+                {
+                    lblConfirm.Text = "You password change was unsuccessful. Please contact the system administrator.";
+                }
+                    
             }
             else
                 lblConfirm.Text = "Old password is incorrect.";
-            //decrypt password fromt his
-            //lblConfirm.Text = "Form in progress.";
             //change form state
             lblForm.Visible = false;
             //lblConfirm.Text = "Thank you.  Your password has been changed.";

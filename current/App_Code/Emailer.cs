@@ -70,6 +70,9 @@ public class emailer
             //adds "to" email addresses from array
             for (int i = 0; i < addresses.Length; i++)
             {
+                if (!addresses[i].Contains("@"))
+                    continue;
+
                 mail.Bcc.Add(addresses[i]);
             }
             mail.From = new MailAddress(fromAddress);

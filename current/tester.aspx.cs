@@ -16,8 +16,8 @@ public partial class tester : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-
     }
+
     protected void Button1_Click(object sender, EventArgs e)
     {
         DatabaseEntities.NHibernateHelper.CreateSessionFactoryAndGenerateSchema();
@@ -89,5 +89,74 @@ public partial class tester : System.Web.UI.Page
 
         
 
+    }
+    protected void Button6_Click(object sender, EventArgs e)
+    {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        DatabaseEntities.User user = new DatabaseEntities.User();
+        user.FirstName = "AdminUser";
+        user.LastName = "AdminUser";
+        user.Email = "admin";
+        user.Password = DatabaseEntities.User.Hash("adminpassword");
+        user.PasswordHint = "Default admin account password.";
+        user.CanVote = true;
+        user.CurrentCommittee = -1;
+        user.Department = DepartmentType.None;
+        user.IsAdmin = true;
+        user.IsBargainingUnit = false;
+        user.IsNEC = false;
+        user.IsTenured = false;
+        user.IsUnion = false;
+        user.LastLogin = DateTime.Now;
+        user.CanVote = false;
+
+
+
+        DatabaseEntities.NHibernateHelper.UpdateDatabase(session, user);
+
+        DatabaseEntities.NHibernateHelper.Finished(transaction);
+    }
+    protected void Button7_Click(object sender, EventArgs e)
+    {
+        Label2.Text = DatabaseEntities.User.Hash(preHash.Text);
+    }
+    protected void Button8_Click(object sender, EventArgs e)
+    {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(ref session,authEmail.Text,authPassword.Text);
+
+        if (testUser == null)
+        {
+            Label3.Text = "Invalid";
+        }
+        else
+        {
+            Label3.Text = "Valid";
+        }
+    }
+    protected void Button9_Click(object sender, EventArgs e)
+    {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        DatabaseEntities.CommitteeElection ce = new DatabaseEntities.CommitteeElection();
+        ce.Committee = 1;
+        ce.VacanciesToFill = 2;
+        ce.Started = DateTime.Now;
+
+        DatabaseEntities.NHibernateHelper.UpdateDatabase(session, ce);
+
+        DatabaseEntities.NHibernateHelper.Finished(transaction);
+    }
+    protected void Button10_Click(object sender, EventArgs e)
+    {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        DatabaseEntities.CommitteeElection.SetPhase(ref session, 1, DatabaseEntities.ElectionPhase.WTSPhase);
+
+        DatabaseEntities.NHibernateHelper.Finished(transaction);
     }
 }

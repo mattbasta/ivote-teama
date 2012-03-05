@@ -12,6 +12,10 @@ public partial class wwwroot_phase1aSite_users : System.Web.UI.Page
     
     protected void Page_Load(object sender, EventArgs e)
     {
+        //TODO: Stop users from loading this page until the new version can be implemented.
+        Response.Write("This page is currently disabled!");
+        Response.End();
+
         if (!Page.IsPostBack)
         {
             dbLogic.selectAllUserInfo();
