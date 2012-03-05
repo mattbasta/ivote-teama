@@ -23,7 +23,7 @@ namespace DatabaseEntities
     /// <summary>
     ///  This type enumerates all the different departments at the university.
     /// </summary>
-    public enum DepartmentType {CSC, MAT, PSY}; 
+    public enum DepartmentType {None, CSC, MAT, PSY}; 
 
     /// <summary>
     /// This type enumerates the different officer positions in APSCUF 
@@ -58,7 +58,7 @@ namespace DatabaseEntities
         /// <summary>
         /// The password this user uses to access the site.
         /// </summary>
-        public virtual byte[] Password { get; set; }
+        public virtual String Password { get; set; }
         /// <summary>
         /// The string which will hopefully remind the user what their password
         /// is.
@@ -158,7 +158,7 @@ namespace DatabaseEntities
             for (int i = 0; i < faculty.Count; i++)
             {
                 // find and return the user with a matching email
-                if (faculty[i].Email == email)
+                if (faculty[i].Email.ToLower() == email.ToLower())
                     return faculty[i];
             }
             // otherwise, return null
@@ -203,7 +203,10 @@ namespace DatabaseEntities
             var faculty = session.CreateCriteria(typeof(User)).List<User>();
             for (int i = 0; i < faculty.Count; i++)
             {
-                if (faculty[i].Email == email && faculty[i].Password == Hash(password))
+                if(String.IsNullOrEmpty(faculty[i].Password))
+                    return null;
+
+                if (faculty[i].Email.ToLower() == email.ToLower() && faculty[i].Password == Hash(password))
                     return faculty[i];
             }
             return null;
@@ -227,16 +230,47 @@ namespace DatabaseEntities
         }
 
         /// <summary>
+        /// Hashes and then updates a user's password.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="ID">The ID of the user whose password is to be set.</param>
+        /// <param name="password">The new password.</param>
+        /// <param name="passwordHint">The new password hint.</param>
+        public static void UpdatePassword(ref ISession session, User user,
+            string password, string passwordHint)
+        {
+            user.Password = Hash(password);
+            user.PasswordHint = passwordHint;
+            session.SaveOrUpdate(user);
+            session.Flush();
+        }
+
+        /// <summary>
         /// Hashes a UTF8 string using SHA256. 
         /// </summary>
         /// <param name="toHash">The string which requires hashing.</param>
         /// <returns>The hash value of toHash.</returns>
-        public static byte[] Hash(string toHash)
+        public static String Hash(string toHash)
         {
             SHA256 hasher = SHA256.Create();
             // Note: is this the correct encoding to use?  
-            byte[] bytes = UTF8Encoding.UTF8.GetBytes(toHash);
-            return hasher.ComputeHash(bytes);
+            byte[] bytes = UTF8Encoding.ASCII.GetBytes(toHash);
+            bytes = hasher.ComputeHash(bytes);
+            return System.Text.Encoding.ASCII.GetString(bytes);
+        }
+
+        public static bool CheckIfEmailExists(ref ISession session, string email)
+        {
+            // pull a list of all the users from the database.
+            var faculty = session.CreateCriteria(typeof(User)).List<User>();
+            for (int i = 0; i < faculty.Count; i++)
+            {
+                // find and return true for a matching email
+                if (faculty[i].Email.ToLower() == email.ToLower())
+                    return true;
+            }
+            // otherwise, return false
+            return false;
         }
     }
 }

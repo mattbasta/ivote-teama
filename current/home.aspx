@@ -36,9 +36,10 @@
         <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton2"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                <asp:LinkButton ID="LinkButton2"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                             text="Create User" runat="server" /><br />
-                <asp:LinkButton ID="LinkButton4"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
+                <asp:LinkButton ID="LinkButton4"  commandname="id" 
+                    CommandArgument="users.aspx"  OnCommand="transfer"
                             text="Edit User" runat="server" /><br />
             
             </div>
@@ -107,7 +108,7 @@
             <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
                 <div class="column">
                     <b>User Management</b><br />
-                    <asp:LinkButton ID="LinkButton3"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                    <asp:LinkButton ID="LinkButton3"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                                 text="Create User" runat="server" /><br />
                     <asp:LinkButton ID="LinkButton8"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                                 text="Edit User" runat="server" /><br />
@@ -144,7 +145,7 @@
             <div class="clear"></div>
             <div class="column">
                 <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton17"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                <asp:LinkButton ID="LinkButton17"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                             text="Create User" runat="server" /><br />
                 <asp:LinkButton ID="LinkButton18"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                             text="Edit User" runat="server" /><br />
@@ -231,7 +232,7 @@
         <asp:Panel id="functions_petition" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton1"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                <asp:LinkButton ID="LinkButton1"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                             text="Create User" runat="server" /><br />
                 <asp:LinkButton ID="LinkButton7"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                             text="Edit User" runat="server" /><br />
@@ -335,7 +336,7 @@
             <asp:Panel id="functions_accept2" style="margin-top:10px;" visible="false" runat="server">
                 <div class="column">
                     <b>User Management</b><br />
-                    <asp:LinkButton ID="LinkButton13"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                    <asp:LinkButton ID="LinkButton13"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                                 text="Create User" runat="server" /><br />
                     <asp:LinkButton ID="LinkButton14"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                                 text="Edit User" runat="server" /><br />
@@ -369,7 +370,7 @@
             <asp:Panel id="functions_approval" style="margin-top:10px;" visible="false" runat="server">
                 <div class="column">
                     <b>User Management</b><br />
-                    <asp:LinkButton ID="LinkButton15"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                    <asp:LinkButton ID="LinkButton15"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                                 text="Create User" runat="server" /><br />
                     <asp:LinkButton ID="LinkButton16"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                                 text="Edit User" runat="server" /><br />
@@ -401,7 +402,7 @@
         <asp:Panel id="functions_voting" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton11"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                <asp:LinkButton ID="LinkButton11"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                             text="Create User" runat="server" /><br />
                 <asp:LinkButton ID="LinkButton12"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                             text="Edit User" runat="server" /><br />
@@ -536,7 +537,7 @@
         <asp:Panel id="functions_stateless" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton9"  commandname="id" CommandArgument="Register.aspx"  OnCommand="transfer"
+                <asp:LinkButton ID="LinkButton9"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
                             text="Create User" runat="server" /> <br />
                 <asp:LinkButton ID="LinkButton10"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
                             text="Edit User" runat="server" /><br />

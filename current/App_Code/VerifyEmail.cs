@@ -190,7 +190,7 @@ public class VerifyEmail
         emailMessage = "";
         emailMessage += "Hello and greetings from the APSCUF-KU iVote System! <br /><br />";
         emailMessage += "This is an automated message from the APSCUF-KU iVote system.  The election has concluded, and you are able to log in and view the results.  You may follow this URL to do so: ";
-        emailMessage += "<a href=\"http://ivote.bashtech.net\"> link</a> ";
+        emailMessage += "<a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
 

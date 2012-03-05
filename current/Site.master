@@ -21,7 +21,7 @@
                     <LoggedInTemplate>
                         Signed in as <span class="bold"><asp:LoginName ID="HeadLoginName" runat="server" /></span>
                         | <asp:LoginStatus ID="HeadLoginStatus" runat="server" LogoutAction="Redirect" LogoutText="Log Out" LogoutPageUrl="~/"/><br />
-                          <a href="CPW.aspx">Change Password</a>
+                          <a href="changepassword.aspx">Change Password</a>
                     </LoggedInTemplate>
                 </asp:LoginView>
             </div>

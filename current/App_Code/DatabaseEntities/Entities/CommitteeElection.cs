@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -74,7 +75,10 @@ namespace DatabaseEntities
 
                     if (electionPhase == ElectionPhase.WTSPhase)
                     {
-                        // email out WTS emails to redirect people to the site
+                        //TODO: Filter which users should be sent a WTS, instead of all.
+                        List<User> userList = User.GetAllUsers(ref session);
+                        nEmailHandler emailHandler = new nEmailHandler();
+                        emailHandler.sendWTS(committees[i], userList);
                     }
                     else if (electionPhase == ElectionPhase.BallotPhase)
                     {

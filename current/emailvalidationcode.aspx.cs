@@ -23,7 +23,7 @@ public partial class emailvalidationcode : System.Web.UI.Page
         insertCodesIntoDb(code_confirm, code_reject); //sends codes to inserter for db
 
         //displays codes for user
-        Label1.Text = "Copy and paste into address bar:<br /><b>http://ivote.bashtech.net/" + confirmUrl + "?x=" + code_confirm + "</b>";
+        Label1.Text = "Copy and paste into address bar:<br /><b>http://" + System.Configuration.ConfigurationManager.AppSettings["baseUrl"] + "/" + confirmUrl + "?x=" + code_confirm + "</b>";
         Button1.Enabled = false; //disables button
     }
 
