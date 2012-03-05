@@ -5,6 +5,12 @@ using System.Web;
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DatabaseEntities;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
 
 public partial class confirm : System.Web.UI.Page
 {
@@ -29,10 +35,10 @@ public partial class confirm : System.Web.UI.Page
                 PanelHide.Visible = true;
                 //if code exists    
                 //Pull First and Last name from union_members and add to congrats message!
-                String getNames = "SELECT last_name, first_name FROM union_members WHERE idunion_members='" + name + "';";
+                String getNames = "SELECT last_name, first_name, email FROM union_members WHERE idunion_members='" + name + "';";
                 FirstLast = getNameOfUser(getNames);
                 LabelFeedback.Text = "Hello <b>" + FirstLast[1] + " " + FirstLast[0] + "</b>. Thank you for verifying your account.<br />Please set up your new password below to complete your new account's activation.";
-                HiddenFieldPassword.Value = name;
+                HiddenFieldPassword.Value = FirstLast[2];
                 fullCode = code;
             }
             else
@@ -70,9 +76,12 @@ public partial class confirm : System.Web.UI.Page
     {
         if (Page.IsValid)
         {
-            iVoteLoginProvider encryptionHelper = new iVoteLoginProvider();
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
 
-            dbLogic.updatePassword(HiddenFieldPassword.Value, encryptionHelper.encrypt(TextBoxPassword.Text)); //inserts new encrypted password
+            DatabaseEntities.User user = DatabaseEntities.User.FindUser(ref session, HiddenFieldPassword.Value);
+            DatabaseEntities.User.UpdatePassword(ref session, user, TextBoxPassword.Text, "");
+
+            //dbLogic.updatePassword(HiddenFieldPassword.Value, encryptionHelper.encrypt(TextBoxPassword.Text)); //inserts new encrypted password
             dbLogic.deleteCode(fullCode); //deletes code row from database
 
             //Make form invisible
@@ -85,14 +94,15 @@ public partial class confirm : System.Web.UI.Page
     }
 
 
-    // gets first and last name of user (NOT FINISHED AS OF 8:49pm 10/4)
+    // gets first and last name of user
     protected String[] getNameOfUser(String id)
     {
         DataSet ds = dbLogic.getFirstAndLast(id);
-        String[] name = new String[2];
+        String[] name = new String[3];
         name[0] = ds.Tables[0].Rows[0].ItemArray[0].ToString();
         name[1] = ds.Tables[0].Rows[0].ItemArray[1].ToString();
-        
+        name[2] = ds.Tables[0].Rows[0].ItemArray[2].ToString();
+
         return name;
     }
 }

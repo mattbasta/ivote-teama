@@ -42,6 +42,7 @@ public partial class home : System.Web.UI.Page
         //if they are faculty
         if (User.IsInRole("faculty"))
         {
+            //Response.Write("Is faculty!");
             //nominatation
             if (phases.currentPhase == "nominate")
             {
@@ -249,6 +250,7 @@ public partial class home : System.Web.UI.Page
         //if they are the admin
         if (User.IsInRole("admin"))
         {
+            //Response.Write("Is Admin!");
             //nominatation
             if (phases.currentPhase == "nominate")
             {
@@ -490,6 +492,7 @@ public partial class home : System.Web.UI.Page
         //if they are the NEC
         if (User.IsInRole("nec"))
         {
+            //Response.Write("Is nec!");
             //nominatation
             if (phases.currentPhase == "nominate")
             {
