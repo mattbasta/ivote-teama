@@ -36,6 +36,9 @@ public partial class home : System.Web.UI.Page
     //sends user to homepage based on current phase and the users role
     protected void setView()
     {
+        // For testing purposes only.
+        if (System.Configuration.ConfigurationManager.AppSettings["dummy_db"] == "true")
+            return;
 
         //sends user to the correct homepage
 

@@ -8,19 +8,19 @@
     <asp:Label ID="lblTest" runat="server" />
     <!--Notifications-->
     <asp:Panel ID="PanelNominationPending" Visible="false" Enabled="false" runat="server">
-            <div id="notifications">
-                <asp:Panel id="nom_pending" class="notification" Visible="false" Enabled="false" runat="server">
-                    <b>You have a nomination pending! </b>
-                    <asp:LinkButton ID="LinkButton5"  commandname="id" CommandArgument="Nominations.aspx"  OnCommand="transfer"
-                        text="View Nominations." runat="server" />
-                </asp:Panel>
-                <asp:Panel ID="elig_pending" class="notification" Visible="false" Enabled="false" runat="server">
-                    <b>There are eligibility forms that must be approved. </b>
-                    <asp:LinkButton ID="LinkButton6"  commandname="id" CommandArgument="approvenominations.aspx"  OnCommand="transfer"
-                        text="Approve Eligibility" runat="server" />
-                </asp:Panel>
-            </div>
-     </asp:Panel>
+        <div id="notifications">
+            <asp:Panel id="nom_pending" class="notification" Visible="false" Enabled="false" runat="server">
+                <b>You have a nomination pending! </b>
+                <asp:LinkButton ID="LinkButton5"  commandname="id" CommandArgument="Nominations.aspx"  OnCommand="transfer"
+                    text="View Nominations." runat="server" />
+            </asp:Panel>
+            <asp:Panel ID="elig_pending" class="notification" Visible="false" Enabled="false" runat="server">
+                <b>There are eligibility forms that must be approved. </b>
+                <asp:LinkButton ID="LinkButton6"  commandname="id" CommandArgument="approvenominations.aspx"  OnCommand="transfer"
+                    text="Approve Eligibility" runat="server" />
+            </asp:Panel>
+        </div>
+    </asp:Panel>
 
     <!--End Notifications-->
 

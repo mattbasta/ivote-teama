@@ -12,11 +12,11 @@ public partial class _Default : System.Web.UI.Page
         //if user is already signed in, then they cannot not view the default page (which is simply the log in page)
         if (Page.User.Identity.IsAuthenticated)
         {
-            Response.Redirect("home.aspx");
+            Response.Redirect("/home.aspx");
         }
         else
         {
-            Response.Redirect("login.aspx");
+            Response.Redirect("/login.aspx");
         }
     }
 }

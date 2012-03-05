@@ -1,5 +1,4 @@
-﻿a
-{
+﻿a {
     text-decoration:none;
     color: #951716;
 }
@@ -87,3 +86,11 @@
        font-weight: bold;
    }
    
+/***************************************/
+
+footer {
+    text-align: center;
+    margin-top: 2em;
+    padding-top: 2em;
+    border-top: 1px solid #eee;
+}
