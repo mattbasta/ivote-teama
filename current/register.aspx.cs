@@ -19,7 +19,11 @@ public partial class Account_Register : System.Web.UI.Page
     iVoteRoleProvider roleProvider = new iVoteRoleProvider();
     protected void Page_Load(object sender, EventArgs e)
     {
-  
+        //Populate dropdown menu from DepartmentType enum.
+        foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
+        {
+            DeptDropDown.Items.Add(dept.ToString());
+        }
     }
 
     protected void submit(object sender, EventArgs e)
