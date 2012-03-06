@@ -23,7 +23,14 @@ namespace DatabaseEntities
     /// <summary>
     ///  This type enumerates all the different departments at the university.
     /// </summary>
-    public enum DepartmentType {None, CSC, MAT, PSY}; 
+    public enum DepartmentType {None, Staff, Other, ACC, AER, AMS, ANT, ARA, ART, ARC, ARU,
+                                ARH, ASE, AST, AVC, BTE, BIO, BUS, CHM, CHI, CMI, CDE, CSC,
+                                CPY, CFT, CRJ, DAN, DVE, DVR, ECO, EDU, EDW, ELU, EGR, ENU,
+                                ENV, FIN, FAR, FAS, FLA, FRE, FRS, GEG, GEL, GER, HEA, HIS,
+                                HPD, HUM, ITC, INT, IST, LIB, MGM, MAR, MAT, MKT, MAU, MED,
+                                MIC, MIL, MLS, MCS, MUS, MUU, MUP, NSE, NUR, PLG, PHI, PED,
+                                PHY, POL, PRO, PSY, RAR, RSS, RUS, SCI, SCU, SEU, SSC, SSE,
+                                SSU, SWK, SOC, SPA, SPU, SPE, THE, TVR, UST, WRI, WST}; 
 
     /// <summary>
     /// This type enumerates the different officer positions in APSCUF 
