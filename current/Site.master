@@ -33,7 +33,7 @@
         </div>
     </div>
 </div>
-    
+
     <div class="container">
         <div class="main">
             <asp:ContentPlaceHolder ID="MainContent" runat="server"/>
@@ -41,7 +41,7 @@
         <div class="clear"></div>
     </div>
     <footer class="container">
-        Designed and developed by <a href="About.aspx">iVote Team A</a>, CSC 354 Fall 2011 & Spring 2012
+        Designed and developed by <a href="About.aspx">iVote Team A</a>, CSC 354 Fall 2011 &amp; Spring 2012
     </footer>
 </form>
 </body>
