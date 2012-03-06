@@ -18,20 +18,18 @@ public partial class wwwroot_finalsite_terminate : System.Web.UI.Page
         //reset system
         dbLogic.resetElection();
 
-        string newMessage = "Hello all users of the iVote System,<br /><br />This email is to inform you that the current administrator has offically <u>terminated</u> the current election.<br /><br/>";
-        newMessage += "<b>The administrator has included this message explaining why the current election has been terminated:</b><br /><br />";
-        newMessage += "\"" + TextBoxMessage.Text + "\"<br /><br />";
-        newMessage += "If you have any questions, comments, or concerns involving this development please email the current administrator of the iVote system.<br /><br /><br />The iVote Team";
+        string newMessage = "Hello,<br /><br />This email is to notify you that the current APSCUF election administration has offically <u>terminated</u> the current officer election.<br /><br/>";
+        newMessage += "<p><b>The administrator has included this message explaining why the current election has been terminated:</b></p>";
+        newMessage += "<blockquote>" + Server.HtmlEncode(TextBoxMessage.Text) + "</blockquote>";
+        newMessage += "<p>If you have any questions, comments, or concerns involving this development please email the current administrator of the iVote system.</p><p>-Kutztown APSCUF</p>";
 
-        string[] emailList;
-
-        emailer emailSender = new emailer();
 
         //grab full list of emails
+        string[] emailList;
         emailList = dbLogic.getEmails();
 
-        emailSender.sendEmailToList(emailList, newMessage, "Current Election Offically Terminated");
-
+        emailer emailSender = new emailer();
+        emailSender.sendEmailToList(emailList, newMessage, "APSCUF Officer Election Terminated");
 
         //give feedback to the user
         PanelTerminate.Visible = false;

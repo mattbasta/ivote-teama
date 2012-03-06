@@ -7,11 +7,9 @@
         <siteMapNode url="~/slate.aspx" title="Slate" />
         <siteMapNode url="~/CPW.aspx" title="Change Password"/>
         <siteMapNode url="~/home.aspx/#" title="Admin" >
-            <siteMapNode url="~/Users.aspx" title="All Users"  />
-            <siteMapNode url="~/Register.aspx" title="Add New User"  description="" />
+            <siteMapNode url="~/users.aspx" title="All Users"  />
+            <siteMapNode url="~/register.aspx" title="Add New User"  description="" />
             <siteMapNode url="~/approvenominations.aspx" title="Approve Eligibility"  />
-            <siteMapNode url="~/set_positions.aspx" title="Set Positions" />
-            <siteMapNode url="~/ManualPhaseChanger.aspx" title="Manually Change Phase"  />
         </siteMapNode>  
     </siteMapNode>
 </siteMap>

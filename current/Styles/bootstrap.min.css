@@ -716,7 +716,7 @@ h1,h2,h3,h4,h5,h6{color:#000000;}
 .navbar .nav>li>a{text-shadow:none;}.navbar .nav>li>a:hover{color:#ffffff;background-color:rgba(256, 256, 256, 0.2);}
 .subnav .nav>li>a{border-left:0px solid white !important;border-right:0px solid white !important;color:#333333;}
 .btn-navbar:hover{background-color:#cccccc;background-position:0 0;}
-.search-query{border:1px solid #CCC;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;background-color:#ffffff;}
+.search-query{border:1px solid #CCC;-webkit-border-radius:20px;-moz-border-radius:20px;border-radius:20px;background-color:#ffffff;}
 .btn{-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;background-color:#fafafa;background-repeat: no-repeat;
     background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
 }

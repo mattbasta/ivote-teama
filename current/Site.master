@@ -9,7 +9,6 @@
 
 <link href="~/Styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
 <link href="~/Styles/Site.css" rel="stylesheet" type="text/css" />
-<link href="~/Views/Views.css" rel="Stylesheet" type="text/css" />
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
@@ -20,7 +19,7 @@
 <div class="navbar">
     <div class="navbar-inner">
         <div class="container">
-            <a class="brand">APSCUF Elections: Kutztown</a>
+            <a href="home.aspx" class="brand">APSCUF Elections: Kutztown</a>
             <ul class="nav">
                 <li><a href="/home.aspx">Home</a></li>
                 <asp:LoginView ID="HeaderUserLinks" runat="server" EnableViewState="false">

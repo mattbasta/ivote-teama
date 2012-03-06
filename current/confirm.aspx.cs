@@ -14,12 +14,12 @@ using NHibernate;
 
 public partial class confirm : System.Web.UI.Page
 {
-    
+
     String fullCode = "";
     databaseLogic dbLogic = new databaseLogic();
     protected void Page_Load(object sender, EventArgs e)
     {
-        
+
         String code = getQueryValue(); //retrieves query value from url
         String idunionQuery = "SELECT iduser FROM email_verification WHERE code_verified=" + code + ";";
         String[] FirstLast = new String[2];
@@ -33,7 +33,8 @@ public partial class confirm : System.Web.UI.Page
             if (name != "")
             {
                 PanelHide.Visible = true;
-                //if code exists    
+                PanelError.Visible = false;
+                //if code exists
                 //Pull First and Last name from union_members and add to congrats message!
                 String getNames = "SELECT last_name, first_name, email FROM union_members WHERE idunion_members='" + name + "';";
                 FirstLast = getNameOfUser(getNames);
@@ -46,15 +47,15 @@ public partial class confirm : System.Web.UI.Page
                 //if code does not exist
                 LabelFeedback.Text = "<b>Sorry, there seems to have been an error...</b>";
                 PanelHide.Visible = false;
-                PanelHide.Enabled = false;
+                PanelError.Visible = true;
             }
         }
         else
         {
             //if query string does not exist
-            LabelFeedback.Text = "<b>Sorry, there seems to have been an error...</b>";
+            LabelFeedback.Text = "<b>A problem has occurred.</b>";
             PanelHide.Visible = false;
-            PanelHide.Enabled = false;
+            PanelError.Visible = true;
         }
 
         //LabelFeedback.Text = dbLogic.checkConfirmCode(code) + "!";
@@ -85,16 +86,16 @@ public partial class confirm : System.Web.UI.Page
             dbLogic.deleteCode(fullCode); //deletes code row from database
 
             //Make form invisible
-            lblForm.Visible = false;
+            PanelHide.Visible = false;
             //display confirmation message
             lblConfirm.Visible = true;
-             
+
         }
-        
+
     }
 
 
-    // gets first and last name of user
+    // gets first and last name of user (NOT FINISHED AS OF 8:49pm 10/4)
     protected String[] getNameOfUser(String id)
     {
         DataSet ds = dbLogic.getFirstAndLast(id);
