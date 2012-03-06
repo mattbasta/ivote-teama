@@ -25,6 +25,12 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
             LinkButtonChangeEmail.OnClientClick = "javascript:return confirm('Are you sure you want to change this persons email?\nEmail messages the system's only method to contact the specified user, so please make sure the new address your saving valid.')";
             ButtonDelete.OnClientClick = "javascript:return confirm('Are you sure what want to PERMANENTLY delete this user account?')";
         }
+        
+        //Populate dropdown menu from DepartmentType enum.
+        foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
+        {
+            DeptDropDown.Items.Add(dept.ToString());
+        }
 
     }
 

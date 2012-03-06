@@ -31,18 +31,23 @@ public partial class home : System.Web.UI.Page
             //Set the view based on role and election phase.
             setView();
         }
+        
+        AdminTabs.Visible = User.IsInRole("admin");
+        
     }
 
     //sends user to homepage based on current phase and the users role
     protected void setView()
     {
+        // For testing purposes only.
+        if (System.Configuration.ConfigurationManager.AppSettings["dummy_db"] == "true")
+            return;
 
         //sends user to the correct homepage
 
         //if they are faculty
         if (User.IsInRole("faculty"))
         {
-            //Response.Write("Is faculty!");
             //nominatation
             if (phases.currentPhase == "nominate")
             {
@@ -60,8 +65,8 @@ public partial class home : System.Web.UI.Page
                 checkForNomination();
 
                 //set label visible
-                lblNominate.Visible = true;
-                lblNominate.Enabled = true;
+                OfficerNominate.Visible = true;
+                OfficerNominate.Enabled = true;
             }
             //accept1
             else if (phases.currentPhase == "accept1")
@@ -84,8 +89,8 @@ public partial class home : System.Web.UI.Page
                 checkForNomination();
 
                 //set label visible
-                lblAccept1.Visible = true;
-                lblAccept1.Enabled = true;
+                OfficerNominationAccept.Visible = true;
+                OfficerNominationAccept.Enabled = true;
             }
 
             //slate
@@ -109,8 +114,8 @@ public partial class home : System.Web.UI.Page
                 
                 
                 //make label visible
-                lblStateless.Visible = true;
-                lblStateless.Enabled = true;
+                OfficerStateless.Visible = true;
+                OfficerStateless.Enabled = true;
             }
             //petition
             else if (phases.currentPhase == "petition")
@@ -178,8 +183,8 @@ public partial class home : System.Web.UI.Page
                 }
 
                 //make label visible
-                lblStateless.Visible = true;
-                lblStateless.Enabled = true;
+                OfficerStateless.Visible = true;
+                OfficerStateless.Enabled = true;
             }
             //voting
             else if (phases.currentPhase == "vote")
@@ -242,15 +247,14 @@ public partial class home : System.Web.UI.Page
                     //email.phaseStateless();
                 }
                 //make label visible
-                lblStateless.Visible = true;
-                lblStateless.Enabled = true;
+                OfficerStateless.Visible = true;
+                OfficerStateless.Enabled = true;
             }
         }
 
         //if they are the admin
         if (User.IsInRole("admin"))
         {
-            //Response.Write("Is Admin!");
             //nominatation
             if (phases.currentPhase == "nominate")
             {
@@ -268,8 +272,8 @@ public partial class home : System.Web.UI.Page
                 checkForEligibility();
 
                 //set label visible
-                lblNominate.Visible = true;
-                lblNominate.Enabled = true;
+                OfficerNominate.Visible = true;
+                OfficerNominate.Enabled = true;
                 functions_nominate.Visible = true;
             }
             //accept1
@@ -295,8 +299,8 @@ public partial class home : System.Web.UI.Page
                 checkForEligibility();
 
                 //set label visible
-                lblAccept1.Visible = true;
-                lblAccept1.Enabled = true;
+                OfficerNominationAccept.Visible = true;
+                OfficerNominationAccept.Enabled = true;
                 functions_accept1.Visible = true;
             }
             //slate
@@ -483,8 +487,8 @@ public partial class home : System.Web.UI.Page
                     //email.phaseStateless();
                 }
                 //Response.Redirect("Views/Admin/stateless.aspx");
-                lblStateless.Visible = true;
-                lblStateless.Enabled = true;
+                OfficerStateless.Visible = true;
+                OfficerStateless.Enabled = true;
                 functions_stateless.Visible = true;
             }
         }
@@ -492,7 +496,6 @@ public partial class home : System.Web.UI.Page
         //if they are the NEC
         if (User.IsInRole("nec"))
         {
-            //Response.Write("Is nec!");
             //nominatation
             if (phases.currentPhase == "nominate")
             {
@@ -508,8 +511,8 @@ public partial class home : System.Web.UI.Page
                 checkForNomination();
 
                 //set label visible
-                lblNominate.Visible = true;
-                lblNominate.Enabled = true;
+                OfficerNominate.Visible = true;
+                OfficerNominate.Enabled = true;
             }
             //accept1
             else if (phases.currentPhase == "accept1")
@@ -532,8 +535,8 @@ public partial class home : System.Web.UI.Page
                 checkForNomination();
 
                 //set label visible
-                lblAccept1.Visible = true;
-                lblAccept1.Enabled = true;
+                OfficerNominationAccept.Visible = true;
+                OfficerNominationAccept.Enabled = true;
             }
             //slate
             else if (phases.currentPhase == "slate")
@@ -645,8 +648,8 @@ public partial class home : System.Web.UI.Page
                 }
 
                 //make label visible
-                lblStateless.Visible = true;
-                lblStateless.Enabled = true;
+                OfficerStateless.Visible = true;
+                OfficerStateless.Enabled = true;
             }
             //voting
             else if (phases.currentPhase == "vote")
@@ -736,8 +739,8 @@ public partial class home : System.Web.UI.Page
                 }
                 //Response.Redirect("Views/NEC/stateless.aspx");
                 //make label visible
-                lblStateless.Visible = true;
-                lblStateless.Enabled = true;
+                OfficerStateless.Visible = true;
+                OfficerStateless.Enabled = true;
             }
         }
     }
@@ -768,9 +771,10 @@ public partial class home : System.Web.UI.Page
         if (String.Equals(e.CommandName, "positions"))
         {
             PanelSelected.Visible = true; //makes the panel visible to the user
-            LabelSelected.Text = "<b>Info for " + e.CommandArgument + ":</b> <br /><br />" + dbLogic.selectDescriptionFromPositionName(e.CommandArgument.ToString()); //displays which position the user has selected
-            ButtonWTS.Text = "Nominate Yourself For " + e.CommandArgument;
-            ButtonNominate.Text = "Nominate A Faculty For " + e.CommandArgument;
+            LabelSelected.Text = "<h3>Info for " + e.CommandArgument + ":</h3>" +
+                                 "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandArgument.ToString()) + "</p>";
+            ButtonWTS.Text = "Nominate me for " + e.CommandArgument;
+            ButtonNominate.Text = "Nominate a user for " + e.CommandArgument;
             HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
             if (dbLogic.isUserNominated(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name), e.CommandArgument.ToString()) || dbLogic.isUserWTS(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name), e.CommandArgument.ToString()))
             {

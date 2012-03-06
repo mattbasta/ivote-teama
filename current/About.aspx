@@ -4,25 +4,60 @@
 <asp:Content ID="HeaderContent" runat="server" ContentPlaceHolderID="HeadContent">
 </asp:Content>
 <asp:Content ID="BodyContent" runat="server" ContentPlaceHolderID="MainContent">
-    <p>
+    <div class="page-header">
         <h1>Created by Team A</h1>
-        <h3>Fall Semester, 2011</h3>
-        <b>Kenneth Rohlfing</b> - Team Leader/Manager<br />
-        <b>Adam Blank</b> - Lead Developer<br />
-        <b>Ralph Sharp</b> - Developer<br />
-        <b>James Fody</b> - System Analyst <br />
-        <b>Aaron Higgins</b> - Designer<br />
-        <b>Rebecca Loux</b> - Tester<br />
-        <b>Jeremy Nagy</b> - Tester/Designer<br />
+    </div>
+    <div class="row">
+        <div class="span6">
+            <h2>Fall Semester, 2011</h2>
+            <dl>
+                <dt>Kenneth Rohlfing</dt>
+                <dd>Team Leader/Manager</dd>
 
-        <h3>Spring Semester, 2012</h3>
-        <b>Matthew Basta</b> - Team Leader & Tester<br />
-        <b>Nancy Rothermel</b> - Project Manager<br />
-        <b>Ryan Groff</b> - System Analysts & Designer<br />
-        <b>Roberto Rodriguez</b> - System Analyst, Designer, & Tester <br />
-        <b>Andrew Bashore</b> - System Designer & Developer<br />
-        <b>Brian Fairservice</b> - Systems Analyst & Developer<br />
-        <b>Julio Ingar</b> - System Developer<br />
-       
-    </p>
+                <dt>Adam Blank</dt>
+                <dd>Lead Developer</dd>
+
+                <dt>Ralph Sharp</dt>
+                <dd>Developer</dd>
+
+                <dt>James Fody</dt>
+                <dd>System Analyst</dd>
+
+                <dt>Aaron Higgins</dt>
+                <dd>Designer</dd>
+
+                <dt>Rebecca Loux</dt>
+                <dd>Tester</dd>
+
+                <dt>Jeremy Nagy</dt>
+                <dd>Tester/Designer</dd>
+            </dl>
+        </div>
+
+        <div class="span6">
+            <h2>Spring Semester, 2012</h2>
+            <dl>
+                <dt>Matthew Basta</dt>
+                <dd>Team Leader & Tester</dd>
+
+                <dt>Nancy Rothermel</dt>
+                <dd>Project Manager</dd>
+
+                <dt>Ryan Groff</dt>
+                <dd>System Analysts & Designer</dd>
+
+                <dt>Roberto Rodriguez</dt>
+                <dd>System Analyst, Designer, & Tester</dd>
+
+                <dt>Andrew Bashore</dt>
+                <dd>System Designer & Developer</dd>
+                    
+                <dt>Brian Fairservice</dt>
+                <dd>Systems Analyst & Developer</dd>
+
+                <dt>Julio Ingar</dt>
+                <dd>System Developer</dd>
+            </dl>
+        </div>
+    </div>
 </asp:Content>

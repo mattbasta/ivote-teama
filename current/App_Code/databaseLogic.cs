@@ -220,7 +220,7 @@ public class databaseLogic
     //    First value is 0 for auto-increment
     public void insertUnion(string[] union)
     {
-        string query = "INSERT INTO union_members (last_name, first_name, email, phone, department) VALUES ('" + union[0] + "', '" + union[1] + "', '" + union[2] + "', '" + union[3] + "', '" + union[4] + "');";
+        string query = "INSERT INTO union_members (last_name, first_name, email, department) VALUES ('" + union[0] + "', '" + union[1] + "', '" + union[2] + "', '" + union[3] + "');";
         genericQueryInserter(query);
     }
 

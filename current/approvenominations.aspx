@@ -2,55 +2,62 @@
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolKit" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
-</asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <ajaxToolKit:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server" />
+    
+    <ul class="breadcrumb">
+        <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
+        <li class="active">Approve Officer Nominations</li>
+    </ul>
+    
+    <div class="page-header">
+        <h1>Approve Officer Nominations</h1>
+    </div>
 
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-    <ContentTemplate>
-    <span style="color:blue;"><asp:Label ID="LabelFeedback" runat="server" Text="Approve or deny the eligibility of each Willingness-to-serve below." /></span>
-    <br />
-    <table class="simpleGrid" style="width: 100%">
-    <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Statement</th>
-            <th>Approve</th>
-            <th>Deny</th>
-        </tr>
-        <asp:ListView ID="ListViewApproval" OnItemCommand="showFullStatement" runat="server">
-            <LayoutTemplate>
-                <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
-            </LayoutTemplate>
-            <ItemTemplate>
+        <ContentTemplate>
+            <p><asp:Label ID="LabelFeedback" runat="server" Text="Approve or deny the eligibility of each Willingness-to-Serve form below." /></p>
+            <br />
+            <table class="table table-bordered">
                 <tr>
-                    <td >
-                        <asp:Label ID="LabelFullname" runat="server" Text='<%#Eval("fullname") %>' />
-                        <asp:HiddenField ID="HiddenFieldID" Value='<%#Eval("wts_id")%>' runat="server" />
-                        <asp:HiddenField ID="HiddenFieldEligible" Value='<%#Eval("eligible")%>' runat="server" />
-                    </td>
-                    <td>
-                        <asp:Label ID="LabelPosition" runat="server" Text='<%#Eval("position") %>' />
-                    </td>
-                    <td>
-                        <asp:Label ID="LabelStatement" runat="server" Text=' <%# "\"" + Eval("statement").ToString().Substring(0,Math.Min(60,Eval("statement").ToString().Length))+"..." + "\"" %>' />
-                        <asp:LinkButton ID="LinkButtonStatement" CommandName="statement" CommandArgument='<%#Eval("statement") %>' runat="server">Continue</asp:LinkButton>
-                    </td>
-                    <td>
-                        <asp:RadioButton ID="RadioButton1" GroupName="nomination" runat="server" />
-                    </td>
-                    <td>
-                        <asp:RadioButton ID="RadioButton2" GroupName="nomination" runat="server" />
-                    </td>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Statement</th>
+                    <th>Approve</th>
+                    <th>Deny</th>
                 </tr>
-            </ItemTemplate>
-        </asp:ListView>
-        </table>
-
-        
-        <br /><br />
-        <asp:Button ID="ButtonSave" runat="server" Text="Save Changes" Width="150" OnClick="Click_ButtonSave" />
+                <asp:ListView ID="ListViewApproval" OnItemCommand="showFullStatement" runat="server">
+                    <LayoutTemplate>
+                        <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                    </LayoutTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td >
+                                <asp:Label ID="LabelFullname" runat="server" Text='<%#Eval("fullname") %>' />
+                                <asp:HiddenField ID="HiddenFieldID" Value='<%#Eval("wts_id")%>' runat="server" />
+                                <asp:HiddenField ID="HiddenFieldEligible" Value='<%#Eval("eligible")%>' runat="server" />
+                            </td>
+                            <td>
+                                <asp:Label ID="LabelPosition" runat="server" Text='<%#Eval("position") %>' />
+                            </td>
+                            <td>
+                                <asp:Label ID="LabelStatement" runat="server" Text=' <%# "\"" + Eval("statement").ToString().Substring(0,Math.Min(60,Eval("statement").ToString().Length))+"..." + "\"" %>' />
+                                <asp:LinkButton ID="LinkButtonStatement" CommandName="statement" CommandArgument='<%#Eval("statement") %>' runat="server">Continue</asp:LinkButton>
+                            </td>
+                            <td>
+                                <asp:RadioButton ID="RadioButton1" GroupName="nomination" runat="server" />
+                            </td>
+                            <td>
+                                <asp:RadioButton ID="RadioButton2" GroupName="nomination" runat="server" />
+                            </td>
+                        </tr>
+                    </ItemTemplate>
+                </asp:ListView>
+            </table>
+    
+            <asp:Button ID="ButtonSave" runat="server" Text="Save Changes" CssClass="btn btn-primary" OnClick="Click_ButtonSave" />
+            <a href="/home.aspx" class="btn">Go Back</a>
         </ContentTemplate>
     </asp:UpdatePanel>
 

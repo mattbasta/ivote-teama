@@ -44,56 +44,66 @@
  </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
+    <ul class="breadcrumb">
+        <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
+        <li class="active">Cast Your Vote</li>
+    </ul>
+    
+    <div class="page-header">
+        <h1>Cast Your Vote</h1>
+    </div>
     
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
-            <div style="color: Blue; padding-bottom: 6px;"><asp:Label ID="LabelFeedback" runat="server" Text="To begin the voting process, please select a position from the list below"></asp:Label></div>
+            <p><asp:Label ID="LabelFeedback" runat="server" Text="To begin the voting process, please select a position from the list below."></asp:Label></p>
             
             <asp:Panel ID="PanelSlateWrapper" runat="server">
-                <div id="slateWrapper" style="width: 710px; height: 385px; background-color: #FF9999;">
+                <div id="slateWrapper" class="row">
                     <!-- Holds the positions in the election -->
-                    <asp:Panel ID="PanelPositions" CssClass="slateListPositions" runat="server">
+                    <asp:Panel ID="PanelPositions" CssClass="span3" runat="server">
                         <asp:ListView ID="ListViewPositions"  OnItemCommand="ListViewPositions_ItemCommand" runat="server">
                             <LayoutTemplate>
+                                <ul class="nav nav-tabs nav-stacked">
                                 <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                                </ul>
                             </LayoutTemplate>
                             <ItemTemplate>
-                                    <asp:LinkButton ID="LinkButtonPostions" CssClass="bold" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' /><br />
-                                <span style="font-size: 12px; font-weight: bold; color: #808080">
-                                    <asp:Label ID="LabelVotedExtra" runat="server" Text=""></asp:Label>
-                                    <asp:Label ID="LabelVoted" runat="server" Text=""></asp:Label>
-                                    <asp:HiddenField ID="HiddenFieldVotedId" runat="server" />
-                                    <asp:HiddenField ID="HiddenFieldVoteNumber" Value='<%#Eval("slots_plurality")%>' runat="server" />
-                                    <asp:HiddenField ID="HiddenFieldAllCandidates" Value="" runat="server" />
-                                </span>
-                                <hr />
+                                <li>
+                                    <asp:LinkButton ID="LinkButtonPostions" CssClass="bold" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' />
+                                    <span style="font-size: 12px; font-weight: bold; color: #808080">
+                                        <asp:Label ID="LabelVotedExtra" runat="server" Text=""></asp:Label>
+                                        <asp:Label ID="LabelVoted" runat="server" Text=""></asp:Label>
+                                        <asp:HiddenField ID="HiddenFieldVotedId" runat="server" />
+                                        <asp:HiddenField ID="HiddenFieldVoteNumber" Value='<%#Eval("slots_plurality")%>' runat="server" />
+                                        <asp:HiddenField ID="HiddenFieldAllCandidates" Value="" runat="server" />
+                                    </span>
+                                </li>
                             </ItemTemplate>
                         </asp:ListView>
                     </asp:Panel>
                     <!-- Holds the people nominated for each position -->
-                    <asp:Panel ID="PanelPeople" CssClass="slateListPeople" Visible="false" runat="server">
+                    <asp:Panel ID="PanelPeople" CssClass="span3" Visible="false" runat="server">
                         <asp:ListView ID="ListViewPeople" OnItemCommand="ListViewPeople_ItemCommand" runat="server">
-                             <LayoutTemplate>
+                            <LayoutTemplate>
+                                <ul class="nav nav-tabs nav-stacked">
                                 <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                                </ul>
                             </LayoutTemplate>
                             <ItemTemplate>
-                                <asp:LinkButton ID="LinkButtonPostions" runat="server" CssClass="bold" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#Eval("fullname")%>' /><br /><hr />
+                                <li>
+                                <asp:LinkButton ID="LinkButtonPostions" runat="server" CssClass="bold" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#Eval("fullname")%>' />
+                                </li>
                             </ItemTemplate>
                         </asp:ListView>
                     </asp:Panel>
                     <!-- Holds submit button and the info that belows to that persion -->
-                    <asp:Panel ID="PanelSelect" CssClass="slateDetailPeople" Visible="false" runat="server">
-                        <br />
-                        <div style="margin-right: auto; margin-left: auto; width: 290px; text-align: center;"><asp:Button ID="ButtonVote" OnClick="ButtonVote_Clicked" Visible="false" runat="server" Text="Vote for This Person" /></div>
-                        <br />
-                        <span style="text-decoration: underline; font-weight: bolder">
-                            Their Personal Statement:
-                        </span>
-                        <br />
-                        <div style="overflow: auto; width: 280px; height: 290px;">
-                            <asp:Label ID="LabelStatement" runat="server" Text="" />
+                    <asp:Panel ID="PanelSelect" CssClass="span6" Visible="false" runat="server">
+                        <div class="well">
+                            <strong>Candidate's Personal Statement:</strong>
+                            <p><asp:Label ID="LabelStatement" runat="server" Text="" /></p>
                         </div>
+                        <asp:Button ID="ButtonVote" OnClick="ButtonVote_Clicked" Visible="false" runat="server" Text="Vote for This Person" class="btn btn-primary" />
                         <asp:HiddenField ID="HiddenFieldName" runat="server" />
                         <asp:HiddenField ID="HiddenFieldId" runat="server" />
                     </asp:Panel>

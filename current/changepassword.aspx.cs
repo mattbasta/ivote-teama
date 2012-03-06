@@ -15,10 +15,7 @@ public partial class CPW : System.Web.UI.Page
     {
         //make sure user is logged in
         if (!Page.User.Identity.IsAuthenticated)
-        {
-            lblForm.Visible = false;
-            Server.Transfer("Account/Login.aspx");
-        }
+            Server.Transfer("/Account/Login.aspx");
     }
 
     protected void submission(object sender, EventArgs e)
@@ -32,7 +29,7 @@ public partial class CPW : System.Web.UI.Page
             bool pw_correct = logger.ValidateUser(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text);
             if (pw_correct)
             {
-                bool changePasswordSuccess = logger.ChangePassword(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text, newPW.Text);
+	        bool changePasswordSuccess = logger.ChangePassword(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text, newPW.Text);
                 if (changePasswordSuccess)
                 {
                     lblConfirm.Text = "Your password has been successfully changed.";
@@ -41,13 +38,16 @@ public partial class CPW : System.Web.UI.Page
                 {
                     lblConfirm.Text = "You password change was unsuccessful. Please contact the system administrator.";
                 }
-                    
+                FailurePanel.Visible = false;
+                SuccessPanel.Visible = true;
             }
             else
-                lblConfirm.Text = "Old password is incorrect.";
-            //change form state
-            lblForm.Visible = false;
-            //lblConfirm.Text = "Thank you.  Your password has been changed.";
+            {
+                FailureMessage.Text = "Old password is incorrect.";
+                FailurePanel.Visible = true;
+                SuccessPanel.Visible = false;
+            }
+
         }
     }
 

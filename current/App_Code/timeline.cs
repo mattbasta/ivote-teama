@@ -20,13 +20,17 @@ public class timeline
     //check which phase a user is currently in 
     public string checkPhase()
     {
+        // For testing purposes only.
+        if (System.Configuration.ConfigurationManager.AppSettings["dummy_db"] == "true")
+            return System.Configuration.ConfigurationManager.AppSettings["debug_legacy_phase"];
+
         string phase = "";
 
         string[] formats = {"M/d/yyyy h:mm:ss tt", "M/d/yyyy h:mm tt", 
-                           "MM/dd/yyyy hh:mm:ss", "M/d/yyyy h:mm:ss", 
-                           "M/d/yyyy hh:mm tt", "M/d/yyyy hh tt", 
-                           "M/d/yyyy h:mm", "M/d/yyyy h:mm", 
-                           "MM/dd/yyyy hh:mm", "M/dd/yyyy hh:mm"};
+                            "MM/dd/yyyy hh:mm:ss", "M/d/yyyy h:mm:ss", 
+                            "M/d/yyyy hh:mm tt", "M/d/yyyy hh tt", 
+                            "M/d/yyyy h:mm", "M/d/yyyy h:mm", 
+                            "MM/dd/yyyy hh:mm", "M/dd/yyyy hh:mm"};
 
         dbLogic.selectPhaseNamesAndDates();
         DataSet phaseSet = dbLogic.getResults();
@@ -109,6 +113,10 @@ public class timeline
 
     public bool changePhaseToCurrent(string phase)
     {
+        // For testing purposes only.
+        if (System.Configuration.ConfigurationManager.AppSettings["dummy_db"] == "true")
+            return true;
+
         if(phase == "nomination")
         {
             dbLogic.turnOnPhase("nomination");

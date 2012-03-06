@@ -47,56 +47,6 @@ public partial class wwwroot_finalsite_removeFromBallot : System.Web.UI.Page
                 }
             }
     }
-
-    /*
-    //saves user changes
-    protected void Click_ButtonSave(object sender, EventArgs e)
-    {
-        int count = 0;
-        foreach (ListViewDataItem eachItem in ListViewApproval.Items)
-        {
-            bool changeMade = false;
-            HiddenField id = (HiddenField)eachItem.FindControl("HiddenFieldID");
-            HiddenField eligible = (HiddenField)eachItem.FindControl("HiddenFieldEligible");
-            Label fullname = (Label)eachItem.FindControl("LabelFullname");
-            Label position = (Label)eachItem.FindControl("LabelPosition");
-            Label statement = (Label)eachItem.FindControl("LabelStatement");
-            RadioButton approve = (RadioButton)eachItem.FindControl("RadioButton1");
-            RadioButton deny = (RadioButton)eachItem.FindControl("RadioButton2");
-
-            if (approve.Checked == true)
-            {
-                dbLogic.updateEligible(id.Value, "1");
-                //email to user saying they were accepted
-                email.approveUserEligibility(id.Value);
-
-                if (eligible.Value != "1")
-                {
-                    count += 1;
-                    eligible.Value = "1";
-                }
-            }
-            else if (deny.Checked == true)
-            {
-                dbLogic.updateEligible(id.Value, "0");
-                //email to user saying they were rejected
-                email.denyUserEligibility(id.Value);
-
-                if (eligible.Value != "0")
-                {
-                    count += 1;
-                    eligible.Value = "0";
-                }
-            }
-
-        }
-        if (count > 0)
-            LabelFeedback.Text = "Save successful. " + count.ToString() + " nomination(s) changed.";
-        else
-            LabelFeedback.Text = "No changes made.";
-    }
-    */
-
     
     protected void showFullStatement(object sender, ListViewCommandEventArgs e)
     {
@@ -126,7 +76,6 @@ public partial class wwwroot_finalsite_removeFromBallot : System.Web.UI.Page
         ListViewApproval.DataSource = emailSet;
         ListViewApproval.DataBind();
         loadApprovalInfo();
-
         
     }
 
