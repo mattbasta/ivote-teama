@@ -45,7 +45,7 @@ public partial class wwwroot_phase1aSite_nominate : System.Web.UI.Page
         {
             Button Nominate = (Button)myItem.FindControl("ButtonNominate");
             //If the current user's name appears in the results list, the nominate button is disabled
-            if(Nominate.CommandArgument.ToString() == dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name).ToString()) 
+            if(Nominate.CommandArgument.ToString() == dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name).ToString())
             {
                 Nominate.ToolTip = "To nominate yourself, click \"Nominate Yourself\" on the homepage";
                 Nominate.Enabled = false;
@@ -71,7 +71,7 @@ public partial class wwwroot_phase1aSite_nominate : System.Web.UI.Page
 
             //inserts data into the db
             dbLogic.insertNominationAccept(info);
-        
+
             string[] emailAddress = {dbLogic.selectEmailFromID(Convert.ToInt16(e.CommandArgument))};
 
             //send an email to the user nominated

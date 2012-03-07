@@ -20,13 +20,10 @@ public partial class finalsite_results : System.Web.UI.Page
     {
         bindPositions();
 
-        if(User.IsInRole("nec"))
+        if(User.IsInRole("nec") && !dbLogic.checkNecApprove())
         {
-            if (!dbLogic.checkNecApprove())
-            {
-                necApprove.Visible = true;
-                necButton.Visible = true;
-            }
+            necApprove.Visible = true;
+            necButton.Visible = true;
         }
     }
 
@@ -65,6 +62,7 @@ public partial class finalsite_results : System.Web.UI.Page
     protected void necButton_OnClick(Object sender, EventArgs e)
     {
         dbLogic.insertNecApprove();
+        necApproved.Visible = true;
         necApprove.Visible = false;
         necButton.Visible = false;
     }

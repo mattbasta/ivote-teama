@@ -3,10 +3,19 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
+    <ul class="breadcrumb">
+        <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
+        <li><a href="/users.aspx">Users</a> <span class="divider">/</span></li>
+        <li class="active">User Info</li>
+    </ul>
+    
     <asp:ScriptManager runat="server" />
-
     <asp:HiddenField ID="HiddenFieldID" runat="server" />
-    <h2><asp:Label ID="LabelFullname" runat="server" Text="" /></h2>
+    
+    <div class="page-header">
+        <h1><asp:Label ID="LabelFullname" runat="server" Text="" /></h1>
+    </div>
+    
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
             <p>
@@ -46,99 +55,6 @@
         <asp:Label ID="Dept" runat="server" AssociatedControlID="DeptDropDown">Department:</asp:Label>
         <asp:DropDownList ID="DeptDropDown" runat="server" >
             <asp:ListItem></asp:ListItem>
-                                    <asp:ListItem>ACC</asp:ListItem>
-                                    <asp:ListItem>AER</asp:ListItem>
-                                    <asp:ListItem>AMS</asp:ListItem>
-                                    <asp:ListItem>ANT</asp:ListItem>
-                                    <asp:ListItem>ARA</asp:ListItem>
-                                    <asp:ListItem>ART</asp:ListItem>
-                                    <asp:ListItem>ARC</asp:ListItem>
-                                    <asp:ListItem>ARU</asp:ListItem>
-                                    <asp:ListItem>ARH</asp:ListItem>
-                                    <asp:ListItem>ASE</asp:ListItem>
-                                    <asp:ListItem>AST</asp:ListItem>
-                                    <asp:ListItem>AVC</asp:ListItem>
-                                    <asp:ListItem>BTE</asp:ListItem>
-                                    <asp:ListItem>BIO</asp:ListItem>
-                                    <asp:ListItem>BUS</asp:ListItem>
-                                    <asp:ListItem>CHM</asp:ListItem>
-                                    <asp:ListItem>CHI</asp:ListItem>
-                                    <asp:ListItem>CMI</asp:ListItem>
-                                    <asp:ListItem>CDE</asp:ListItem>
-                                    <asp:ListItem>CSC</asp:ListItem>
-                                    <asp:ListItem>CPY</asp:ListItem>
-                                    <asp:ListItem>CFT</asp:ListItem>
-                                    <asp:ListItem>CRJ</asp:ListItem>
-                                    <asp:ListItem>DAN</asp:ListItem>
-                                    <asp:ListItem>DVE</asp:ListItem>
-                                    <asp:ListItem>DVR</asp:ListItem>
-                                    <asp:ListItem>ECO</asp:ListItem>
-                                    <asp:ListItem>EDU</asp:ListItem>
-                                    <asp:ListItem>EDW</asp:ListItem>
-                                    <asp:ListItem>ELU</asp:ListItem>
-                                    <asp:ListItem>EGR</asp:ListItem>
-                                    <asp:ListItem>ENU</asp:ListItem>
-                                    <asp:ListItem>ENV</asp:ListItem>
-                                    <asp:ListItem>FIN</asp:ListItem>
-                                    <asp:ListItem>FAR</asp:ListItem>
-                                    <asp:ListItem>FAS</asp:ListItem>
-                                    <asp:ListItem>FLA</asp:ListItem>
-                                    <asp:ListItem>FRE</asp:ListItem>
-                                    <asp:ListItem>FRS</asp:ListItem>
-                                    <asp:ListItem>GEG</asp:ListItem>
-                                    <asp:ListItem>GEl</asp:ListItem>
-                                    <asp:ListItem>GER</asp:ListItem>
-                                    <asp:ListItem>HEA</asp:ListItem>
-                                    <asp:ListItem>HIS</asp:ListItem>
-                                    <asp:ListItem>HPD</asp:ListItem>
-                                    <asp:ListItem>HUM</asp:ListItem>
-                                    <asp:ListItem>ITC</asp:ListItem>
-                                    <asp:ListItem>INT</asp:ListItem>
-                                    <asp:ListItem>IST</asp:ListItem>
-                                    <asp:ListItem>LIB</asp:ListItem>
-                                    <asp:ListItem>MGM</asp:ListItem>
-                                    <asp:ListItem>MAR</asp:ListItem>
-                                    <asp:ListItem>MAT</asp:ListItem>
-                                    <asp:ListItem>MKT</asp:ListItem>
-                                    <asp:ListItem>MAU</asp:ListItem>
-                                    <asp:ListItem>MED</asp:ListItem>
-                                    <asp:ListItem>MIC</asp:ListItem>
-                                    <asp:ListItem>MIL</asp:ListItem>
-                                    <asp:ListItem>MLS</asp:ListItem>
-                                    <asp:ListItem>MCS</asp:ListItem>
-                                    <asp:ListItem>MUS</asp:ListItem>
-                                    <asp:ListItem>MUU</asp:ListItem>
-                                    <asp:ListItem>MUP</asp:ListItem>
-                                    <asp:ListItem>NSE</asp:ListItem>
-                                    <asp:ListItem>NUR</asp:ListItem>
-                                    <asp:ListItem>PLG</asp:ListItem>
-                                    <asp:ListItem>PHI</asp:ListItem>
-                                    <asp:ListItem>PED</asp:ListItem>
-                                    <asp:ListItem>PHY</asp:ListItem>
-                                    <asp:ListItem>POL</asp:ListItem>
-                                    <asp:ListItem>PRO</asp:ListItem>
-                                    <asp:ListItem>PSY</asp:ListItem>
-                                    <asp:ListItem>RAR</asp:ListItem>
-                                    <asp:ListItem>RSS</asp:ListItem>
-                                    <asp:ListItem>RUS</asp:ListItem>
-                                    <asp:ListItem>SCI</asp:ListItem>
-                                    <asp:ListItem>SCU</asp:ListItem>
-                                    <asp:ListItem>SEU</asp:ListItem>
-                                    <asp:ListItem>SSC</asp:ListItem>
-                                    <asp:ListItem>SSE</asp:ListItem>
-                                    <asp:ListItem>SSU</asp:ListItem>
-                                    <asp:ListItem>SWK</asp:ListItem>
-                                    <asp:ListItem>SOC</asp:ListItem>
-                                    <asp:ListItem>SPA</asp:ListItem>
-                                    <asp:ListItem>SPU</asp:ListItem>
-                                    <asp:ListItem>SPE</asp:ListItem>
-                                    <asp:ListItem>Staff</asp:ListItem>
-                                    <asp:ListItem>THE</asp:ListItem>
-                                    <asp:ListItem>TVR</asp:ListItem>
-                                    <asp:ListItem>UST</asp:ListItem>
-                                    <asp:ListItem>WRI</asp:ListItem>
-                                    <asp:ListItem>WST</asp:ListItem>
-                                    <asp:ListItem>Other</asp:ListItem>
         </asp:DropDownList>                            
         <asp:RequiredFieldValidator ID="DeptRequired" runat="server" ControlToValidate="DeptDropDown" 
                 CssClass="failureNotification" ErrorMessage="Department is required." ToolTip="Department is required." 

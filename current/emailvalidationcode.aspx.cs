@@ -9,7 +9,7 @@ using System.Data;
 public partial class emailvalidationcode : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic(); //initializes new db logic instance
-    
+
     protected void Page_Load(object sender, EventArgs e)
     {
     }
@@ -68,7 +68,7 @@ public partial class emailvalidationcode : System.Web.UI.Page
         code[0] = "1"; //supposed to be persons new username, will be added later
         code[1] = code1;
         code[2] = code2;
-        
+
         //inserts values into db
         dbLogic.insertCodes(code);
     }

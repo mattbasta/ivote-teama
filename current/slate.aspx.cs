@@ -80,7 +80,7 @@ public partial class slate : System.Web.UI.Page
     {
         if (String.Equals(e.CommandName, "id"))
         {
-           
+
             dbLogic.selectDetailFromWTS(e.CommandArgument.ToString());
             DataSet infoSet = dbLogic.getResults();
             DataRow dr = infoSet.Tables["query"].Rows[0];

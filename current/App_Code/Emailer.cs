@@ -16,6 +16,8 @@ using System.Net.Mail;
 
 public class emailer
 {
+    private bool enabled;
+
     private string host;
     private string fromAddress;
     private string userName;
@@ -27,6 +29,11 @@ public class emailer
 
     public emailer()
     {
+        enabled = System.Configuration.ConfigurationManager.AppSettings["smtpEnabled"] == "true";
+
+        if (!enabled)
+            return;
+
         fromAddress = "\"iVote System\" <" + System.Configuration.ConfigurationManager.AppSettings["fromAddress"] + ">";
         host = System.Configuration.ConfigurationManager.AppSettings["smtpHost"];
         userName = System.Configuration.ConfigurationManager.AppSettings["smtpUser"];
@@ -39,6 +46,8 @@ public class emailer
     //generic method for sending email
     private string send(MailMessage mail)
     {
+        if (!enabled) return "Emails are not enabled.";
+
         try
         {
 
@@ -63,6 +72,7 @@ public class emailer
     //sends email to a list of addresses inside of an array (array can hold just 1 address as well)
     public string sendEmailToList(string[] addresses, string message, string subject)
     {
+        if (!enabled) return "Emails are not enabled.";
         try
         {
             MailMessage mail = new MailMessage();
