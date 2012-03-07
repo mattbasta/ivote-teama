@@ -13,13 +13,13 @@
         Your password was updated and the changes were saved. Your new password is effective immediately.
     </div>
 </asp:Panel>
+<asp:Panel ID="FailurePanel" runat="server" Visible="False">
+    <div class="alert alert-failure">
+        <strong>Password change unsccessful.</strong><br />
+        Your password was not changed.
+    </div>
+</asp:Panel>
 <asp:Panel ID="UpdatePanel" runat="server" CssClass="form-horizontal">
-    <asp:Panel ID="FailurePanel" runat="server" Visible="False">
-        <div class="alert alert-error">
-            <strong>Error</strong><br />
-            <asp:Label ID="FailureMessage" runat="server" Text=""></asp:Label>
-        </div>
-    </asp:Panel>
     <div class="control-group">
         <asp:Label ID="NewPasswordLabel" runat="server" Text="New Password:" CssClass="control-label"></asp:Label>
         <div class="controls">

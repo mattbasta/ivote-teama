@@ -25,7 +25,7 @@
                 <asp:LoginView ID="HeaderUserLinks" runat="server" EnableViewState="false">
                     <AnonymousTemplate></AnonymousTemplate>
                     <LoggedInTemplate>
-                        <li><a href="/CPW.aspx">Change Password</a></li>
+                        <li><a href="changepassword.aspx">Change Password</a></li>
                         <li><asp:LoginStatus ID="HeaderLoggedInStatus" runat="server" LogoutAction="Redirect" LogoutText="Log Out" LogoutPageUrl="~/"/></li>
                     </LoggedInTemplate>
                 </asp:LoginView>
