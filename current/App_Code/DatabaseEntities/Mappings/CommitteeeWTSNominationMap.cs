@@ -22,7 +22,7 @@ namespace DatabaseEntities
         {
             // Specify the name of the table WTS nominations's will be 
             // inserted into.
-            Table("CommitteeWTSes");
+            Table("CommitteeWTSNominations");
             // ID is a self-incrementing, unique identifier for the WTS 
             // nomination.
             Id(x => x.ID);

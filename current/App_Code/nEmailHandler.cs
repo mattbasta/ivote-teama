@@ -39,7 +39,7 @@ public class nEmailHandler
 
         //Retrieve committee information
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.Committee committee = DatabaseEntities.Committee.FindCommittee(ref session, committeeElection.Committee);
+        DatabaseEntities.Committee committee = DatabaseEntities.Committee.FindCommittee(session, committeeElection.PertinentCommittee);
 
         if (committee == null)
             return;

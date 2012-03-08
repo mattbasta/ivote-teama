@@ -1,4 +1,14 @@
-﻿
+﻿footer
+{
+	border-top: 1px solid #eee;
+	margin-top: 2em;
+	padding-top: 2em;
+	text-align: center;
+}
+
+.lineThrough {text-decoration: line-through;}
+
+.buttonrow {margin-bottom: 1.5em;}
 
 /* MISC  
 ----------------------------------------------------------*/
@@ -14,97 +24,6 @@
     float: left;
     text-align: left;
     width: auto;
-}
-
-.loginDisplay
-{
-    font-size: 1.1em;
-    display: block;
-    text-align: right;
-    padding: 10px;
-    color: White;
-}
-
-.loginDisplay a:link
-{
-    color: white;
-}
-
-.loginDisplay a:visited
-{
-    color: white;
-}
-
-.loginDisplay a:hover
-{
-    color: white;
-}
-
-.failureNotification
-{
-    font-size: 1.2em;
-    color: Red;
-}
-
-.bold
-{
-    font-weight: bold;
-}
-
-.red
-{
-    color: Red;
-}
-
-.blue
-{
-    color: Blue;   
-}
-.submitButton
-{
-    text-align: right;
-    padding-right: 10px;
-}
-
-.usersGrid
-{
-    width: 95%;   
-    background-color: #fff;   
-    margin: 5px 0 10px 0;   
-    border: solid 1px #525252;   
-    border-collapse:collapse; 
-    text-align: center; 
-}
-
-.usersGrid th
-{
-    padding: 4px 2px;
-    background-color: #DBC8D1;
-    font-size: 0.9em;
-}
-
-.simpleBorder
-{
-    border-bottom-color: Gray;
-    border-bottom-width: thin;
-    border-top-style: solid;  
-}
-
-.simpleGrid
-{
-    width: 70%;   
-    background-color: #fff;   
-    margin: 5px 0 10px 0;   
-    border: solid 1px #525252;   
-    border-collapse:collapse; 
-    text-align: center; 
-}
-
-.simpleGrid th
-{
-    padding: 4px 2px;
-    background-color: #DBC8D1;
-    font-size: 0.9em;
 }
 
 .modalBackground
