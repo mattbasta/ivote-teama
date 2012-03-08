@@ -37,11 +37,11 @@ public partial class tester : System.Web.UI.Page
         ITransaction transaction = session.BeginTransaction();
 
         DatabaseEntities.User user = new DatabaseEntities.User();
-        user.FirstName = "FirstTest";
-        user.LastName = "LastTest";
+        user.FirstName = "Default";
+        user.LastName = "Admin";
         user.Email = "test@btx.me";
         user.Password = DatabaseEntities.User.Hash("testpassword");
-        user.PasswordHint = "This is a hint.";
+        user.PasswordHint = "";
         user.CanVote = true;
         user.CurrentCommittee = -1;
         user.Department = DepartmentType.CSC;
@@ -90,35 +90,7 @@ public partial class tester : System.Web.UI.Page
         
 
     }
-    protected void Button6_Click(object sender, EventArgs e)
-    {
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        ITransaction transaction = session.BeginTransaction();
-
-        DatabaseEntities.User user = new DatabaseEntities.User();
-        user.FirstName = "AdminUser";
-        user.LastName = "AdminUser";
-        user.Email = "admin";
-        user.Password = DatabaseEntities.User.Hash("adminpassword");
-        user.PasswordHint = "Default admin account password.";
-        user.CanVote = true;
-        user.CurrentCommittee = -1;
-        user.Department = DepartmentType.None;
-        user.IsAdmin = true;
-        user.IsBargainingUnit = false;
-        user.IsNEC = false;
-        user.IsTenured = false;
-        user.IsUnion = false;
-        user.LastLogin = DateTime.Now;
-        user.CanVote = false;
-
-
-
-        DatabaseEntities.NHibernateHelper.UpdateDatabase(session, user);
-
-        DatabaseEntities.NHibernateHelper.Finished(transaction);
-    }
-    protected void Button7_Click(object sender, EventArgs e)
+   protected void Button7_Click(object sender, EventArgs e)
     {
         Label2.Text = DatabaseEntities.User.Hash(preHash.Text);
     }
