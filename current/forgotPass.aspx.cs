@@ -36,7 +36,7 @@ public partial class phase1aSite_forgotPass : System.Web.UI.Page
             emailMessage += "Please follow the link below to reset your password. <br /><br />";
             
             // check if email exists in union_members table
-            if (!DatabaseEntities.User.CheckIfEmailExists(ref session, email.Text))
+            if (!DatabaseEntities.User.CheckIfEmailExists(session, email.Text))
             {
                 lblError.Visible = true;
                 temp_error = true;

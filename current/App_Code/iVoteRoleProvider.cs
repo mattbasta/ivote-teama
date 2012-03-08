@@ -65,7 +65,7 @@ public class iVoteRoleProvider : RoleProvider
     public override string[] FindUsersInRole(string role, string user)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        List<DatabaseEntities.User> users = DatabaseEntities.User.GetAllUsers(ref session);
+        List<DatabaseEntities.User> users = DatabaseEntities.User.GetAllUsers(session);
 
         List<string> usersInRole = new List<string>();
 
@@ -93,7 +93,7 @@ public class iVoteRoleProvider : RoleProvider
     public override string[] GetRolesForUser(string user)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User nUser = DatabaseEntities.User.FindUser(ref session, user);
+        DatabaseEntities.User nUser = DatabaseEntities.User.FindUser(session, user);
 
         List<string> userRoles = new List<string>();
 
@@ -110,7 +110,7 @@ public class iVoteRoleProvider : RoleProvider
     public override string[] GetUsersInRole(string role)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        List<DatabaseEntities.User> users = DatabaseEntities.User.GetAllUsers(ref session);
+        List<DatabaseEntities.User> users = DatabaseEntities.User.GetAllUsers(session);
 
         List<string> usersInRole = new List<string>();
 
@@ -130,7 +130,7 @@ public class iVoteRoleProvider : RoleProvider
     public override Boolean IsUserInRole(string user, string role)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User nUser = DatabaseEntities.User.FindUser(ref session, user);
+        DatabaseEntities.User nUser = DatabaseEntities.User.FindUser(session, user);
 
         if (role == "admin" && nUser.IsAdmin)
             return true;

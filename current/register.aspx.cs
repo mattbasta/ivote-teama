@@ -34,7 +34,7 @@ public partial class Account_Register : System.Web.UI.Page
         {
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
 
-            if (DatabaseEntities.User.CheckIfEmailExists(ref session, Email.Text)) //checks if new user's email address already exists
+            if (DatabaseEntities.User.CheckIfEmailExists(session, Email.Text)) //checks if new user's email address already exists
             {
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
             }

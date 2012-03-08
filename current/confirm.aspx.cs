@@ -79,8 +79,8 @@ public partial class confirm : System.Web.UI.Page
         {
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
 
-            DatabaseEntities.User user = DatabaseEntities.User.FindUser(ref session, HiddenFieldPassword.Value);
-            DatabaseEntities.User.UpdatePassword(ref session, user, TextBoxPassword.Text, "");
+            DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, HiddenFieldPassword.Value);
+            DatabaseEntities.User.UpdatePassword(session, user, TextBoxPassword.Text, "");
 
             //dbLogic.updatePassword(HiddenFieldPassword.Value, encryptionHelper.encrypt(TextBoxPassword.Text)); //inserts new encrypted password
             dbLogic.deleteCode(fullCode); //deletes code row from database
