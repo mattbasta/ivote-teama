@@ -23,7 +23,7 @@ namespace DatabaseEntities
             Id(x => x.ID);
             // The rest of the parameters will be fluently auto-mapped, and
             // cannot be null.
-            Map(x => x.Committee)
+            Map(x => x.PertinentCommittee)
                 .Not.Nullable();
             Map(x => x.Started)
                 .Not.Nullable();

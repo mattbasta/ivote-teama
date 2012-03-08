@@ -68,7 +68,7 @@ public partial class tester : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
-        User user = DatabaseEntities.User.FindUser(ref session, "test@btx.me");
+        User user = DatabaseEntities.User.FindUser(session, "test@btx.me");
 
         DatabaseEntities.NHibernateHelper.Delete(session, user);
         DatabaseEntities.NHibernateHelper.Finished(transaction);
@@ -79,7 +79,7 @@ public partial class tester : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
-        List<User> userList = DatabaseEntities.User.GetAllUsers(ref session);
+        List<User> userList = DatabaseEntities.User.GetAllUsers(session);
         DatabaseEntities.NHibernateHelper.Finished(transaction);
 
         foreach (User user in userList)
@@ -125,7 +125,7 @@ public partial class tester : System.Web.UI.Page
     protected void Button8_Click(object sender, EventArgs e)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(ref session,authEmail.Text,authPassword.Text);
+        DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(session,authEmail.Text,authPassword.Text);
 
         if (testUser == null)
         {
@@ -142,7 +142,7 @@ public partial class tester : System.Web.UI.Page
         ITransaction transaction = session.BeginTransaction();
 
         DatabaseEntities.CommitteeElection ce = new DatabaseEntities.CommitteeElection();
-        ce.Committee = 1;
+        ce.PertinentCommittee = 1;
         ce.VacanciesToFill = 2;
         ce.Started = DateTime.Now;
 
@@ -155,7 +155,7 @@ public partial class tester : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
-        DatabaseEntities.CommitteeElection.SetPhase(ref session, 1, DatabaseEntities.ElectionPhase.WTSPhase);
+        DatabaseEntities.CommitteeElection.SetPhase(session, 1, DatabaseEntities.ElectionPhase.WTSPhase);
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
     }

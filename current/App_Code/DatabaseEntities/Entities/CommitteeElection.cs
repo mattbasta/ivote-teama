@@ -1,13 +1,12 @@
 ﻿// CommitteeElection.cs
 // Written by: Brian Fairservice
-// Date Modified: 2/17/12
+// Date Modified: 3/6/12
 // TODO: Write static helper functions
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -18,8 +17,11 @@ using NHibernate.Cfg;
 
 namespace DatabaseEntities
 {
-    public enum ElectionPhase {WTSPhase,BallotPhase,VotePhase,
-        ConflictPhase,ResultPhase};
+    public enum ElectionPhase
+    {
+        WTSPhase, BallotPhase, NominationPhase, VotePhase,
+        ConflictPhase, ResultPhase
+    };
 
     /// <summary>
     /// This class stores the information regarding an election to a committee.
@@ -33,7 +35,7 @@ namespace DatabaseEntities
         /// <summary>
         /// The unique id of the committee this election pertains to.
         /// </summary>
-        public virtual int Committee { get; set; }
+        public virtual int PertinentCommittee { get; set; }
         /// <summary>
         /// The date the election was started
         /// </summary>
@@ -48,8 +50,52 @@ namespace DatabaseEntities
         /// This number indicates the number of positions which are open in the 
         /// committee this election pertains to.
         /// </summary>
-        public virtual int VacanciesToFill {get; set;}
+        public virtual int VacanciesToFill { get; set; }
 
+        // Methods
+        public static bool ShouldEnterNominationPhase(ISession session,
+            int id)
+        {
+            CommitteeElection election = CommitteeElection.FindElection(session,
+                id);
+            // if the number of WTS's submitted is less than twice the number of
+            // vacnacies, no need for nomination phase
+            if (CommitteeWTS.FindCommitteeWTS(session, election.ID).Count <=
+                election.VacanciesToFill * 2)
+                return false;
+            else return true;
+        }
+
+        /// <summary>
+        /// Creates a CommitteeElection object based off of a committee
+        /// </summary>
+        /// <param name="session">A valid session</param>
+        /// <param name="committee">The committee the election pertains to</param>
+        /// <returns>A committeeElection object to be saved to the database, or null if there were no vacancies</returns>
+        public static CommitteeElection CreateElection(ISession session,
+            Committee committee)
+        {
+            CommitteeElection ret = new CommitteeElection();
+            ret.PertinentCommittee = committee.ID;
+            ret.Started = DateTime.Now;
+            ret.Phase = ElectionPhase.WTSPhase;
+            // Lets find out how many vacancies there are
+            int currentlyServing = 0; // This number represents the number of 
+            // people current serving on the committee
+            List<User> users = User.GetAllUsers(session);
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].CurrentCommittee == committee.ID)
+                    currentlyServing++;
+            }
+            ret.VacanciesToFill = committee.PositionCount - currentlyServing;
+            // return null if there are no vacancies to fill or if there is 
+            // already an election for this committee
+            if (ret.VacanciesToFill <= 0 || FindElection(session, committee.Name) != null)
+                return null;
+            else
+                return ret;
+        }
         /// <summary>
         /// This function sets the phase of the specified election.  You still 
         /// to call transaction.Commit() to ensure pending changes are saved.
@@ -57,7 +103,7 @@ namespace DatabaseEntities
         /// <param name="session">A valid session.</param>
         /// <param name="ID">The id of the election to edit.</param>
         /// <param name="electionPhase">The new phase of the election.</param>
-        public static void SetPhase(ref ISession session, int ID, 
+        public static void SetPhase(ISession session, int ID,
             ElectionPhase electionPhase)
         {
             // pull a list of all the committee elections from the database.
@@ -76,7 +122,7 @@ namespace DatabaseEntities
                     if (electionPhase == ElectionPhase.WTSPhase)
                     {
                         //TODO: Filter which users should be sent a WTS, instead of all.
-                        List<User> userList = User.GetAllUsers(ref session);
+                        List<User> userList = User.GetAllUsers(session);
                         nEmailHandler emailHandler = new nEmailHandler();
                         emailHandler.sendWTS(committees[i], userList);
                     }
@@ -105,19 +151,20 @@ namespace DatabaseEntities
             }
         }
 
-        public static DateTime NextPhaseDate(ref ISession session, int ID)
+        public static DateTime NextPhaseDate(ISession session, int id)
         {
             // Grab the info about this committee election form the database.
             var committees = session.CreateCriteria(typeof(CommitteeElection)).List<CommitteeElection>();
             CommitteeElection election = null;
             for (int i = 0; i < committees.Count; i++)
             {
-                if (committees[i].ID == ID)
+                if (committees[i].ID == id)
                 {
                     election = committees[i];
                     break;
                 }
             }
+
             // If there was no election in the database with a matching id,
             // return MinValue (since the data will never be MinValue).
             if (election == null)
@@ -128,9 +175,16 @@ namespace DatabaseEntities
             // The NEC has one week to compose the ballot
             else if (election.Phase == ElectionPhase.BallotPhase)
                 return election.Started.AddDays(14 + 7);
+            else if (election.Phase == ElectionPhase.NominationPhase)
+                return election.Started.AddDays(14 + 7 + 7);
             // The voters have one week to cast their vote
             else if (election.Phase == ElectionPhase.VotePhase)
-                return election.Started.AddDays(14 + 7);
+            {
+                if (CommitteeElection.ShouldEnterNominationPhase(session, id))
+                    return election.Started.AddDays(14 + 7 + 7 + 7);
+                else
+                    return election.Started.AddDays(14 + 7 + 7);
+            }
             else
                 // after that, there are no dead-line restrictions.
                 return DateTime.MinValue;
@@ -141,7 +195,7 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="session">A valid session.</param>
         /// <param name="ID">The ID of the election.</param>
-        public static ElectionPhase NextPhase(ref ISession session, int ID)
+        public static ElectionPhase NextPhase(ISession session, int ID)
         {
             // pull a list of all the committee elections from the database.
             var committees = session.CreateCriteria(typeof(CommitteeElection)).List<CommitteeElection>();
@@ -151,7 +205,12 @@ namespace DatabaseEntities
                 if (committees[i].ID == ID)
                 {
                     ElectionPhase toReturn = committees[i].Phase;
-                    return ++toReturn;
+                    toReturn += 1;
+                    if (toReturn == ElectionPhase.NominationPhase &&
+                        CommitteeElection.ShouldEnterNominationPhase(session, committees[i].ID) == false)
+                        return ElectionPhase.VotePhase;
+                    else
+                        return toReturn;
                 }
             }
             // Return if the specified election wasn't found.
@@ -165,7 +224,7 @@ namespace DatabaseEntities
         /// <param name="ID">The ID of the election.</param>
         /// <returns>A list of all nominations pertinent to the specified
         /// election, or an empty list.</returns>
-        public static List<Nomination> GetNominations(ref ISession session,
+        public static List<Nomination> GetNominations(ISession session,
             int ID)
         {
             var nominations = session.CreateCriteria(typeof(CommitteeElection)).List<Nomination>();
@@ -188,7 +247,7 @@ namespace DatabaseEntities
         /// number of votes they recieved. Dictionary keys are of the form 
         /// [User.FirstName + User.LastName].  The corresponding value
         /// is the number of votes.</returns>
-        public static Dictionary<string, int> GetResults(ref ISession session,
+        public static Dictionary<string, int> GetResults(ISession session,
             int ID)
         {
             var votes = session.CreateCriteria(typeof(BallotEntry)).List<BallotEntry>();
@@ -201,7 +260,7 @@ namespace DatabaseEntities
                 if (votes[i].Election == ID)
                 {
                     // Get the information for the candidate of this ballot entry
-                    User thisUser = User.FindUser(ref session, votes[i].Candidate);
+                    User thisUser = User.FindUser(session, votes[i].Candidate);
                     // If this candidate already has an entry in the return diciontary,
                     // increment the number of votes for him
                     if (ret.ContainsKey(thisUser.FirstName + thisUser.LastName))
@@ -226,7 +285,7 @@ namespace DatabaseEntities
         /// <param name="candidate">The user ID who has submitted a WTS.</param>
         /// <param name="election">The pertinent election ID.</param>
         /// <param name="statement">THe statement provided by the user.</param>
-        public static void WillingToServe(ref ISession session, int candidate, 
+        public static void WillingToServe(ISession session, int candidate,
             int election, string statement)
         {
             CommitteeWTS toSubmit = new CommitteeWTS();
@@ -236,6 +295,48 @@ namespace DatabaseEntities
 
             session.SaveOrUpdate(toSubmit);
             session.Flush();
+        }
+
+        /// <summary>
+        /// Returns the election which is running for the specified committee.
+        /// </summary>
+        /// <param name="session">A valid session</param>
+        /// <param name="committeeName">The name of the committee that the requested election is runnign for.</param>
+        /// <returns>The CommitteeElection which is running for the specified election</returns>
+        public static CommitteeElection FindElection(ISession session,
+            string committeeName)
+        {
+            Committee c = Committee.FindCommittee(session, committeeName);
+            // pull a list of all the users from the database.
+            var elections = session.CreateCriteria(typeof(CommitteeElection)).List<CommitteeElection>();
+            for (int i = 0; i < elections.Count; i++)
+            {
+                // find and return the user with a matching email
+                if (elections[i].PertinentCommittee == c.ID)
+                    return elections[i];
+            }
+            // otherwise, return null
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the election with the specified ID.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="id">The id of the election being searched for.</param>
+        /// <returns>The CommitteeElection with the specified ID.</returns>
+        public static CommitteeElection FindElection(ISession session,
+            int id)
+        {
+            var elections = session.CreateCriteria(typeof(CommitteeElection)).List<CommitteeElection>();
+            for (int i = 0; i < elections.Count; i++)
+            {
+                // find and return the user with a matching email
+                if (elections[i].ID == id)
+                    return elections[i];
+            }
+            // otherwise, return null
+            return null;
         }
     }
 }

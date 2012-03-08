@@ -174,7 +174,7 @@ public class iVoteLoginProvider : MembershipProvider
     public override bool ValidateUser(string email, string password)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(ref session, email, password);
+        DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(session, email, password);
 
         return (testUser != null);
     }
@@ -219,12 +219,12 @@ public class iVoteLoginProvider : MembershipProvider
     public override bool ChangePassword(string email, string oldPassword, string newPassword)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User user = DatabaseEntities.User.Authenticate(ref session, email, oldPassword);
+        DatabaseEntities.User user = DatabaseEntities.User.Authenticate(session, email, oldPassword);
 
         if (user == null)
             return false;
 
-        DatabaseEntities.User.UpdatePassword(ref session, user, newPassword, "");
+        DatabaseEntities.User.UpdatePassword(session, user, newPassword, "");
 
         return true;
     }
