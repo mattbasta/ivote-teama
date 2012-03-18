@@ -1,12 +1,19 @@
 ﻿// CommitteeWTS.cs
 // Written by: Brian Fairservice
-// Date Modified: 2/17/12
+// Date Modified: 3/6/12
 // TODO: Write static helper functions
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Cfg;
 
 namespace DatabaseEntities
 {
@@ -36,5 +43,25 @@ namespace DatabaseEntities
         /// with the WTS.
         /// </summary>
         public virtual string Statement { get; set; }
+
+        /// <summary>
+        /// Returns a list of all CommitteeWTS objects pertinent to a given election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="election">The election id.</param>
+        /// <returns>A list of all the CommitteeWTS objects pertinent to the specified election.</returns>
+        public static List<CommitteeWTS> FindCommitteeWTS(ISession session,
+            int election)
+        {
+            // pull a list of all the ballot entries from the database.
+            var entries = session.CreateCriteria(typeof(CommitteeWTS)).List<CommitteeWTS>();
+            List<CommitteeWTS> ret = new List<CommitteeWTS>();
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if (entries[i].Election == election)
+                    ret.Add(entries[i]);
+            }
+            return ret;
+        }
     }
 }
