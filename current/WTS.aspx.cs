@@ -5,6 +5,12 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Cfg;
 
 public partial class experimental_WTS : System.Web.UI.Page
 {
@@ -20,30 +26,76 @@ public partial class experimental_WTS : System.Web.UI.Page
        //Submit.Attributes.Add("onClick", "alert('You may only run for this position once!');");
 
 
-        string fullPath = Request.PathInfo;
-
         if (!Page.IsPostBack)
         {
-            //new method to retrieve
-            if (fullPath != "")
-            {
-                string[] categoryList;
-                categoryList = fullPath.Substring(1).TrimEnd('/').Split('/');
-                string queryVal = categoryList[0]; //variable name of querystring
-                string positionTitle = dbLogic.selectPositionFromID(queryVal);
-                LabelHeader.Text = positionTitle + " Willingness To Serve Form:";
-                LabelExplain.Text = "If you are willing to hold a place in office as " + positionTitle + ", please fill out the following form:";
-                HiddenFieldPosition.Value = positionTitle;
-            }
+
+            string position = Request.QueryString["position"];
+            int positionID;
+            string committee = Request.QueryString["committee"];
+            int committeeID;
+
+ 
+                //Election ID is a number
+
+                //Check if is legacy officer election
+                if (position != null && int.TryParse(position, out positionID))
+                {
+                    string queryVal = positionID.ToString(); //variable name of querystring
+                    string positionTitle = dbLogic.selectPositionFromID(queryVal);
+                    LabelHeader.Text = positionTitle + " Willingness To Serve Form:";
+                    LabelExplain.Text = "If you are willing to hold a place in office as " + positionTitle + ", please fill out the following form:";
+                    HiddenFieldPosition.Value = positionTitle;
+
+                    id = dbLogic.returnUnionIDFromUsername(Page.User.Identity.Name.ToString());
+                    dbLogic.selectUserInfoFromUnionId(id);
+                    ds = dbLogic.getResults();
+                    info = new string[3] { id, id, HiddenFieldPosition.Value };
+
+                    Name.Text = ds.Tables[0].Rows[0].ItemArray[2].ToString() + " " + ds.Tables[0].Rows[0].ItemArray[1].ToString();
+                    Dept.Text = ds.Tables[0].Rows[0].ItemArray[5].ToString();
+
+                    if (!String.IsNullOrEmpty(positionTitle))
+                        Submit.Enabled = true;
+                }
+                //Check if is committee election
+                else if (committee != null && int.TryParse(committee, out committeeID))
+                {
+                    //Open session
+                    ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+                    ITransaction transaction = session.BeginTransaction();
+
+                    //Check if election exists
+                    DatabaseEntities.CommitteeElection electionObject = DatabaseEntities.CommitteeElection.FindElection(session, committeeID);
+
+                    if (electionObject != null && electionObject.Phase == DatabaseEntities.ElectionPhase.WTSPhase)
+                    {
+                        //Election is valid and in WTS phase.
+
+                        //Lookup committee
+                        DatabaseEntities.Committee committeeObject = DatabaseEntities.Committee.FindCommittee(session,electionObject.PertinentCommittee);
+
+                        //Display
+                        string positionTitle = committeeObject.Name;
+                        LabelExplain.Text = "If you are willing to hold a place in office as " + positionTitle + ", please fill out the following form:";
+                        HiddenFieldPosition.Value = positionTitle;
+
+                        //Get user
+                        DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
+                        Name.Text = userObject.FirstName + " " + userObject.LastName;
+                        Dept.Text = userObject.Department.ToString();
+
+                        //Enable submit
+                        Submit.Enabled = true;
+
+                    }
+
+
+                    DatabaseEntities.NHibernateHelper.Finished(transaction);
+                }
+            
+
         }
         
-        id = dbLogic.returnUnionIDFromUsername(Page.User.Identity.Name.ToString());        
-        dbLogic.selectUserInfoFromUnionId( id );
-        ds = dbLogic.getResults();
-        info = new string[3] {id, id, HiddenFieldPosition.Value};
-
-        Name.Text = ds.Tables[0].Rows[0].ItemArray[2].ToString() + " " + ds.Tables[0].Rows[0].ItemArray[1].ToString();
-        Dept.Text = ds.Tables[0].Rows[0].ItemArray[5].ToString();
     }
 
     protected bool checkAccept()
