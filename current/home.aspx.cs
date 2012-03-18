@@ -813,7 +813,7 @@ public partial class home : System.Web.UI.Page
 
     protected void next(Object sender, EventArgs e)
     {
-        Response.Redirect("~/WTS.aspx/" + HiddenFieldID.Value);
+        Response.Redirect("~/WTS.aspx?position=" + HiddenFieldID.Value);
     }
 
     protected void nominate(Object sender, EventArgs e)
