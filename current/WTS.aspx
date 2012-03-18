@@ -43,7 +43,7 @@
                     <asp:RegularExpressionValidator ID="RegularExpressionValidator1" ValidationGroup="check" ControlToValidate="Statement" ValidationExpression="^[a-zA-Z0-9\s.\-'!?]+$" Display="Dynamic" CssClass="red" runat="server" ErrorMessage="Please only use alphanumeric characters and normal punctuation in your statement." />
 
                     <p class="submitButton">         
-                        <asp:Button ID="Submit" runat="server" ValidationGroup="check" Text="Submit" OnClick="submit"/>
+                        <asp:Button ID="Submit" runat="server" ValidationGroup="check" Text="Submit" OnClick="submit" Enabled="false"/>
                     </p>
                 </ContentTemplate>
             </asp:UpdatePanel>
