@@ -31,7 +31,7 @@ public class iVoteRoleProvider : RoleProvider
         {
             base.Initialize(name, configuration);
         }
-        catch (Exception e)
+        catch
         {
         }
     }

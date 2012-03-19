@@ -33,7 +33,6 @@ public class VerifyEmail
     //sends the user an email when registered
     public void verify(int unionID, string[] emailAddress, String emailMessage)
     {
-        String confirmUrl = "confirm.aspx"; //current landing page for test cofirmation
         String code_confirm = getRanString(); //the confirmation code needed by user to activate the account
         String code_reject = getRanString(); //the code needed if person sent email is not person who sent verification code
         
