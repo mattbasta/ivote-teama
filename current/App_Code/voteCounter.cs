@@ -62,7 +62,7 @@ public class voteCounter
         {
             dbLogic.insertWinners(position, (int)ds.Tables[0].Rows[0].ItemArray[0]);
         }
-        catch (Exception e)
+        catch
         {
         }
     }
@@ -86,7 +86,7 @@ public class voteCounter
                 numPositionSpots--;
             }
         }
-        catch (Exception e)
+        catch
         { }
     }
 
@@ -114,7 +114,7 @@ public class voteCounter
                 dbLogic.insertWinners(position, (int)userIDs[0]);
             }
         }
-        catch (Exception e)
+        catch
         { }
 
     }
@@ -182,7 +182,7 @@ public class voteCounter
     public void extendVotingWeek()
     {
         //variables not initially set
-        int newDay = 0, newMonth = 0, newYear = 0;
+        //int newDay = 0, newMonth = 0, newYear = 0;
         //get end date of voting
         dbLogic.getEndDate("vote");
         DataSet phaseSet = dbLogic.getResults();

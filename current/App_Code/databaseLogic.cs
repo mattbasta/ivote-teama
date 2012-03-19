@@ -1,5 +1,3 @@
-using System;
-
 /// <summary>
 /// 
 /// Created by Adam Blank, 9/17/2011, databaseLogic.cs
@@ -75,7 +73,7 @@ public class databaseLogic
         {
             connection.Open();
         }
-        catch (Exception e)
+        catch
         {
         }
     }
@@ -94,7 +92,7 @@ public class databaseLogic
             adapter.Fill(ds, "query");
             closeConnection();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -117,7 +115,7 @@ public class databaseLogic
             closeConnection();
             return count;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -137,7 +135,7 @@ public class databaseLogic
             cmd.ExecuteNonQuery();
             closeConnection();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -155,7 +153,7 @@ public class databaseLogic
             cmd.ExecuteNonQuery();
             closeConnection();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -173,7 +171,7 @@ public class databaseLogic
             cmd.ExecuteNonQuery();
             closeConnection();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -238,7 +236,7 @@ public class databaseLogic
             closeConnection();
             return id;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -259,7 +257,7 @@ public class databaseLogic
             closeConnection();
             return username;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -281,7 +279,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -301,7 +299,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -320,7 +318,7 @@ public class databaseLogic
             closeConnection();
             return ds;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -340,7 +338,7 @@ public class databaseLogic
             closeConnection();
             return name;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -402,7 +400,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -421,7 +419,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -442,7 +440,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -463,7 +461,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -485,7 +483,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -508,7 +506,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -534,7 +532,7 @@ public class databaseLogic
             closeConnection();
             return ds;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -605,7 +603,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -630,7 +628,7 @@ public class databaseLogic
             else
                 return false;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return false;
@@ -706,7 +704,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -729,7 +727,7 @@ public class databaseLogic
             closeConnection();
             return pictureURL;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -823,7 +821,7 @@ public class databaseLogic
             else
                 return false;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return false;
@@ -898,7 +896,7 @@ public class databaseLogic
             closeConnection();
             return phase;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -937,7 +935,7 @@ public class databaseLogic
             else
                 return false;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return false;
@@ -961,7 +959,7 @@ public class databaseLogic
             else
                 return false;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return false;
@@ -986,7 +984,7 @@ public class databaseLogic
             else
                 return false;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return false;
@@ -1007,7 +1005,7 @@ public class databaseLogic
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
 
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return "";
@@ -1057,7 +1055,7 @@ public class databaseLogic
             closeConnection();
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return "";
@@ -1185,7 +1183,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1205,7 +1203,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1226,7 +1224,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1253,7 +1251,7 @@ public class databaseLogic
                 }
             }
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             //testing = "remove users from roles: " + e.Message;
@@ -1278,7 +1276,7 @@ public class databaseLogic
             closeConnection();
             return parseTable();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1300,7 +1298,7 @@ public class databaseLogic
             closeConnection();
             return (ds.Tables.Count > 0);
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1319,7 +1317,7 @@ public class databaseLogic
             adapter.Fill(ds, "users");
             closeConnection();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1343,7 +1341,7 @@ public class databaseLogic
             }
             closeConnection();
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
         }
@@ -1363,7 +1361,7 @@ public class databaseLogic
             closeConnection();
             return ds.Tables.Count > 0 ? ds.Tables[0] : null;
         }
-        catch (Exception e)
+        catch
         {
             closeConnection();
             return null;
@@ -1394,7 +1392,7 @@ public class databaseLogic
                 }
             }
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             closeConnection();
             testing = "add users to roles_users: " + e.Message;

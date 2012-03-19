@@ -1,5 +1,4 @@
 ﻿// Membershp Provider coded with guide from MSDN: http://msdn.microsoft.com/en-us/library/6tc47t75(VS.80).aspx
-using System.Web.Security;
 using System.Configuration.Provider;
 using System.Collections.Specialized;
 using System;
