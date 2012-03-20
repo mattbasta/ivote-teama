@@ -14,7 +14,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Cfg;
 
-public partial class wwwroot_phase1aSite_users : System.Web.UI.Page
+public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -63,7 +63,7 @@ public partial class wwwroot_phase1aSite_users : System.Web.UI.Page
                     start_election_button.CssClass = "btn btn-small btn-success";
                     start_election_button.OnClientClick =
                             "window.location.href = \"/committee_election_confirminit.aspx?id=" +
-                            active_election[0].ID +
+                            committee.ID +
                             "\";return false;";
                     
                     status.Controls.Add(start_election_button);

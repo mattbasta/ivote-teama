@@ -16,7 +16,7 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        id = getQueryValue();
+        id = Request.QueryString["id"];
 
         if (!Page.IsPostBack)
         {
@@ -33,18 +33,6 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         }
 
     }
-
-    protected String getQueryValue()
-    {
-        if (Request.QueryString.ToString() != "")
-        {
-            String[] commandArgs = Request.QueryString.ToString().Split(new char[] { '=' }); //splits querystring into variable name and value
-            return commandArgs[1]; //returns query value
-        }
-        else
-            return "";
-    }
-
     //Gets info for a user
     protected void getSpecificInfo(string id) 
     {

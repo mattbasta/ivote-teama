@@ -130,7 +130,7 @@ namespace DatabaseEntities
             ret.VacanciesToFill = Committee.NumberOfVacancies(session, committee.Name);
             // return null if there are no vacancies to fill or if there is 
             // already an election for this committee
-            if (ret.VacanciesToFill <= 0 || FindElection(session, committee.Name) != null)
+            if (ret.VacanciesToFill <= 0 || FindElection(session, committee.ID) != null)
                 return null;
             else
                 return ret;
