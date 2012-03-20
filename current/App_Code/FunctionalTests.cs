@@ -242,6 +242,7 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
+                        session.SaveOrUpdate(user[i]);
                         User.AddToCommittee(session, user, "Acommittee");
                     }
                     transaction.Commit();
@@ -305,6 +306,7 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
+                        session.SaveOrUpdate(user[i]);
                         User.AddToCommittee(session, users[i], "Acommittee");
                     }
 
@@ -392,6 +394,7 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
+                        session.SaveOrUpdate(user);
                         User.AddToCommittee(session, user, "Acommittee");
                     }
                     transaction.Commit();
@@ -463,6 +466,7 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
+                        session.SaveOrUpdate(user);
                         if(i < 2)
                             User.AddToCommittee(session, user, "Acommittee");
                     }
