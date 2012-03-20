@@ -54,7 +54,7 @@ namespace DatabaseEntities
         public virtual ElectionPhase Phase { get; set; }
 
         /// <summary>
-        /// This number indicates the number of positions which are open in the 
+        /// This number indicates the number of positions which are open in the
         /// committee this election pertains to.
         /// </summary>
         public virtual int VacanciesToFill { get; set; }
@@ -128,7 +128,7 @@ namespace DatabaseEntities
             ret.Phase = ElectionPhase.WTSPhase;
             // Lets find out how many vacancies there are
             ret.VacanciesToFill = Committee.NumberOfVacancies(session, committee.Name);
-            // return null if there are no vacancies to fill or if there is 
+            // return null if there are no vacancies to fill or if there is
             // already an election for this committee
             if (ret.VacanciesToFill <= 0 || FindElection(session, committee.ID) != null)
                 return null;
@@ -136,7 +136,7 @@ namespace DatabaseEntities
                 return ret;
         }
         /// <summary>
-        /// This function sets the phase of the specified election.  You still 
+        /// This function sets the phase of the specified election.  You still
         /// to call transaction.Commit() to ensure pending changes are saved.
         /// </summary>
         /// <param name="session">A valid session.</param>
@@ -147,7 +147,7 @@ namespace DatabaseEntities
         {
             CommitteeElection committees =
                 CommitteeElection.FindElection(session, id);
-            // change the phase to the one specified by the parameters, 
+            // change the phase to the one specified by the parameters,
             // then save our changes.
             // then do some other stuff based on what the new phase is
             committees.Phase = electionPhase;
@@ -165,7 +165,7 @@ namespace DatabaseEntities
             }
             else if (electionPhase == ElectionPhase.VotePhase)
             {
-                // distribute emails prompting faculty members to come 
+                // distribute emails prompting faculty members to come
                 // vote
             }
             else if (electionPhase == ElectionPhase.ConflictPhase)
@@ -255,13 +255,13 @@ namespace DatabaseEntities
         }
 
         /// <summary>
-        /// This function returns a dictionary storing each candidate of this 
-        /// and the number of votes that candidate one.  
+        /// This function returns a dictionary storing each candidate of this
+        /// and the number of votes that candidate one.
         /// </summary>
         /// <param name="session">A valid session.</param>
         /// <param name="ID">The ID of the election.</param>
         /// <returns>A dictionary storing each candidate and the
-        /// number of votes they recieved. Dictionary keys are of the form 
+        /// number of votes they recieved. Dictionary keys are of the form
         /// [User.FirstName + User.LastName].  The corresponding value
         /// is the number of votes.</returns>
         public static Dictionary<string, int> GetResults(ISession session,
