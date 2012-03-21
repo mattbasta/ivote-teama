@@ -37,20 +37,20 @@
                 <div style="margin-left: auto; width:95%; margin-right: auto">
                 <asp:GridView ID="GridViewUsers" runat="server" OnRowCommand="GridViewUsers_RowCommand" CssClass="table table-bordered" AutoGenerateColumns="False" AllowSorting="true" OnSorting="sorting">
                     <Columns>        
-                        <asp:TemplateField HeaderText="Full Name" SortExpression="last_name">
+                        <asp:TemplateField HeaderText="Full Name" SortExpression="LastName">
                             <ItemTemplate>
-                                <asp:Label ID="LabelName" text='<%#Eval("last_name") + ", " + Eval("first_name") %>' runat="server" />
+                                <asp:Label ID="LabelName" text='<%#Eval("LastName") + ", " + Eval("FirstName") %>' runat="server" />
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:TemplateField HeaderText="Email Address" SortExpression="email">
+                        <asp:TemplateField HeaderText="Email Address" SortExpression="Email">
                             <ItemTemplate>
-                                    <asp:HyperLink ID="HyperLink1" text='<%#Eval("email")%>' NavigateUrl='<%#DataBinder.Eval(Container, "DataItem.email","MAILTO:{0}")%>' runat="server">HyperLink</asp:HyperLink>
+                                    <asp:HyperLink ID="HyperLink1" text='<%#Eval("Email")%>' NavigateUrl='<%#DataBinder.Eval(Container, "DataItem.Email","MAILTO:{0}")%>' runat="server">HyperLink</asp:HyperLink>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField HeaderText="Department" DataField="department" NullDisplayText="None" SortExpression="department"/>
+                        <asp:BoundField HeaderText="Department" DataField="Department" NullDisplayText="None" SortExpression="Department"/>
                         <asp:TemplateField HeaderText="" >
                             <ItemTemplate>
-                                <asp:LinkButton ID="LinkButton1" commandname="id"  commandargument='<%#Eval("idunion_members") %>'
+                                <asp:LinkButton ID="LinkButton1" commandname="id" commandargument='<%#Eval("ID") %>'
                                     text="Edit User" runat="server" />
                             </ItemTemplate>
                         </asp:TemplateField>
