@@ -6,81 +6,68 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 
+using DatabaseEntities;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Cfg;
+
 public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
 {
-    databaseLogic dbLogic = new databaseLogic();
-    iVoteRoleProvider roleProvider = new iVoteRoleProvider();
-    
     //global variable "only" used for changing users roles
-    String id = "";
+    int id = -1;
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        id = Request.QueryString["id"];
-
+        if(Request.QueryString["id"] == null)
+            throw new HttpException(400, "Missing user ID.");
+        
+        try {
+            id = Convert.ToInt32(Request.QueryString["id"]);
+        } catch {
+            throw new HttpException(400, "Invaild user ID.");
+        }
+        
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        
+        DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, id);
+        if(user == null)
+            throw new HttpException(404, "User '" + id.ToString() + "' not found.");
+        
         if (!Page.IsPostBack)
         {
-            getSpecificInfo(id);
-            HiddenFieldID.Value = id;
-            LinkButtonChangeEmail.OnClientClick = "javascript:return confirm('Are you sure you want to change this persons email?\nEmail messages the system's only method to contact the specified user, so please make sure the new address your saving valid.')";
+            SetupUser(user);
             ButtonDelete.OnClientClick = "javascript:return confirm('Are you sure what want to PERMANENTLY delete this user account?')";
         }
         
         //Populate dropdown menu from DepartmentType enum.
         foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
-        {
             DeptDropDown.Items.Add(dept.ToString());
-        }
 
     }
     
-    //Gets info for a user
-    protected void getSpecificInfo(string id) 
+    protected void SetupUser(DatabaseEntities.User user) 
     {
-        dbLogic.selectUserInfoFromUnionId(id);
-        DataSet infoSet = dbLogic.getResults();
-        DataRow dr = infoSet.Tables["query"].Rows[0];
-        //attach data to external schema
-
-        Page.Title = "Edit info for " + dr["first_name"].ToString() + " " + dr["last_name"].ToString();
+        Page.Title = user.FirstName + " " + user.LastName;
 
         //name, first and last
-        Email.Text += dr["email"].ToString();
-        FirstName.Text = dr["first_name"].ToString();
-        LastName.Text = dr["last_name"].ToString();
-        Phone.Text = dr["phone"].ToString();
-        DeptDropDown.SelectedItem.Text = dr["department"].ToString();
-        LabelFullname.Text = "Edit " + dr["first_name"].ToString() + " " + dr["last_name"].ToString() + "'s information in the field below.";
-    
-        //add role of the user
-        string username = dbLogic.returnUsernameFromUnionID(id);
-        HiddenFieldUsername.Value = username;
-
-        if(roleProvider.IsUserInRole(username, "faculty"))
-        {
-            RadioButtonListRoles.SelectedValue = "faculty";
-            //previousRole = "faculty";
-        }
-        else if(roleProvider.IsUserInRole(username, "nec"))
-        {
-            RadioButtonListRoles.SelectedValue = "nec";
-            //previousRole = "pres";
-        }
-        else if (roleProvider.IsUserInRole(username, "admin"))
-        {
-            RadioButtonListRoles.SelectedValue = "admin";
-            //previousRole = "admin";
-        }
-    }
-
-    public void setUpRoles()
-    {
-        String[] userArray = { HiddenFieldUsername.Value };
-        String[] roleArray = { RadioButtonListRoles.SelectedValue };
-        String[] previousRoleArray = { "admin", "faculty", "nec" };
-
-        roleProvider.RemoveUsersFromRoles(userArray, previousRoleArray); //removes user from previous role
-        roleProvider.AddUsersToRoles(userArray, roleArray); //adds user's new role
+        Email.Text = user.Email;
+        FirstName.Text = user.FirstName;
+        LastName.Text = user.LastName;
+        DeptDropDown.SelectedItem.Text = user.Department.ToString();
+        LabelFullname.Text = "Edit " + user.FirstName + " " + user.LastName;
+        
+        IsAdmin.Checked = user.IsAdmin;
+        IsNEC.Checked = user.IsNEC;
+        // IsFaculty.Checked = user.IsFaculty; TODO BUG 31
+        IsTenured.Checked = user.IsTenured;
+        IsUnion.Checked = user.IsUnion;
+        
+        CanVote.Checked = user.CanVote;
+        
     }
 
     //returns user to orginal page
@@ -93,31 +80,39 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
     //ADD CHECK AGAINST EMAIL IN THE DATABASE
     protected void ButtonSave_Clicked(object sender, EventArgs e)
     {
-        string[] union = { LastName.Text, FirstName.Text, Email.Text, Phone.Text, DeptDropDown.SelectedValue };
-        dbLogic.updateUser(HiddenFieldID.Value, union);
-        setUpRoles();
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+        
+        DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, id);
+        
+        user.FirstName = FirstName.Text;
+        user.LastName = LastName.Text;
+        user.Email = Email.Text;
+        user.Department = (DatabaseEntities.DepartmentType)Enum.Parse(typeof(DatabaseEntities.DepartmentType), DeptDropDown.SelectedValue);
+        
+        user.IsAdmin = IsAdmin.Checked;
+        user.IsNEC = IsNEC.Checked;
+        // user.IsFaculty = IsFaculty.Checked; TODO: BUG 31
+        user.IsTenured = IsTenured.Checked;
+        user.IsUnion = IsUnion.Checked;
+        
+        user.CanVote = CanVote.Checked;
+        
+        session.SaveOrUpdate(user);
+        
+        DatabaseEntities.NHibernateHelper.Finished(transaction);
         Response.Redirect("users.aspx");
         
     }
 
-    protected void LinkButtonChangeEmail_Clicked(object sender, EventArgs e)
-    {
-        if (Email.Enabled == false)
-        {
-            Email.Enabled = true;
-            LinkButtonChangeEmail.Text = "Lock";
-        }
-        else
-        {
-            Email.Enabled = false;
-            LinkButtonChangeEmail.Text = "Change";
-        }
-    }
-
-
     protected void ButtonDelete_Clicked(object sender, EventArgs e)
     {
-        dbLogic.deleteAccountCompletely(id);
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+        
+        session.Delete(DatabaseEntities.User.FindUser(session, id));
+        
+        DatabaseEntities.NHibernateHelper.Finished(transaction);
         Response.Redirect("users.aspx");
     }
 }

@@ -1,7 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="userinfo.aspx.cs" Inherits="wwwroot_phase1aSite_userinfo" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
-</asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <ul class="breadcrumb">
         <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
@@ -16,18 +15,13 @@
         <h1><asp:Label ID="LabelFullname" runat="server" Text="" /></h1>
     </div>
     
-    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-        <ContentTemplate>
-            <p>
-                <asp:Label ID="EmailLabel" runat="server" AssociatedControlID="Email">E-mail:</asp:Label>
-                <asp:TextBox ID="Email" runat="server" Enabled="false" CssClass="textEntry"></asp:TextBox>
-                <asp:LinkButton ID="LinkButtonChangeEmail" Text="Change" OnClick="LinkButtonChangeEmail_Clicked" runat="server" />
-                <asp:RequiredFieldValidator ID="EmailRequired" runat="server" ControlToValidate="Email" 
-                        CssClass="failureNotification" ErrorMessage="E-mail is required." ToolTip="E-mail is required." 
-                        ValidationGroup="RegisterUserValidationGroup">*</asp:RequiredFieldValidator>
-            </p>
-        </ContentTemplate>
-    </asp:UpdatePanel>
+    <p>
+        <asp:Label ID="EmailLabel" runat="server" AssociatedControlID="Email">E-mail:</asp:Label>
+        <asp:TextBox ID="Email" runat="server" CssClass="textEntry"></asp:TextBox>
+        <asp:RequiredFieldValidator ID="EmailRequired" runat="server" ControlToValidate="Email" 
+                CssClass="failureNotification" ErrorMessage="E-mail is required." ToolTip="E-mail is required." 
+                ValidationGroup="RegisterUserValidationGroup">*</asp:RequiredFieldValidator>
+    </p>
     <p>
         <asp:Label ID="FirstNameLabel" runat="server" AssociatedControlID="FirstName">First Name:</asp:Label>
         <asp:TextBox ID="FirstName" runat="server" CssClass="textEntry" ></asp:TextBox>
@@ -60,15 +54,17 @@
                 CssClass="failureNotification" ErrorMessage="Department is required." ToolTip="Department is required." 
                 ValidationGroup="RegisterUserValidationGroup">*</asp:RequiredFieldValidator>
     </p>
-    <asp:RadioButtonList ID="RadioButtonListRoles" runat="server">
-                                <asp:ListItem Value="faculty" Text="This is a FACULTY account" />
-                                <asp:ListItem Value="nec" Text="This is a NEC account" />
-                                <asp:ListItem Value="admin" Text="This is a PEER ADMIN account" />
-                                </asp:RadioButtonList>
-    <br />
+    
+    <asp:CheckBox ID="IsAdmin" Text="Administrator" runat="server" />
+    <asp:CheckBox ID="IsNEC" Text="NEC" runat="server" />
+    <!-- <asp:CheckBox ID="IsFaculty" Text="Faculty" runat="server" /> TODO: BUG 31 -->
+    <asp:CheckBox ID="IsTenured" Text="Tenured Faculty" runat="server" />
+    <asp:CheckBox ID="IsUnion" Text="Union Member" runat="server" />
+    
+    <asp:CheckBox ID="CanVote" Text="Allowed to Vote" runat="server" />
+    
     <asp:Button ID="ButtonSave" OnClick="ButtonSave_Clicked" runat="server" Text="Save Changes" />
     <asp:Button ID="ButtonDelete" OnClick="ButtonDelete_Clicked" runat="server" Text="Delete Account" />
-    <asp:Button ID="ButtonCancel" runat="server" OnClick="returnToUsersPage" Text="Cancel" />
-    <asp:HiddenField ID="HiddenFieldUsername" runat="server" />
+    <a href="/users.aspx" class="btn">Back</a>
 </asp:Content>
 

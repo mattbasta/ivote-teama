@@ -35,7 +35,7 @@ public partial class wwwroot_phase1aSite_users : System.Web.UI.Page
     protected void GridViewUsers_RowCommand(Object sender, GridViewCommandEventArgs e)
     {
         if (String.Equals(e.CommandName, "id"))
-            Response.Redirect("userinfo.aspx?x=" + e.CommandArgument.ToString());
+            Response.Redirect("userinfo.aspx?id=" + e.CommandArgument.ToString());
     }
 
     protected void sorting(object sender, GridViewSortEventArgs e)
