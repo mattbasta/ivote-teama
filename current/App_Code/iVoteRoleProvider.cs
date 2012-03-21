@@ -22,9 +22,6 @@ using System.Collections.Generic;
 /// </summary>
 public class iVoteRoleProvider : RoleProvider
 {
-    private databaseLogic dbLogic = new databaseLogic();
-
- 
     public override void Initialize(string name, NameValueCollection configuration)
     {
         try
@@ -101,8 +98,12 @@ public class iVoteRoleProvider : RoleProvider
             userRoles.Add("admin");
         if (nUser.IsNEC)
             userRoles.Add("nec");
-        if (nUser.IsUnion)
+        if (nUser.IsUnion)  // TODO: Bug 31
             userRoles.Add("faculty");
+        if (nUser.IsUnion)
+            userRoles.Add("union");
+        if (nUser.IsTenured)
+            userRoles.Add("tenured");
 
         return userRoles.ToArray<string>();
     }
@@ -120,7 +121,11 @@ public class iVoteRoleProvider : RoleProvider
                 usersInRole.Add(userTemp.Email);
             if (role == "nec" && userTemp.IsNEC)
                 usersInRole.Add(userTemp.Email);
-            if (role == "faculty" && userTemp.IsUnion)
+            if (role == "faculty" && userTemp.IsUnion)  // TODO: Bug 31
+                usersInRole.Add(userTemp.Email);
+            if (role == "union" && userTemp.IsUnion)
+                usersInRole.Add(userTemp.Email);
+            if (role == "tenured" && userTemp.IsTenured)
                 usersInRole.Add(userTemp.Email);
         }
 
@@ -136,7 +141,11 @@ public class iVoteRoleProvider : RoleProvider
             return true;
         else if (role == "nec" && nUser.IsNEC)
             return true;
-        else if (role == "faculty" && nUser.IsUnion)
+        else if (role == "faculty" && nUser.IsUnion)  // TODO: Bug 31
+            return true;
+        else if (role == "union" && nUser.IsUnion)
+            return true;
+        else if (role == "tenured" && nUser.IsTenured)
             return true;
         else
             return false;

@@ -242,8 +242,8 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
-                        session.SaveOrUpdate(user[i]);
-                        User.AddToCommittee(session, user, "Acommittee");
+                        session.SaveOrUpdate(user);
+                        user.AddToCommittee(session, "Acommittee");
                     }
                     transaction.Commit();
                 }
@@ -261,8 +261,8 @@ namespace DatabaseEntities
                     Assert.AreEqual(a.ID, users[0].CurrentCommittee);
                     Assert.AreEqual(a.ID, users[1].CurrentCommittee);
 
-                    Assert.AreEqual(0, Committee.NumberOfVacancies(session, "Acommittee"));
-                    Assert.AreEqual(2, Committee.NumberOfPositions(session, "Acommittee"));
+                    Assert.AreEqual(0, a.NumberOfVacancies(session));
+                    Assert.AreEqual(2, a.NumberOfPositions(session));
                 }
             }
         }
@@ -306,8 +306,8 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
-                        session.SaveOrUpdate(user[i]);
-                        User.AddToCommittee(session, users[i], "Acommittee");
+                        session.SaveOrUpdate(users[i]);
+                        users[i].AddToCommittee(session, "Acommittee");
                     }
 
                     // create 2nd committee
@@ -328,7 +328,7 @@ namespace DatabaseEntities
                     Console.Write("Try to add one of the users to the second committee.\n");
                     List<User> users = User.GetAllUsers(session);
                     User toAdd = users[0];
-                    User.AddToCommittee(session, toAdd, "Bcommittee");
+                    toAdd.AddToCommittee(session, "Bcommittee");
                     transaction.Commit();
                 }
             }
@@ -346,11 +346,11 @@ namespace DatabaseEntities
                     Assert.AreEqual(a.ID, users[0].CurrentCommittee);
                     Assert.AreEqual(a.ID, users[1].CurrentCommittee);
 
-                    Assert.AreEqual(0, Committee.NumberOfVacancies(session, "Acommittee"));
-                    Assert.AreEqual(2, Committee.NumberOfVacancies(session, "Bcommittee"));
+                    Assert.AreEqual(0, a.NumberOfVacancies(session));
+                    Assert.AreEqual(2, b.NumberOfVacancies(session));
 
-                    Assert.AreEqual(2, Committee.NumberOfPositions(session, "Acommittee"));
-                    Assert.AreEqual(0, Committee.NumberOfPositions(session, "Bcommittee"));
+                    Assert.AreEqual(2, a.NumberOfPositions(session));
+                    Assert.AreEqual(0, b.NumberOfPositions(session));
                 }
             }
         }
@@ -395,7 +395,7 @@ namespace DatabaseEntities
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
                         session.SaveOrUpdate(user);
-                        User.AddToCommittee(session, user, "Acommittee");
+                        user.AddToCommittee(session, "Acommittee");
                     }
                     transaction.Commit();
                 }
@@ -421,7 +421,7 @@ namespace DatabaseEntities
                     List<User> users = User.GetAllUsers(session);
                     Assert.AreEqual(User.NoCommittee, users[0].CurrentCommittee);
 
-                    Assert.AreEqual(1, Committee.NumberOfVacancies(session, "Acommittee"));
+                    Assert.AreEqual(1, Committee.FindCommittee(session, "Acommittee").NumberOfVacancies(session));
                 }
             }
         }
@@ -468,13 +468,12 @@ namespace DatabaseEntities
                             User.NoCommittee);
                         session.SaveOrUpdate(user);
                         if(i < 2)
-                            User.AddToCommittee(session, user, "Acommittee");
+                            user.AddToCommittee(session, "Acommittee");
                     }
                     // create an election for the committee
                     Console.Write("Create an election based off the committee.\n");
                     CommitteeElection election = 
                         CommitteeElection.CreateElection(session, com);
-                    election.Phase = ElectionPhase.BallotPhase;
                     session.SaveOrUpdate(election);
 
                     session.Flush();
@@ -501,7 +500,7 @@ namespace DatabaseEntities
                 using (ITransaction transaction = session.BeginTransaction())
                 {
                     CommitteeElection election = CommitteeElection.FindElection(session, "Acommittee");
-                    ElectionPhase phase = CommitteeElection.NextPhase(session, election.ID);
+                    ElectionPhase phase = election.NextPhase(session);
 
                     Assert.AreEqual(phase, ElectionPhase.VotePhase);
                 }
@@ -549,14 +548,13 @@ namespace DatabaseEntities
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
                         if (i < 2)
-                            User.AddToCommittee(session, user, "Acommittee");
+                            user.AddToCommittee(session, "Acommittee");
                         session.SaveOrUpdate(user);
                     }
                     // create an election for the committee
                     Console.Write("Create an election based off the committee.\n");
                     CommitteeElection election =
                         CommitteeElection.CreateElection(session, com);
-                    election.Phase = ElectionPhase.BallotPhase;
                     session.SaveOrUpdate(election);
 
                     session.Flush();
@@ -583,7 +581,7 @@ namespace DatabaseEntities
                 using (ITransaction transaction = session.BeginTransaction())
                 {
                     CommitteeElection election = CommitteeElection.FindElection(session, "Acommittee");
-                    ElectionPhase phase = CommitteeElection.NextPhase(session, election.ID);
+                    ElectionPhase phase = election.NextPhase(session);
                     Assert.AreEqual(ElectionPhase.NominationPhase, phase);
                 }
             }
@@ -635,7 +633,7 @@ namespace DatabaseEntities
                             i.ToString() + "L", "p", "h", false, false, true, true,
                             false, DepartmentType.CSC, OfficerPositionType.None, true,
                             User.NoCommittee);
-                        User.AddToCommittee(session, user, "Acommittee");
+                        user.AddToCommittee(session, "Acommittee");
                         session.SaveOrUpdate(user);
                     }
 
@@ -654,8 +652,8 @@ namespace DatabaseEntities
                     CommitteeElection election = 
                         CommitteeElection.FindElection(session, "Acommittee");
 
-                    Assert.AreEqual(ElectionPhase.VotePhase, CommitteeElection.NextPhase(session, election.ID));
-                    CommitteeElection.SetPhase(session, election.ID, ElectionPhase.VotePhase);
+                    Assert.AreEqual(ElectionPhase.VotePhase, election.NextPhase(session));
+                    election.SetPhase(session, ElectionPhase.VotePhase);
                     transaction.Commit();
                 }
             }
@@ -666,8 +664,8 @@ namespace DatabaseEntities
                     CommitteeElection election =
                         CommitteeElection.FindElection(session, "Acommittee");
 
-                    Assert.AreEqual(ElectionPhase.ConflictPhase, CommitteeElection.NextPhase(session, election.ID));
-                    CommitteeElection.SetPhase(session, election.ID, ElectionPhase.ConflictPhase);
+                    Assert.AreEqual(ElectionPhase.ConflictPhase, election.NextPhase(session));
+                    election.SetPhase(session, ElectionPhase.ConflictPhase);
                     transaction.Commit();
                 }
             }
@@ -678,9 +676,9 @@ namespace DatabaseEntities
                     CommitteeElection election =
                         CommitteeElection.FindElection(session, "Acommittee");
 
-                    Assert.AreEqual(ElectionPhase.ResultPhase, CommitteeElection.NextPhase(session, election.ID));
+                    Assert.AreEqual(ElectionPhase.ClosedPhase, election.NextPhase(session));
 
-                    CommitteeElection.SetPhase(session, election.ID, ElectionPhase.ResultPhase);
+                    election.SetPhase(session, ElectionPhase.ClosedPhase);
                     transaction.Commit();
                 }
             }

@@ -87,8 +87,6 @@ public partial class tester : System.Web.UI.Page
             Label1.Text += user.Email + "<br />";
         }
 
-        
-
     }
    protected void Button7_Click(object sender, EventArgs e)
     {
@@ -127,7 +125,8 @@ public partial class tester : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
-        DatabaseEntities.CommitteeElection.SetPhase(session, 1, DatabaseEntities.ElectionPhase.WTSPhase);
+        DatabaseEntities.CommitteeElection.FindElection(session, 1)
+                .SetPhase(session, DatabaseEntities.ElectionPhase.WTSPhase);
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
     }

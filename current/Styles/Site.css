@@ -10,6 +10,17 @@
 
 .buttonrow {margin-bottom: 1.5em;}
 
+#committee_elections .election {
+    padding: 1em;
+}
+#committee_elections .election + .election {
+    border-top: 1px solid #eee;
+}
+#committee_elections .election strong {
+    font-size: 1.2em;
+}
+
+
 /* MISC  
 ----------------------------------------------------------*/
 

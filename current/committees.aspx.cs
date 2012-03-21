@@ -25,10 +25,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
         for(int i = 0; i < committees.Count; i++)
         {
             DatabaseEntities.Committee committee = committees[i];
-            int vacancy_count = committee.PositionCount -
-                                session.CreateCriteria(typeof(DatabaseEntities.User))
-                                           .Add(Restrictions.Eq("CurrentCommittee", committee.ID))
-                                           .List().Count;
+            int vacancy_count = committee.NumberOfVacancies(session);
             IList<DatabaseEntities.CommitteeElection> active_election =
                     session.CreateCriteria(typeof(DatabaseEntities.CommitteeElection))
                                .Add(Restrictions.Eq("PertinentCommittee", committee.ID))
@@ -71,6 +68,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
                 else
                 {
                     Button visit_election = new Button();
+                    visit_election.CssClass = "btn btn-small";
                     visit_election.Text = "Visit Election";
                     visit_election.OnClientClick = "window.location.href = \"/committee_election.aspx?id=" +
                                                    active_election[0].ID + "\";return false;";

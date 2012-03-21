@@ -33,6 +33,7 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         }
 
     }
+    
     //Gets info for a user
     protected void getSpecificInfo(string id) 
     {
