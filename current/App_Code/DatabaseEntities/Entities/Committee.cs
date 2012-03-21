@@ -71,6 +71,25 @@ namespace DatabaseEntities
         }
 
         /// <summary>
+        /// Returns the number of committees that have vacancies.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <returns>An integer describing the number of committees found.</returns>
+        public static int NumberOfWaitingCommittees(ISession session)
+        {
+            // formulate a query for the committees
+            var committees = session.CreateCriteria(typeof(Committee))
+                    .List<Committee>();
+            int count = 0;
+            for(int i = 0; i < committees.Count; i++)
+                if(committees[i].NumberOfVacancies(session) > 0)
+                   count++;
+            return count - session.CreateCriteria(typeof(CommitteeElection))
+                                   .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
+                                   .List().Count;
+        }
+
+        /// <summary>
         /// This function calculates the number of vancies in a given committee.
         /// </summary>
         /// <param name="session">A valid sesssion.</param>

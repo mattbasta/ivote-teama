@@ -33,7 +33,7 @@
         <div class="tabbable">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#">Active Elections</a></li>
-                <li><a href="/committees.aspx">Committees</a></li>
+                <li><a href="/committees.aspx">Committees <asp:Label runat="server" ID="WaitingCommittees" CssClass="badge badge-info" Visible="False" Text="0" /></a></li>
                 <li><a href="/users.aspx">Users</a></li>
             </ul>
         </div>

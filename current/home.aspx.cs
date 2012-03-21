@@ -56,6 +56,16 @@ public partial class home : System.Web.UI.Page
             CommitteeElectionRepeater.DataBind();
         }
         
+        if(is_admin)
+        {
+            int waiting_committees = DatabaseEntities.Committee.NumberOfWaitingCommittees(session);
+            if(waiting_committees > 0)
+            {
+                WaitingCommittees.Visible = true;
+                WaitingCommittees.Text = waiting_committees.ToString();
+            }
+        }
+        
         DatabaseEntities.NHibernateHelper.Finished(transaction);
     }
     
