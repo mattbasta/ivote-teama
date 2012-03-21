@@ -76,11 +76,16 @@ namespace DatabaseEntities
         /// <param name="session">A valid sesssion.</param>
         /// <param name="name">The name of the committee in question</param>
         /// <returns>The number of vacancies in the committee, or -1 if there was a problem.</returns>
-        public static int NumberOfVacancies(ISession session, string name)
+        public virtual int NumberOfVacancies(ISession session)
         {
-            Committee com = Committee.FindCommittee(session, name);
-            List<User> users = User.FindUsers(session, name);
-            return com.PositionCount - users.Count;
+            List<User> users = User.GetAllUsers(session);
+
+            // this number represents the number of people serving on the committee
+            int members = 0;
+            for (int i = 0; i < users.Count; i++)
+                if (users[i].CurrentCommittee == this.ID)
+                    members++;
+            return this.PositionCount - members;
         }
 
         /// <summary>
@@ -89,15 +94,13 @@ namespace DatabaseEntities
         /// <param name="session">A valid session.</param>
         /// <param name="name">The name of the committee in question.</param>
         /// <returns>The number of positions users are filling in the committee, or -1 if there was a problem.</returns>
-        public static int NumberOfPositions(ISession session, string name)
+        public virtual int NumberOfPositions(ISession session)
         {
-            Committee com = Committee.FindCommittee(session, name);
-            List<User> users = User.FindUsers(session, name);
-            return users.Count;
+            return this.PositionCount;
         }
 
         /// <summary>
-        /// This function takes the specified user off the committee with the 
+        /// This function takes the specified user off the committee with the
         /// specified ID.
         /// </summary>
         /// <param name="session">A valid session.</param>

@@ -320,16 +320,16 @@ namespace DatabaseEntities
         /// <param name="user">A reference to the user to be added</param>
         /// <param name="committee">The name of the committee the user is to be added to.</param>
         /// <returns>True if the operation was successful.</returns>
-        public static bool AddToCommittee(ISession session, ref User user, string committee)
+        public virtual bool AddToCommittee(ISession session, string committee)
         {
             Committee com = Committee.FindCommittee(session, committee);
             if (com != null)
             {
-                if (user.CurrentCommittee == NoCommittee ||
-                    user.CurrentCommittee == com.ID)
+                if (this.CurrentCommittee == NoCommittee ||
+                    this.CurrentCommittee == com.ID)
                 {
-                    user.CurrentCommittee = com.ID;
-                    session.SaveOrUpdate(user);
+                    this.CurrentCommittee = com.ID;
+                    session.SaveOrUpdate(this);
                     session.Flush();
                     return true;
                 }

@@ -15,14 +15,12 @@
             <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" Enabled="false" runat="server">
                 <strong>Notification</strong>
                 <p>You have a nomination pending!</p>
-                <asp:LinkButton ID="LinkButton5"  commandname="id" CommandArgument="Nominations.aspx" OnCommand="transfer"
-                    text="View Nomination" runat="server" CssClass="btn btn-primary" />
+                <a href="/Nominations.aspx" class="btn btn-primary">View Nomination</a>
             </asp:Panel>
             <asp:Panel ID="elig_pending" class="alert" Visible="false" Enabled="false" runat="server">
                 <strong>Notification</strong>
                 <p>There are eligibility forms that must be approved.</p>
-                <asp:LinkButton ID="LinkButton6" commandname="id" CommandArgument="approvenominations.aspx"  OnCommand="transfer"
-                    text="View Forms" runat="server" CssClass="btn btn-warning" />
+                <a href="/approvenominations.aspx" class="btn btn-warning">View Forms</a>
             </asp:Panel>
         </div>
     </asp:Panel>
@@ -43,82 +41,90 @@
     
     
     <!-- Officer Elections -->
-    <div class="row">
-        <div id="officer_elections" class="span6">
-            <h2>Officer Elections</h2>
-            
-            
-            <asp:Panel ID="OfficerStateless" Enabled="false" Visible="false" runat="server">
-                <div class="alert alert-info">
-                    <strong>No Active Officer Election</strong>
-                    There are currently no active election phases. This could mean that there is no election running, or that there is no 
-                    action required on your part at this time.
-                </div>
-                <asp:Panel id="functions_stateless" style="margin-top:10px;" visible="false" runat="server">
-                    <a class="btn" href="/controlRoom.aspx">Initiate Officer Election</a>
-                </asp:Panel>
+    <div id="officer_elections">
+        <h2>Officer Election</h2>
+        
+        <asp:Panel ID="OfficerStateless" Enabled="false" Visible="false" runat="server">
+            <div class="alert alert-info">
+                <strong>No Active Officer Election</strong>
+                There are currently no active election phases. This could mean that there is no election running, or that there is no 
+                action required on your part at this time.
+            </div>
+            <asp:Panel id="functions_stateless" style="margin-top:10px;" visible="false" runat="server">
+                <a class="btn" href="/controlRoom.aspx">Initiate Officer Election</a>
             </asp:Panel>
-            
-            
-            <asp:Panel ID="OfficerNominate" Enabled="false" Visible="false" runat="server">
-                <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
+        </asp:Panel>
+        
+        
+        <asp:Panel ID="OfficerNominate" Enabled="false" Visible="false" runat="server">
+            <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
 
-                <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
-                <div class="buttonrow">
-                    <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
-                    <a class="btn" href="/terminate.aspx">Cancel Election</a>
-                </div>
-                </asp:Panel>
-            
-                <!-- TODO: For users with can_vote=False, do not show this section. -->
-                <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
-                <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-                    <ContentTemplate>
-                        <!--Display form/data for selected position -->
-                        <asp:Panel ID="PanelSelected" CssClass="well" Visible="false" runat="server">
-                            <asp:Label ID="LabelSelected" runat="server" Text="" />
-                            <p class="buttons"> 
-                                <asp:Button CssClass="btn" ID="ButtonNominate" runat="server" OnClick="nominate" Text="" />
-                                <asp:Button CssClass="btn" ID="ButtonWTS" runat="server" Text="" OnClick="next" /> 
-                            </p>
-                            <asp:HiddenField ID="HiddenFieldID" runat="server" />
-                        </asp:Panel>
-                        
-                        <!-- List of positions -->
-                        <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
-                             <Columns>
-                                <asp:TemplateField HeaderText="">
-                                    <ItemTemplate>
-                                        <asp:Button ID="ButtonSelect" runat="server" commandname="positions" commandargument='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown"/>
-                            </Columns>
-                        </asp:GridView>
-                    </ContentTemplate>
-                </asp:UpdatePanel>
+            <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
+            <div class="buttonrow">
+                <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/terminate.aspx">Cancel Election</a>
+            </div>
             </asp:Panel>
-            <asp:Panel ID="OfficerNominationAccept" Enabled="false" Visible="false" runat="server">
-                <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
-                
-                <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
-                <div class="buttonrow">
-                    <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
-                    <a class="btn" href="/terminate.aspx">Cancel Election</a>
-                </div>
-                </asp:Panel>
-            </asp:Panel>
+        
+            <!-- TODO: For users with can_vote=False, do not show this section. -->
+            <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
+            <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                <ContentTemplate>
+                    <!--Display form/data for selected position -->
+                    <asp:Panel ID="PanelSelected" CssClass="well" Visible="false" runat="server">
+                        <asp:Label ID="LabelSelected" runat="server" Text="" />
+                        <p class="buttons"> 
+                            <asp:Button CssClass="btn" ID="ButtonNominate" runat="server" OnClick="nominate" Text="" />
+                            <asp:Button CssClass="btn" ID="ButtonWTS" runat="server" Text="" OnClick="next" /> 
+                        </p>
+                        <asp:HiddenField ID="HiddenFieldID" runat="server" />
+                    </asp:Panel>
+                    
+                    <!-- List of positions -->
+                    <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
+                         <Columns>
+                            <asp:TemplateField HeaderText="">
+                                <ItemTemplate>
+                                    <asp:Button ID="ButtonSelect" runat="server" commandname="positions" commandargument='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown"/>
+                        </Columns>
+                    </asp:GridView>
+                </ContentTemplate>
+            </asp:UpdatePanel>
+        </asp:Panel>
+        <asp:Panel ID="OfficerNominationAccept" Enabled="false" Visible="false" runat="server">
+            <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
             
-        </div>
-        <div id="committee_elections" class="span6">
+            <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
+            <div class="buttonrow">
+                <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/terminate.aspx">Cancel Election</a>
+            </div>
+            </asp:Panel>
+        </asp:Panel>
+    </div>
+    <div id="committee_elections">
+        <asp:Panel ID="CommitteeElectionList" runat="server">
             <h2>Committee Elections</h2>
-            <asp:Label ID="CommitteeElectionStatus" Text="No active committee election." runat="server" />
-            <asp:Panel ID="CommitteeElectionList" runat="server">
-                <ul class="nav nav-tabs nav-stacked">
-                    <li><a href=""></a></li>
-                </ul>
-            </asp:Panel>
-        </div>
+            <asp:Label ID="CommitteeElectionStatus" Text="No active committee election." runat="server" Visible="False" />
+            <asp:Repeater ID="CommitteeElectionRepeater" runat="server">
+                <ItemTemplate>
+                    <div class="election">
+                        <strong><a href="/committee_election.aspx?id=<%#DataBinder.Eval(Container.DataItem, "ID")%>">
+                            <%#GetName(DataBinder.Eval(Container.DataItem, "PertinentCommittee"))%>
+                        </a></strong>
+                        <p>Now accepting Willingness to Serve applications.</p>
+                        <% if(IsAdmin()) { %>
+                        <div class="<%#GetCommitteeProgressStatus((DatabaseEntities.CommitteeElection)Container.DataItem)%>">
+                            <div class="bar" style="width:<%#GetCommitteePhaseProgress((DatabaseEntities.CommitteeElection)Container.DataItem)%>%;"></div>
+                        </div>
+                        <% } %>
+                    </div>
+                </ItemTemplate>
+            </asp:Repeater>
+        </asp:Panel>
     </div>
     
     <!--Slate Approval -->
@@ -133,14 +139,6 @@
         <asp:Panel id="functions_slate" style="margin-top:10px;" visible="false" runat="server">
             <b>This is a special phase where the NEC must approve the slate.</b><br /><br />
             <div class="clear"></div>
-            <div class="column">
-                <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton17"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
-                            text="Create User" runat="server" /><br />
-                <asp:LinkButton ID="LinkButton18"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
-                            text="Edit User" runat="server" /><br />
-            
-            </div>
             <div class="column">
                 <b>Election Management</b><br />
                 <a href="approvenominations.aspx">Approve Eligibility</a><br />
@@ -220,14 +218,6 @@
             members for a position.
         </div>
         <asp:Panel id="functions_petition" style="margin-top:10px;" visible="false" runat="server">
-            <div class="column">
-                <b>User Management</b><br />
-                <asp:LinkButton ID="LinkButton1"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
-                            text="Create User" runat="server" /><br />
-                <asp:LinkButton ID="LinkButton7"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
-                            text="Edit User" runat="server" /><br />
-            
-            </div>
             <div class="column">
                 <b>Election Management</b><br />
                 <a href="approvenominations.aspx">Approve Eligibility</a><br />
@@ -324,14 +314,6 @@
 
             <!--Admin only-->
             <asp:Panel id="functions_accept2" style="margin-top:10px;" visible="false" runat="server">
-                <div class="column">
-                    <b>User Management</b><br />
-                    <asp:LinkButton ID="LinkButton13"  commandname="id" CommandArgument="register.aspx"  OnCommand="transfer"
-                                text="Create User" runat="server" /><br />
-                    <asp:LinkButton ID="LinkButton14"  commandname="id" CommandArgument="users.aspx"  OnCommand="transfer"
-                                text="Edit User" runat="server" /><br />
-            
-                </div>
                 <div class="column">
                     <b>Election Management</b><br />
                     <a href="approvenominations.aspx">Approve Eligibility</a><br />

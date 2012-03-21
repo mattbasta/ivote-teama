@@ -20,8 +20,8 @@ namespace DatabaseEntities
 {
     public enum ElectionPhase
     {
-        WTSPhase, BallotPhase, NominationPhase, VotePhase,
-        ConflictPhase, ResultPhase
+        WTSPhase, NominationPhase, VotePhase, CertificationPhase,
+        ConflictPhase, ClosedPhase
     };
 
     /// <summary>
@@ -99,17 +99,11 @@ namespace DatabaseEntities
         }
 
 
-        public static bool ShouldEnterNominationPhase(ISession session,
-            int id)
+        public virtual bool ShouldEnterNominationPhase(ISession session)
         {
-            CommitteeElection election = CommitteeElection.FindElection(session,
-                id);
             // if the number of WTS's submitted is less than twice the number of
             // vacnacies, no need for nomination phase
-            if (CommitteeWTS.FindCommitteeWTS(session, election.ID).Count <=
-                election.VacanciesToFill * 2)
-                return false;
-            else return true;
+            return !(CommitteeWTS.FindCommitteeWTS(session, this.ID).Count <= this.VacanciesToFill * 2);
         }
 
         /// <summary>
@@ -126,8 +120,7 @@ namespace DatabaseEntities
             ret.Started = DateTime.Now;
             ret.PhaseStarted = ret.Started;
             ret.Phase = ElectionPhase.WTSPhase;
-            // Lets find out how many vacancies there are
-            ret.VacanciesToFill = Committee.NumberOfVacancies(session, committee.Name);
+            ret.VacanciesToFill = committee.NumberOfVacancies(session);
             // return null if there are no vacancies to fill or if there is
             // already an election for this committee
             if (ret.VacanciesToFill <= 0 || FindElection(session, committee.ID) != null)
@@ -142,81 +135,64 @@ namespace DatabaseEntities
         /// <param name="session">A valid session.</param>
         /// <param name="id">The id of the election to edit.</param>
         /// <param name="electionPhase">The new phase of the election.</param>
-        public static void SetPhase(ISession session, int id,
+        public virtual void SetPhase(ISession session,
             ElectionPhase electionPhase)
         {
-            CommitteeElection committees =
-                CommitteeElection.FindElection(session, id);
-            // change the phase to the one specified by the parameters,
-            // then save our changes.
-            // then do some other stuff based on what the new phase is
-            committees.Phase = electionPhase;
+            this.Phase = electionPhase;
 
             if (electionPhase == ElectionPhase.WTSPhase)
             {
                 //TODO: Filter which users should be sent a WTS, instead of all.
                 List<User> userList = User.GetAllUsers(session);
                 nEmailHandler emailHandler = new nEmailHandler();
-                emailHandler.sendWTS(committees, userList);
+                emailHandler.sendWTS(this, userList);
             }
-            else if (electionPhase == ElectionPhase.BallotPhase)
+            else if (electionPhase == ElectionPhase.NominationPhase)
             {
-                // not much needs to be done here
+                // distribute emails prompting faculty members to come
+                // vote in the primary election
             }
             else if (electionPhase == ElectionPhase.VotePhase)
             {
                 // distribute emails prompting faculty members to come
                 // vote
             }
+            else if (electionPhase == ElectionPhase.CertificationPhase)
+            {
+                // send out emails teling NEC people to certify results
+            }
             else if (electionPhase == ElectionPhase.ConflictPhase)
             {
                 // not much needs to be done here.
             }
-            else if (electionPhase == ElectionPhase.ResultPhase)
+            else if (electionPhase == ElectionPhase.ClosedPhase)
             {
-                // send out emails informing people of the results.
-                // send out emails teling NEC people to certify results
+                // not much needs to be done here.
             }
             // Store the current date in the PhaseStarted field
-            committees.PhaseStarted = DateTime.Now;
+            this.PhaseStarted = DateTime.Now;
 
-            session.SaveOrUpdate(committees);
+            session.SaveOrUpdate(this);
             session.Flush();
-            return;
         }
 
-        /// <summary>
-        /// Returns the date when the current phase should be ending.
-        /// </summary>
-        /// <param name="session">A valid session.</param>
-        /// <param name="id">The id of the election being queried.</param>
-        /// <returns>The end-date of the election's current phase.</returns>
-        public static DateTime NextPhaseDate(ISession session, int id)
+        public virtual DateTime NextPhaseDate(ISession session)
         {
-            // Grab the info about this committee election from the database.
-            CommitteeElection election = CommitteeElection.FindElection(session, id);
-
-            // If there was no election in the database with a matching id,
-            // return MinValue (since the data will never be MinValue).
-            if (election == null)
-                return DateTime.MinValue;
             // People have two weeks to submit their WTS
-            else if (election.Phase == ElectionPhase.WTSPhase)
-                return election.PhaseStarted.AddDays(14);
-            // The NEC has one week to compose the ballot
-            else if (election.Phase == ElectionPhase.BallotPhase)
-                return election.PhaseStarted.AddDays(7);
-            // Faculty can nominate one another for a week
-            else if (election.Phase == ElectionPhase.NominationPhase)
-                return election.PhaseStarted.AddDays(7);
+            if (this.Phase == ElectionPhase.WTSPhase)
+                return this.PhaseStarted.AddDays(14);
+            // The "ballot phase" is automatic/instantaneous when the phase is bumped.
+            //// The NEC has one week to compose the ballot
+            //else if (this.Phase == ElectionPhase.BallotPhase)
+            //    return this.PhaseStarted.AddDays(7);
+            else if (this.Phase == ElectionPhase.NominationPhase)
+                return this.PhaseStarted.AddDays(7);
             // The voters have one week to cast their vote
-            else if (election.Phase == ElectionPhase.VotePhase)
-            {
-                return election.PhaseStarted.AddDays(7);
-            }
+            else if (this.Phase == ElectionPhase.VotePhase)
+                return this.PhaseStarted.AddDays(7);
             else
                 // after that, there are no dead-line restrictions.
-                return DateTime.MinValue;
+                return DateTime.MaxValue;
         }
 
         /// <summary>
@@ -224,16 +200,13 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="session">A valid session.</param>
         /// <param name="ID">The ID of the election.</param>
-        public static ElectionPhase NextPhase(ISession session, int id)
+        public virtual ElectionPhase NextPhase(ISession session)
         {
-            // Get the election being queried.
-            CommitteeElection committees = CommitteeElection.FindElection(session, id);
-            ElectionPhase toReturn = committees.Phase;
+            ElectionPhase toReturn = this.Phase;
             toReturn += 1;
             if (toReturn == ElectionPhase.NominationPhase &&
-                CommitteeElection.ShouldEnterNominationPhase(session, committees.ID) == false)
+                this.ShouldEnterNominationPhase(session) == false)
                 return ElectionPhase.VotePhase;
-            // TODO: If there are no conflicts, skape the Conflict phase.
             else
                 return toReturn;
         }
