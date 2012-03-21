@@ -115,7 +115,7 @@
                         <strong><a href="/committee_election.aspx?id=<%#DataBinder.Eval(Container.DataItem, "ID")%>">
                             <%#GetName(DataBinder.Eval(Container.DataItem, "PertinentCommittee"))%>
                         </a></strong>
-                        <p>Now accepting Willingness to Serve applications.</p>
+                        <p><%#GetCommitteePhaseMessage((DatabaseEntities.CommitteeElection)Container.DataItem)%></p>
                         <% if(IsAdmin()) { %>
                         <div class="<%#GetCommitteeProgressStatus((DatabaseEntities.CommitteeElection)Container.DataItem)%>">
                             <div class="bar" style="width:<%#GetCommitteePhaseProgress((DatabaseEntities.CommitteeElection)Container.DataItem)%>%;"></div>

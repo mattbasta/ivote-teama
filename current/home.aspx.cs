@@ -112,6 +112,24 @@ public partial class home : System.Web.UI.Page
         }
         return output;
     }
+    
+    public string GetCommitteePhaseMessage(DatabaseEntities.CommitteeElection election) {
+        switch(election.Phase) {
+            case DatabaseEntities.ElectionPhase.WTSPhase:
+                return "Now accepting Willingness to Serve applications.";
+            case DatabaseEntities.ElectionPhase.NominationPhase:
+                return "The primary voting period is currently in progress.";
+            case DatabaseEntities.ElectionPhase.VotePhase:
+                return "General voting is now open.";
+            case DatabaseEntities.ElectionPhase.CertificationPhase:
+                return "Results are currently being certified by the NEC.";
+            case DatabaseEntities.ElectionPhase.ConflictPhase:
+                return "Election result conflicts are awaiting resolution.";
+            case DatabaseEntities.ElectionPhase.ClosedPhase:
+                return "The election is closed.";
+        }
+        throw new Exception("Unexpected election phase.");
+    }
 
     //sends user to homepage based on current phase and the users role
     protected void setView()
