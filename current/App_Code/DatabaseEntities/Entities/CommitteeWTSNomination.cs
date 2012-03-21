@@ -14,6 +14,7 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 
 namespace DatabaseEntities
 {
@@ -51,15 +52,13 @@ namespace DatabaseEntities
         public static List<CommitteeWTSNomination> FindCommitteeWTSNomination(ISession session,
             int election)
         {
-            // pull a list of all the ballot entriess from the database.
-            var entries = session.CreateCriteria(typeof(CommitteeWTSNomination)).List<CommitteeWTSNomination>();
-            List<CommitteeWTSNomination> ret = new List<CommitteeWTSNomination>();
-            for (int i = 0; i < entries.Count; i++)
-            {
-                if (entries[i].Election == election)
-                    ret.Add(entries[i]);
-            }
-            return ret;
+            // formulate a query for committee WTS nominations for the given election
+            var entries = session.CreateCriteria(typeof(CommitteeWTSNomination))
+                .Add(Restrictions.Eq("Election", election))
+                .List<CommitteeWTSNomination>();
+
+            // return the results of the query
+            return entries.ToList<CommitteeWTSNomination>();
         }
     }
 }

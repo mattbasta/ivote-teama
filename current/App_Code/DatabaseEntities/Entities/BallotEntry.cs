@@ -14,6 +14,7 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 
 namespace DatabaseEntities
 {
@@ -46,15 +47,13 @@ namespace DatabaseEntities
         public static List<BallotEntry> FindBallotEntry(ISession session, 
             int election)
         {
-            // pull a list of all the ballot entriess from the database.
-            var entries = session.CreateCriteria(typeof(BallotEntry)).List<BallotEntry>();
-            List<BallotEntry> ret = new List<BallotEntry>();
-            for (int i = 0; i < entries.Count; i++)
-            {
-                if (entries[i].Election == election)
-                    ret.Add(entries[i]);
-            }
-            return ret;
+            // formulate our query using NHibernate
+            var entries = session.CreateCriteria(typeof(BallotEntry))
+                .Add(Restrictions.Eq("Election", election))
+                .List<BallotEntry>();
+
+            // return the list of results
+            return entries.ToList<BallotEntry>();
         }
     }
 }

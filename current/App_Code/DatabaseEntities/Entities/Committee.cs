@@ -14,6 +14,7 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 
 namespace DatabaseEntities
 {
@@ -40,19 +41,16 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="session">A valid session.</param>
         /// <param name="name">The name of the committee needed.</param>
-        /// <returns>The committee object with the given name.</returns>
+        /// <returns>The committee object with the given name, or null if none was found</returns>
         public static Committee FindCommittee(ISession session, string name)
         {
-            // pull a list of all the users from the database.
-            var committees = session.CreateCriteria(typeof(Committee)).List<Committee>();
-            for (int i = 0; i < committees.Count; i++)
-            {
-                // find and return the user with a matching email
-                if (committees[i].Name == name)
-                    return committees[i];
-            }
-            // otherwise, return null
-            return null;
+            // Formulate a query for the committee based on the committee name
+            var committees = session.CreateCriteria(typeof(Committee))
+                .Add(Restrictions.Eq("Name", name))
+                .UniqueResult<Committee>();
+
+            // return the result
+            return committees;
         }
 
         /// <summary>
@@ -60,19 +58,16 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="session">A valid session.</param>
         /// <param name="id">The id of the election being seached for.</param>
-        /// <returns>The committee object with the given id.</returns>
+        /// <returns>The committee object with the given id, or null if none was found.</returns>
         public static Committee FindCommittee(ISession session, int id)
         {
-            // pull a list of all the users from the database.
-            var committees = session.CreateCriteria(typeof(Committee)).List<Committee>();
-            for (int i = 0; i < committees.Count; i++)
-            {
-                // find and return the user with a matching email
-                if (committees[i].ID == id)
-                    return committees[i];
-            }
-            // otherwise, return null
-            return null;
+            // formulate a query for the committee based off the id
+            var committees = session.CreateCriteria(typeof(Committee))
+                .Add(Restrictions.Eq("ID", id))
+                .UniqueResult<Committee>();
+
+            // and return it.
+            return committees;
         }
 
         /// <summary>
@@ -84,20 +79,8 @@ namespace DatabaseEntities
         public static int NumberOfVacancies(ISession session, string name)
         {
             Committee com = Committee.FindCommittee(session, name);
-            List<User> users = User.GetAllUsers(session);
-
-            if (com == null)
-                return -1;
-
-            // this number represents the number of people serving on the committee
-            int members = 0;
-
-            for (int i = 0; i < users.Count; i++)
-            {
-                if (users[i].CurrentCommittee == com.ID)
-                    members++;
-            }
-            return com.PositionCount - members;
+            List<User> users = User.FindUsers(session, name);
+            return com.PositionCount - users.Count;
         }
 
         /// <summary>
@@ -109,20 +92,8 @@ namespace DatabaseEntities
         public static int NumberOfPositions(ISession session, string name)
         {
             Committee com = Committee.FindCommittee(session, name);
-            List<User> users = User.GetAllUsers(session);
-
-            if (com == null)
-                return -1;
-
-            // this number represents the number of people serving on the committee
-            int members = 0;
-
-            for (int i = 0; i < users.Count; i++)
-            {
-                if (users[i].CurrentCommittee == com.ID)
-                    members++;
-            }
-            return members;
+            List<User> users = User.FindUsers(session, name);
+            return users.Count;
         }
 
         /// <summary>

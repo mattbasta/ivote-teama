@@ -27,6 +27,8 @@ namespace DatabaseEntities
                 .Not.Nullable();
             Map(x => x.Started)
                 .Not.Nullable();
+            Map(x => x.PhaseStarted)
+                .Not.Nullable();
             // This value is an enum type.  By default, NHibernate maps enums to
             // strings in the database.
             // We can use .CustomType<TYPE>() to change that.

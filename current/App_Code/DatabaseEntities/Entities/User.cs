@@ -17,6 +17,7 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 
 namespace DatabaseEntities
 {
@@ -186,18 +187,15 @@ namespace DatabaseEntities
         /// <param name="Session">The current session.</param>
         /// <param name="ID">The ID of the user you are looking for.</param>
         /// <returns>The user with the matching ID, or null if none was found.</returns>
-        public static User FindUser(ISession session, int ID)
+        public static User FindUser(ISession session, int id)
         {
-            // pull a list of all the users from the database.
-            var faculty = session.CreateCriteria(typeof(User)).List<User>();
-            for (int i = 0; i < faculty.Count; i++)
-            {
-                // find and return the user with a matching id
-                if (faculty[i].ID == ID)
-                    return faculty[i];
-            }
-            // otherwise, return null
-            return null;
+            // use nhibernate to build the query
+            var faculty = session.CreateCriteria(typeof(User))
+                .Add(Restrictions.Eq("ID", id))
+                .UniqueResult<User>();
+
+            // return the result
+            return faculty;
         }
 
         /// <summary>
@@ -208,16 +206,13 @@ namespace DatabaseEntities
         /// <returns>The user with the matching email, or null if none was found.</returns>
         public static User FindUser(ISession session, string email)
         {
-            // pull a list of all the users from the database.
-            var faculty = session.CreateCriteria(typeof(User)).List<User>();
-            for (int i = 0; i < faculty.Count; i++)
-            {
-                // find and return the user with a matching email
-                if (faculty[i].Email == email)
-                    return faculty[i];
-            }
-            // otherwise, return null
-            return null;
+            // use nhibernate to build the query
+            var faculty = session.CreateCriteria(typeof(User))
+                .Add(Restrictions.Eq("Email", email))
+                .UniqueResult<User>();
+            
+            // return the result
+            return faculty;
         }
 
         /// <summary>
@@ -230,16 +225,34 @@ namespace DatabaseEntities
         public static User FindUser(ISession session, string firstName,
             string lastName)
         {
-            // pull a list of all the users from the database.
-            var faculty = session.CreateCriteria(typeof(User)).List<User>();
-            for (int i = 0; i < faculty.Count; i++)
-            {
-                // find and return the user with a matching name
-                if (faculty[i].FirstName == firstName && faculty[i].LastName == lastName)
-                    return faculty[i];
-            }
-            // otherwise return null
-            return null;
+            // use nhibernate to build the query
+            var faculty = session.CreateCriteria(typeof(User))
+                .Add(Restrictions.Eq("FirstName", firstName))
+                .Add(Restrictions.Eq("LastName", lastName))
+                .UniqueResult<User>();
+            
+            // return the result
+            return faculty;
+        }
+
+        /// <summary>
+        /// Returns a list of users on the committee with the specified name.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="currentCommitteeName">The name of the pertinent committee.</param>
+        /// <returns>A list of all the users on the specified committee.</returns>
+        public static List<User> FindUsers(ISession session, 
+            string currentCommitteeName)
+        {
+            // Get the id of the committee
+            int committeeId = Committee.FindCommittee(session, 
+                currentCommitteeName).ID;
+
+            var faculty = session.CreateCriteria(typeof(User))
+                .Add(Restrictions.Eq("CurrentCommittee", committeeId))
+                .List<User>();
+
+            return faculty.ToList<User>();
         }
 
         /// <summary>
@@ -300,7 +313,14 @@ namespace DatabaseEntities
             session.Flush();
         }
 
-        public static bool AddToCommittee(ISession session, User user, string committee)
+        /// <summary>
+        /// Adds the specified user to the specified committee
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="user">A reference to the user to be added</param>
+        /// <param name="committee">The name of the committee the user is to be added to.</param>
+        /// <returns>True if the operation was successful.</returns>
+        public static bool AddToCommittee(ISession session, ref User user, string committee)
         {
             Committee com = Committee.FindCommittee(session, committee);
             if (com != null)
@@ -309,6 +329,8 @@ namespace DatabaseEntities
                     user.CurrentCommittee == com.ID)
                 {
                     user.CurrentCommittee = com.ID;
+                    session.SaveOrUpdate(user);
+                    session.Flush();
                     return true;
                 }
                 else return false;
