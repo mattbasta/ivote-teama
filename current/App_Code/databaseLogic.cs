@@ -523,15 +523,10 @@ public class databaseLogic
         genericQueryInserter("UPDATE timeline SET datetime_end = DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
     }
 
-    public void turnOnPhase(string phase, DateTime end_date)
+    public void turnOnPhase(string phase)
     {
-        string str_end_date = end_date.ToString("yyyy-MM-dd hh:mm");
-        genericQueryUpdater("UPDATE timeline set iscurrent = 1 AND datetime_end = " + str_end_date + " WHERE name_phase = '" + phase + "';");
-    }
-
-    public void turnOffPhase(string phase)
-    {
-        genericQueryUpdater("UPDATE timeline set iscurrent = 0 WHERE name_phase = '" + phase + "';");
+        genericQueryUpdater("UPDATE timeline SET iscurrent = 0 WHERE 1;");
+        genericQueryUpdater("UPDATE timeline SET iscurrent = 1, datetime_end = NOW() WHERE name_phase = '" + phase + "';");
     }
 
     public string currentPhase()
@@ -755,7 +750,7 @@ public class databaseLogic
     public void getPosAndWinner()
     {
         // TODO: Update this
-        genericQuerySelector("SELECT R.position, R.id_union, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM results R, union_members UM  WHERE UM.idunion_members = R.id_union;");
+        genericQuerySelector("SELECT position, id_union FROM results;");
     }
 
     public void insertWinners(string position, int id)
@@ -952,8 +947,12 @@ public class databaseLogic
      * ******************************************/
     public bool canSkipPhase()
     {
-        if(currentPhase() == "approval")
+        string cp = currentPhase();
+        if(cp == "approval")
             return canSkipAdminPhase();
+        else if(cp != "accept1")
+            return false;
+        
         openConnection();
         adapter = new MySqlDataAdapter("select * from nomination_accept where accepted is NULL;", connection);
         ds = new DataSet();

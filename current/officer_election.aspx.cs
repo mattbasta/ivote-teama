@@ -33,13 +33,14 @@ public partial class officer_election : System.Web.UI.Page
     
     protected void Page_Load(object sender, EventArgs e)
     {
-        is_admin = User.IsInRole("admin");
         
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         DatabaseEntities.User user = GetUser(session);
+        is_admin = user.IsAdmin;
         setView(user);
         
-        JulioButtonPanel.Visible = is_admin;
+        JulioButtonPanel.Visible = is_admin || user.IsNEC;
+        JulioButtonPhase.SelectedValue = phases.currentPhase;
     }
     
     public bool IsAdmin() {return is_admin;}
@@ -47,14 +48,15 @@ public partial class officer_election : System.Web.UI.Page
     private void DaysLeftInPhase()
     {
         DaysRemaining.Text = "No election is currently in progress.";
-        if(phases.currentPhase != "results" &&
-           phases.currentPhase != "")
+        if(phases.currentPhase == "nullphase")
+            return;
+        else if(phases.currentPhase != "results")
         {
             int days_remaining = phases.daysRemaining();
             if(days_remaining > 0)
-                DaysRemaining.Text = days_remaining.ToString() + " days remaining for this phase.";
+                DaysRemaining.Text = (days_remaining + 1).ToString() + " day(s) remaining for this phase.";
             else
-                DaysRemaining.Text = "This phase is " + days_remaining.ToString() + " days overdue.";
+                DaysRemaining.Text = "This phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
         }
     }
 
@@ -62,6 +64,21 @@ public partial class officer_election : System.Web.UI.Page
     protected void setView(DatabaseEntities.User user)
     {
         CancelElection.Visible = true;
+        
+        // Reset the panel visibility.
+        OfficerNominate.Visible = false;
+        OfficerNominationAccept.Visible = false;
+        OfficerSlate.Visible = false;
+        OfficerPetition.Visible = false;
+        OfficerPetitionAccept.Visible = false;
+        OfficerApproval.Visible = false;
+        OfficerVoting.Visible = false;
+        OfficerResults.Visible = false;
+        OfficerStateless.Visible = false;
+        
+        JulioButtonHider.Visible = true;
+        JulioButton.Visible = true;
+        
         switch(phases.currentPhase) {
             case "nominate":
                 OfficerNominate.Visible = true;
@@ -83,7 +100,7 @@ public partial class officer_election : System.Web.UI.Page
                 
                 if (dbLogic.checkSlateApprove())
                 {
-                    dbLogic.turnOffPhase("slate");
+                    //dbLogic.turnOffPhase("slate");
                     Response.Redirect("home.aspx");
                 }
                 
@@ -125,15 +142,19 @@ public partial class officer_election : System.Web.UI.Page
                 PhaseLiteral.Text = "Result Phase";
                 // You can't cancel an election that isn't happening.
                 CancelElection.Visible = false;
+                JulioButtonHider.Visible = false;
                 
                 bindPositions();
                 
                 break;
             default:
                 OfficerStateless.Visible = true;
+                FunctionsStateless.Visible = user.IsAdmin;
                 PhaseLiteral.Text = "Inactive";
+                
                 // You can't cancel an election that isn't happening.
                 CancelElection.Visible = false;
+                JulioButtonHider.Visible = false;
                 break;
         }
         
@@ -212,6 +233,17 @@ public partial class officer_election : System.Web.UI.Page
         Response.Redirect(e.CommandArgument.ToString());
     }
 
+    protected void JulioButton_Clicked(Object sender, EventArgs e)
+    {
+        phases.bumpPhase();
+        Response.Redirect("/officer_election.aspx");
+    }
+
+    protected void JulioButtonCustom_Clicked(Object sender, EventArgs e)
+    {
+        phases.changePhaseToCurrent(JulioButtonPhase.SelectedValue, true);
+        Response.Redirect("/officer_election.aspx");
+    }
 
     //gridview actions
     protected void GridViewPositions_RowCommand(Object sender, GridViewCommandEventArgs e)
@@ -596,7 +628,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void adminButton_OnClick(Object sender, EventArgs e)
     {
-        dbLogic.turnOffPhase("result");
+        //dbLogic.turnOffPhase("result");
         Response.Redirect("/officer_election.aspx");
     } 
 }

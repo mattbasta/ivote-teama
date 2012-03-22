@@ -27,26 +27,41 @@
         <h1>Officer Election</h1>
     </div>
     
-    <asp:Panel runat="server" ID="JulioButtonPanel">
-        <div class="well">
-            <asp:Hyperlink ID="CancelElection" Visible="true" Text="Cancel Election"
-                    NavigateUrl="/terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
-            <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
-            <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
-        </div>
+    <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well">
+        <asp:Hyperlink ID="CancelElection" Visible="true" Text="Cancel Election"
+                NavigateUrl="/terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
+        <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
+        <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
+        <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline">
+            <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
+                    CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
+            or switch to
+            <asp:DropDownList runat="server" ID="JulioButtonPhase">
+                <asp:ListItem Value="nominate">Nomination</asp:ListItem>
+                <asp:ListItem Value="accept1">Nomination Acceptance</asp:ListItem>
+                <asp:ListItem Value="slate">Slate</asp:ListItem>
+                <asp:ListItem Value="petition">Petition</asp:ListItem>
+                <asp:ListItem Value="accept2">Petition Acceptance</asp:ListItem>
+                <asp:ListItem Value="approval">Approval</asp:ListItem>
+                <asp:ListItem Value="vote">Voting</asp:ListItem>
+            </asp:DropDownList>
+            <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
+                    CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
+        </asp:Panel>
     </asp:Panel>
     
     <asp:ScriptManager runat="server" />
     
     <asp:Panel ID="OfficerStateless" Enabled="false" Visible="false" runat="server">
         <div class="alert alert-info">
-            <strong>No Active Officer Election</strong>
-            There are currently no active election phases. This could mean that there is no election running, or that there is no 
-            action required on your part at this time.
+            <p>
+                <strong>No Active Officer Election</strong>
+                There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.
+            </p>
+            <asp:Panel ID="FunctionsStateless" Visible="false" runat="server">
+                <a class="btn btn-primary" href="/controlRoom.aspx">Initiate Officer Election</a>
+            </asp:Panel>
         </div>
-        <asp:Panel id="functions_stateless" style="margin-top:10px;" visible="false" runat="server">
-            <a class="btn" href="/controlRoom.aspx">Initiate Officer Election</a>
-        </asp:Panel>
     </asp:Panel>
     
     

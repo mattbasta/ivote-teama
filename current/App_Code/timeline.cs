@@ -23,16 +23,16 @@ public class timeline
         if(dbLogic.currentPhase() == phase)
             return false;
         
-        string[] iter_phases = {"nominate", "accept1", "petition", "accept2", "vote", "slate", "approval", "result"};
+        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
         int changed_to = 0;
         for(int i = 0; i < iter_phases.Length; i++)
         {
             if(phase == iter_phases[i])
             {
-                dbLogic.turnOnPhase(iter_phases[i], DateTime.Now);
+                dbLogic.turnOnPhase(iter_phases[i]);
                 changed_to = i;
+                break;
             }
-            else dbLogic.turnOffPhase(iter_phases[i]);
         }
         
         if(dbLogic.canSkipPhase() && !force)
@@ -71,13 +71,22 @@ public class timeline
         return true;
     }
 
+    public bool bumpPhase()
+    {
+        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
+        for(int i = 0; i < iter_phases.Length - 1; i++)
+            if(currentPhase == iter_phases[i])
+                return changePhaseToCurrent(iter_phases[i + 1]);
+        return false;
+    }
+
     public int daysRemaining()
     {
-        string[] iter_phases = {"nominate", "accept1", "petition", "accept2", "vote", "slate", "approval"};
+        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote"};
         int[] phase_durations = {7, 7, 7, 7, 7, 7, 7};
         for(int i = 0; i < iter_phases.Length; i++)
             if(currentPhase == iter_phases[i])
-                return (int)DateTime.Now.Subtract(dbLogic.currentPhaseEndDateTime()).TotalDays;
+                return (int)dbLogic.currentPhaseEndDateTime().Subtract(DateTime.Now).TotalDays;
         return 0;
     }
 
