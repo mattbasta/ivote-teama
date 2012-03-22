@@ -1,45 +1,45 @@
--- Created by Team A for CSC 354, Fall 2011
--- 
--- Developed by Adam Blank, Kenneth Rohlfing, and Ralph Sharp
---
--- Host: localhost
--- Generation Time: Dec 08, 2011 at 08:28 PM
--- Server version: 5.1.52
--- PHP Version: 5.2.14
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 3408
+#
+# http://www.sequelpro.com/
+# http://code.google.com/p/sequel-pro/
+#
+# Host: winsrv.bashtech.net (MySQL 5.5.20)
+# Database: dev_ivote1
+# Generation Time: 2012-03-22 03:01:53 +0000
+# ************************************************************
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
---
--- Database: `ivote`
---
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `election`
---
-
-CREATE SCHEMA IF NOT EXISTS ivote
-
-USE ivote;
+# Dump of table election
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `election`;
-CREATE TABLE IF NOT EXISTS `election` (
+
+CREATE TABLE `election` (
   `idelection` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `latest_phase` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idelection`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `election_position`
---
+# Dump of table election_position
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `election_position`;
-CREATE TABLE IF NOT EXISTS `election_position` (
+
+CREATE TABLE `election_position` (
   `idelection_position` int(11) NOT NULL AUTO_INCREMENT,
   `idelection` int(11) NOT NULL DEFAULT '1',
   `position` varchar(45) NOT NULL,
@@ -49,17 +49,16 @@ CREATE TABLE IF NOT EXISTS `election_position` (
   `slots_plurality` int(11) DEFAULT NULL,
   `votes_allowed` int(11) DEFAULT NULL,
   PRIMARY KEY (`idelection_position`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `email_verification`
---
+# Dump of table email_verification
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `email_verification`;
-CREATE TABLE IF NOT EXISTS `email_verification` (
+
+CREATE TABLE `email_verification` (
   `idemail_verification` int(11) NOT NULL AUTO_INCREMENT,
   `iduser` int(11) NOT NULL,
   `code_verified` varchar(64) DEFAULT NULL,
@@ -67,47 +66,45 @@ CREATE TABLE IF NOT EXISTS `email_verification` (
   `datetime_sent` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idemail_verification`),
   UNIQUE KEY `code_verified_UNIQUE` (`code_verified`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=172 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `flag_nec`
---
+
+# Dump of table flag_nec
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `flag_nec`;
-CREATE TABLE IF NOT EXISTS `flag_nec` (
+
+CREATE TABLE `flag_nec` (
   `idflag_nec` int(11) NOT NULL AUTO_INCREMENT,
   `idelection` int(11) NOT NULL DEFAULT '1',
   `approve` tinyint(1) NOT NULL,
   `slate` int(11) DEFAULT NULL,
   PRIMARY KEY (`idflag_nec`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `flag_voted`
---
+# Dump of table flag_voted
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `flag_voted`;
-CREATE TABLE IF NOT EXISTS `flag_voted` (
+
+CREATE TABLE `flag_voted` (
   `idflag_voted` int(11) NOT NULL AUTO_INCREMENT,
   `idunion_members` int(11) NOT NULL,
   `code_confirm` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`idflag_voted`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `nomination_accept`
---
+# Dump of table nomination_accept
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `nomination_accept`;
-CREATE TABLE IF NOT EXISTS `nomination_accept` (
+
+CREATE TABLE `nomination_accept` (
   `idnominate_accept` int(11) NOT NULL AUTO_INCREMENT,
   `idunion_to` int(11) NOT NULL,
   `idunion_from` int(11) NOT NULL,
@@ -115,34 +112,31 @@ CREATE TABLE IF NOT EXISTS `nomination_accept` (
   `accepted` tinyint(1) DEFAULT NULL,
   `from_petition` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idnominate_accept`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `petition`
---
+# Dump of table petition
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `petition`;
-CREATE TABLE IF NOT EXISTS `petition` (
+
+CREATE TABLE `petition` (
   `idpetition` int(11) NOT NULL AUTO_INCREMENT,
   `idunion_members` int(11) NOT NULL,
   `positions` varchar(20) NOT NULL,
   `idum_signedby` int(11) NOT NULL,
   PRIMARY KEY (`idpetition`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 
--- --------------------------------------------------------
-
---
--- Table structure for table `results`
---
+# Dump of table results
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `results`;
-CREATE TABLE IF NOT EXISTS `results` (
+
+CREATE TABLE `results` (
   `position` varchar(20) NOT NULL,
   `id_union` int(11) NOT NULL,
   `percent` double DEFAULT NULL,
@@ -152,56 +146,58 @@ CREATE TABLE IF NOT EXISTS `results` (
 
 
 
--- --------------------------------------------------------
-
---
--- Table structure for table `roles`
---
+# Dump of table roles
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `roles`;
-CREATE TABLE IF NOT EXISTS `roles` (
+
+CREATE TABLE `roles` (
   `roles` varchar(20) NOT NULL,
   PRIMARY KEY (`roles`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- NEEDED data for table `roles`
---
+LOCK TABLES `roles` WRITE;
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 
-INSERT INTO `roles` (`roles`) VALUES
-('admin'),
-('faculty'),
-('nec');
+INSERT INTO `roles` (`roles`)
+VALUES
+	('admin'),
+	('faculty'),
+	('nec');
 
--- --------------------------------------------------------
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
 
---
--- Table structure for table `roles_users`
---
+
+# Dump of table roles_users
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `roles_users`;
-CREATE TABLE IF NOT EXISTS `roles_users` (
+
+CREATE TABLE `roles_users` (
   `idroles_users` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(45) NOT NULL,
   `role` varchar(22) NOT NULL,
   PRIMARY KEY (`idroles_users`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=148 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- NEEDED data for table `roles_users`
---
+LOCK TABLES `roles_users` WRITE;
+/*!40000 ALTER TABLE `roles_users` DISABLE KEYS */;
 
-INSERT INTO `roles_users` (`idroles_users`, `username`, `role`) VALUES
-(1, 'admin', 'admin');
+INSERT INTO `roles_users` (`idroles_users`, `username`, `role`)
+VALUES
+	(1,'admin','admin');
 
--- --------------------------------------------------------
+/*!40000 ALTER TABLE `roles_users` ENABLE KEYS */;
+UNLOCK TABLES;
 
---
--- Table structure for table `tally`
---
+
+# Dump of table tally
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `tally`;
-CREATE TABLE IF NOT EXISTS `tally` (
+
+CREATE TABLE `tally` (
   `id_union` int(11) NOT NULL,
   `position` varchar(20) NOT NULL,
   `count` int(11) DEFAULT NULL,
@@ -209,86 +205,44 @@ CREATE TABLE IF NOT EXISTS `tally` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `timeline`
---
+# Dump of table timeline
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `timeline`;
-CREATE TABLE IF NOT EXISTS `timeline` (
+
+CREATE TABLE `timeline` (
   `idtimeline` int(11) NOT NULL AUTO_INCREMENT,
   `idelection` int(11) NOT NULL DEFAULT '1',
   `name_phase` varchar(45) NOT NULL,
   `datetime_end` datetime NOT NULL,
   `iscurrent` tinyint(1) NOT NULL,
   PRIMARY KEY (`idtimeline`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `union_members`
---
-
-DROP TABLE IF EXISTS `union_members`;
-CREATE TABLE IF NOT EXISTS `union_members` (
-  `idunion_members` int(11) NOT NULL AUTO_INCREMENT,
-  `last_name` varchar(45) DEFAULT NULL,
-  `first_name` varchar(45) DEFAULT NULL,
-  `email` varchar(45) NOT NULL,
-  `phone` varchar(45) DEFAULT NULL,
-  `department` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`idunion_members`),
-  FULLTEXT KEY `fulltext` (`last_name`,`first_name`,`department`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=215 ;
-
---
--- NEEDED data for table `union_members`
---
-
-INSERT INTO `union_members` (`idunion_members`, `last_name`, `first_name`, `email`, `phone`, `department`) VALUES
-(1, 'Admin', 'Account', 'changetorealemail@doitstat.org', '', '');
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
--- --------------------------------------------------------
 
---
--- Table structure for table `user`
---
-
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE IF NOT EXISTS `user` (
-  `iduser` int(11) NOT NULL AUTO_INCREMENT,
-  `idunion_members` int(11) NOT NULL,
-  `username` varchar(45) DEFAULT NULL,
-  `password` varchar(64) DEFAULT NULL,
-  `password_hint` varchar(200) DEFAULT NULL,
-  `datetime_lastLogin` datetime DEFAULT NULL,
-  PRIMARY KEY (`iduser`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=67 ;
-
---
--- NEEDED data for table `user`
---
-
-INSERT INTO `user` (`iduser`, `idunion_members`, `username`, `password`, `password_hint`, `datetime_lastLogin`) VALUES
-(1, 1, 'admin', 'C6rVIVPg5o5ktrxyEGLGR9nz20+1U4OuXR4bxe/kBdE=', NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `wts`
---
+# Dump of table wts
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `wts`;
-CREATE TABLE IF NOT EXISTS `wts` (
+
+CREATE TABLE `wts` (
   `wts_id` int(11) NOT NULL AUTO_INCREMENT,
   `idunion_members` int(11) DEFAULT NULL,
   `position` varchar(20) DEFAULT NULL,
   `date_applied` datetime DEFAULT NULL,
-  `statement` varchar(1024) DEFAULT NULL,
+  `statement` text,
   `eligible` int(11) DEFAULT NULL,
   PRIMARY KEY (`wts_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
