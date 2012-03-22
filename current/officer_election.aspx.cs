@@ -38,419 +38,79 @@ public partial class officer_election : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         DatabaseEntities.User user = GetUser(session);
         setView(user);
+        
+        JulioButtonPanel.Visible = is_admin;
     }
     
     public bool IsAdmin() {return is_admin;}
+    
+    private void DaysLeftInPhase()
+    {
+        DaysRemaining.Text = "No election is currently in progress.";
+        if(phases.currentPhase != "results" &&
+           phases.currentPhase != "")
+        {
+            int days_remaining = phases.daysRemaining();
+            if(days_remaining > 0)
+                DaysRemaining.Text = days_remaining.ToString() + " days remaining for this phase.";
+            else
+                DaysRemaining.Text = "This phase is " + days_remaining.ToString() + " days overdue.";
+        }
+    }
 
     //sends user to homepage based on current phase and the users role
     protected void setView(DatabaseEntities.User user)
     {
-        //if they are faculty
-        if (User.IsInRole("faculty"))
-        {
-            //nominatation
-            if (phases.currentPhase == "nominate")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    email.phaseNomination();
-
-                //page load data
-                loadData(); //call method to load office position data
-
-                //notifications
-                checkForNomination();
-
-                //set label visible
+        CancelElection.Visible = true;
+        switch(phases.currentPhase) {
+            case "nominate":
                 OfficerNominate.Visible = true;
-            }
-            //accept1
-            else if (phases.currentPhase == "accept1")
-            {
-                //make sure the phase can't be skipped
-                if (dbLogic.canSkipPhase())
-                {
-                    dbLogic.turnOffPhase("accept1");
-                    Response.Redirect("home.aspx");
-                }
-              
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseAccept1();
-
-                //notifications
-                checkForNomination();
-
-                //set label visible
+                PhaseLiteral.Text = "Nomination Phase";
+                
+                dbLogic.selectAllAvailablePositions();
+                DataSet postionsSet = dbLogic.getResults();
+                GridViewPositions.DataSource = postionsSet;
+                GridViewPositions.DataBind();
+                
+                break;
+            case "accept1":
                 OfficerNominationAccept.Visible = true;
-            }
-            //slate
-            else if (phases.currentPhase == "slate")
-            {
- 
-                //make sure phase can't be ended, then display stateless
+                PhaseLiteral.Text = "Nomination Acceptance Phase";
+                break;
+            case "slate":
+                OfficerSlate.Visible = true;
+                PhaseLiteral.Text = "Slate Phase";
+                
                 if (dbLogic.checkSlateApprove())
                 {
                     dbLogic.turnOffPhase("slate");
                     Response.Redirect("home.aspx");
                 }
                 
+                break;
+            case "petition":
+                OfficerPetition.Visible = true;
+                PhaseLiteral.Text = "Petition Phase";
                 
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseSlate();
-                
-                //make label visible
-                OfficerStateless.Visible = true;
-            }
-            //petition
-            else if (phases.currentPhase == "petition")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phasePetition();
-                    dbLogic.phase_ClearNullNominations();
-                }
-                //load data
                 dbLogic.selectAllAvailablePositions();
                 DataSet positionSet = dbLogic.getResults();
                 DropDownListPostions.DataSource = positionSet;
                 DropDownListPostions.DataTextField = positionSet.Tables[0].Columns[2].ToString();
                 DropDownListPostions.DataBind();
-
-
-                //notifications
-                checkForNomination();
-
-                //set label
-                lblPetition.Visible = true;
-            }
-            //accept 2
-            else if (phases.currentPhase == "accept2")
-            {
-                //make sure the phase can't be skipped
-                if (dbLogic.canSkipPhase())
-                {
-                    dbLogic.turnOffPhase("accept2");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseAccept2();
                 
-                //notifications
-                checkForNomination();
-
-                //set label visible
-                lblAccept2.Visible = true;
-            }
-            else if (phases.currentPhase == "approval")
-            {
-                //make sure phase can't be ended, then display stateless
-                if (dbLogic.canSkipAdminPhase())
-                {
-                    dbLogic.turnOffPhase("approval");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseApproval();
-
-                //make label visible
-                OfficerStateless.Visible = true;
-            }
-            //voting
-            else if (phases.currentPhase == "vote")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phaseVote();
-                    dbLogic.phase_ClearNullNominations();
-                }
-                //load data
-                //voting functionality
-                dbLogic.selectAllBallotPositions();
-                DataSet emailSet = dbLogic.getResults();
-                ListViewPositions.DataSource = emailSet;
-                ListViewPositions.DataBind();
-
-                if (dbLogic.isUserNewVoter(user.ID))
-                    PanelSlateWrapper.Visible = true;
-                else
-                {
-                    PanelSlateWrapper.Visible = false;
-                    LabelFeedbackVote2.Text = "You have already voted for this election.";
-                    LabelFeedback.Text = "You have already voted for this election.";
-                }
-
-                //no notifications for this phase
-
-                //set label visible
-                lblVoting.Visible = true;
-            }
-            //results
-            else if (phases.currentPhase == "result")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    email.phaseResults();
-
-                //make phase visible
-                lblResults.Visible = true;
-                lblResults.Enabled = true;
-
-                //results functionality
-                bindPositions();
-
-            }
-            //stateless
-            else
-                //make label visible
-                OfficerStateless.Visible = true;
-        }
-        else if (User.IsInRole("admin"))
-        {
-            //nominatation
-            if (phases.currentPhase == "nominate")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    email.phaseNomination();
+                break;
+            case "accept2":
+                OfficerPetitionAccept.Visible = true;
+                PhaseLiteral.Text = "Petition Acceptance Phase";
+                break;
+            case "approval":
+                OfficerApproval.Visible = true;
+                PhaseLiteral.Text = "Approval Phase";
+                break;
+            case "vote":
+                OfficerVoting.Visible = true;
+                PhaseLiteral.Text = "General Voting Phase";
                 
-                //page load data
-                loadData(); //call method to load office position data
-
-                //notifications
-                checkForNomination();
-                checkForEligibility();
-
-                //set label visible
-                OfficerNominate.Visible = true;
-                functions_nominate.Visible = true;
-            }
-            //accept1
-            else if (phases.currentPhase == "accept1")
-            {
-                //make sure the phase can't be skipped
-                if (dbLogic.canSkipPhase())
-                {
-                    dbLogic.turnOffPhase("accept1");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseAccept1();
-
-                //notifications
-                checkForNomination();
-                checkForEligibility();
-
-                //set label visible
-                OfficerNominationAccept.Visible = true;
-                functions_accept1.Visible = true;
-            }
-            //slate
-            else if (phases.currentPhase == "slate")
-            {
-                PanelSlateWrapper2.Visible = false;
-                LabelFeedback2.Text = "";
-
-                //make sure phase can't be ended, then display stateless
-                if (dbLogic.checkSlateApprove())
-                {
-                    dbLogic.turnOffPhase("slate");
-                    Response.Redirect("home.aspx");
-                }
-                checkForEligibility();
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseSlate();
-                
-                //make label visible
-                lblSlate.Visible = true;
-                functions_slate.Visible = true;
-            } //petition
-            else if (phases.currentPhase == "petition")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phasePetition();
-                    dbLogic.phase_ClearNullNominations();
-                }
-                //load data
-                dbLogic.selectAllAvailablePositions();
-                DataSet positionSet = dbLogic.getResults();
-                DropDownListPostions.DataSource = positionSet;
-                DropDownListPostions.DataTextField = positionSet.Tables[0].Columns[2].ToString();
-                DropDownListPostions.DataBind();
-
-                //notifications
-                checkForNomination();
-                checkForEligibility();
-
-                //set label
-                lblPetition.Visible = true;
-                functions_petition.Visible = true;
-            }
-
-            else if (phases.currentPhase == "accept2")
-            {
-                //make sure the phase can't be skipped
-                bool canSkip = dbLogic.canSkipPhase();
-                if (canSkip)
-                {
-                    dbLogic.turnOffPhase("accept2");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    //email notification
-                    email.phaseAccept2();
-                }
-                
-                //notifications
-                checkForNomination();
-                checkForEligibility();
-
-                //set label visible
-                lblAccept2.Visible = true;
-                functions_accept2.Visible = true;
-            }
-            //approval
-            else if (phases.currentPhase == "approval")
-            {
-                //make sure phase can't be ended, then display stateless
-                if (dbLogic.canSkipAdminPhase())
-                {
-                    dbLogic.turnOffPhase("approval");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseApproval();
-
-                checkForEligibility();
-                //make label visible
-                lblApproval.Visible = true;
-                functions_approval.Visible = true;
-            }
-            //voting
-            else if (phases.currentPhase == "vote")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phaseVote();
-                    dbLogic.phase_ClearNullNominations();
-                }
-                //load data
-                //voting functionality
-                dbLogic.selectAllBallotPositions();
-                DataSet emailSet = dbLogic.getResults();
-                ListViewPositions.DataSource = emailSet;
-                ListViewPositions.DataBind();
-
-                if (dbLogic.isUserNewVoter(user.ID))
-                    PanelSlateWrapper.Visible = true;
-                else
-                {
-                    PanelSlateWrapper.Visible = false;
-                    LabelFeedbackVote2.Text = "You have already voted for this election.";
-                    LabelFeedback.Text = "You have already voted for this election.";
-                }
-
-
-                //no notifications for this phase
-
-                //set label visible
-                lblVoting.Visible = true;
-                functions_voting.Visible = true;
-            }
-            //results
-            else if (phases.currentPhase == "result")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    email.phaseResults();
-
-                    //make phase visible
-                lblResults.Visible = true;
-                lblResults.Enabled = true;
-
-                //results functionality
-                bindPositions();
-
-                //admin functionality
-                if (dbLogic.checkNecApprove())
-                    //if nec approved, then the admin can end the election
-                    adminButton.Visible = true;
-                else
-                    adminEnd.Visible = true;
-
-                    }
-            //stateless
-            else
-            {
-                //Response.Redirect("Views/Admin/stateless.aspx");
-                OfficerStateless.Visible = true;
-                functions_stateless.Visible = true;
-            }
-        }
-        else if (User.IsInRole("nec"))
-        {
-            //nominatation
-            if (phases.currentPhase == "nominate")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    email.phaseNomination();
-                //page load data
-                loadData(); //call method to load office position data
-
-                //notifications
-                checkForNomination();
-
-                //set label visible
-                OfficerNominate.Visible = true;
-            }
-            //accept1
-            else if (phases.currentPhase == "accept1")
-            {
-                //make sure the phase can't be skipped
-                if (dbLogic.canSkipPhase())
-                {
-                    dbLogic.turnOffPhase("accept1");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseAccept1();
-                
-                //notifications
-                checkForNomination();
-
-                //set label visible
-                OfficerNominationAccept.Visible = true;
-            }
-            //slate
-            else if (phases.currentPhase == "slate")
-            {
-                //load data
-                dbLogic.selectAllBallotPositions();
-                DataSet emailSet = dbLogic.getResults();
-                ListViewPositions2.DataSource = emailSet;
-                ListViewPositions2.DataBind();
-
                 if (dbLogic.isUserNewVoter(user.ID))
                     PanelSlateWrapper2.Visible = true;
                 else
@@ -458,104 +118,54 @@ public partial class officer_election : System.Web.UI.Page
                     PanelSlateWrapper2.Visible = false;
                     LabelFeedback2.Text = "You have already voted for this election.";
                 }
-
-                //make sure phase can't be ended, then display stateless
-                if (dbLogic.checkSlateApprove())
-                {
-                    dbLogic.turnOffPhase("slate");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseSlate();
                 
-
-                //make label visible
-                lblSlate.Visible = true;
-                btnApprove.Visible = true;
-
-            }
-            //petition
-            else if (phases.currentPhase == "petition")
-            {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phasePetition();
-                    dbLogic.phase_ClearNullNominations();
-                }
-                //load data
-                dbLogic.selectAllAvailablePositions();
-                DataSet positionSet = dbLogic.getResults();
-                DropDownListPostions.DataSource = positionSet;
-                DropDownListPostions.DataTextField = positionSet.Tables[0].Columns[2].ToString();
-                DropDownListPostions.DataBind();
-
-
-                //notifications
-                checkForNomination();
-
-                //set label
-                lblPetition.Visible = true;
-            }
-            //accept 2
-            else if (phases.currentPhase == "accept2")
-            {
-                //make sure the phase can't be skipped
-                bool canSkip = dbLogic.canSkipPhase();
-                if (canSkip)
-                {
-                    dbLogic.turnOffPhase("accept2");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                    //email notification
-                    email.phaseAccept2();
+                break;
+            case "result":
+                OfficerResults.Visible = true;
+                PhaseLiteral.Text = "Result Phase";
+                // You can't cancel an election that isn't happening.
+                CancelElection.Visible = false;
                 
-                //notifications
-                checkForNomination();
-
-                //set label visible
-                lblAccept2.Visible = true;
-            }
-            //approval
-            else if (phases.currentPhase == "approval")
-            {
-                //make sure phase can't be ended, then display stateless
-                bool canSkip1 = dbLogic.canSkipAdminPhase();
-                if (canSkip1)
-                {
-                    dbLogic.turnOffPhase("approval");
-                    Response.Redirect("home.aspx");
-                }
-
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    //email notification
-                    email.phaseApproval();
-
-                }
-
-                //make label visible
+                bindPositions();
+                
+                break;
+            default:
                 OfficerStateless.Visible = true;
-            }
-            //voting
-            else if (phases.currentPhase == "vote")
+                PhaseLiteral.Text = "Inactive";
+                // You can't cancel an election that isn't happening.
+                CancelElection.Visible = false;
+                break;
+        }
+        
+        DaysLeftInPhase();
+        
+        checkForNomination();
+        if(is_admin)
+            checkForEligibility();
+        
+        if (is_admin)
+        {
+            //nominatation
+            if (phases.currentPhase == "slate")
             {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phaseVote();
-                    dbLogic.phase_ClearNullNominations();
-                }
-                //load data
-                //voting functionality
-                dbLogic.selectAllBallotPositions();
-                DataSet emailSet = dbLogic.getResults();
-                ListViewPositions.DataSource = emailSet;
-                ListViewPositions.DataBind();
+                PanelSlateWrapper2.Visible = false;
+                LabelFeedback2.Text = "";
+            }
+            //results
+            else if (phases.currentPhase == "result")
+            {
+                //admin functionality
+                if (dbLogic.checkNecApprove())
+                    //if nec approved, then the admin can end the election
+                    adminButton.Visible = true;
+                else
+                    adminEnd.Visible = true;
+            }
+        }
+        else if (User.IsInRole("nec"))
+        {
+            if (phases.currentPhase == "vote")
+            {
 
                 if (dbLogic.isUserNewVoter(user.ID))
                 {
@@ -582,41 +192,16 @@ public partial class officer_election : System.Web.UI.Page
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
                     LabelFeedback.Text = "You have already voted for this election.";
                 }
-
-
-                //no notifications for this phase
-
-                //set label visible
-                lblVoting.Visible = true;
             }
-
             //results
             else if (phases.currentPhase == "result")
             {
-                //if this is the first time the phase has occured, then a set group of site functions occur
-                if (phases.firstTimeOccurence(phases.currentPhase))
-                {
-                    email.phaseResults();
-                }
-                //make phase visible
-                lblResults.Visible = true;
-
-                //results functionality
-                bindPositions();
-
                 //this is for NEC role
                 if (!dbLogic.checkNecApprove())
                 {
                     necApprove.Visible = true;
                     necButton.Visible = true;
                 }
-            }
-            //stateless
-            else
-            {
-                //Response.Redirect("Views/NEC/stateless.aspx");
-                //make label visible
-                OfficerStateless.Visible = true;
             }
         }
     }
@@ -627,19 +212,6 @@ public partial class officer_election : System.Web.UI.Page
         Response.Redirect(e.CommandArgument.ToString());
     }
 
-
-    /************************************************
-     * NOMINATION
-     * FUNCTIONALITY
-     * *********************************************/
-    //load office position data
-    protected void loadData()
-    {
-        dbLogic.selectAllAvailablePositions();
-        DataSet postionsSet = dbLogic.getResults();
-        GridViewPositions.DataSource = postionsSet;
-        GridViewPositions.DataBind();
-    }
 
     //gridview actions
     protected void GridViewPositions_RowCommand(Object sender, GridViewCommandEventArgs e)
@@ -736,10 +308,8 @@ public partial class officer_election : System.Web.UI.Page
     protected void btnApprove_OnClick(object sender, EventArgs e)
     {
         dbLogic.approveSlate();
-        Response.Redirect("home.aspx");
+        Response.Redirect("/officer_election.aspx");
     }
-
-
 
     /********************************************
      * PETITION
@@ -992,8 +562,7 @@ public partial class officer_election : System.Web.UI.Page
     {
         
         DataSet ds = new DataSet();
-        String query = "SELECT * FROM election_position;";
-        dbLogic.genericQuerySelector(query);
+        dbLogic.genericQuerySelector("SELECT * FROM election_position;");
         ds = dbLogic.getResults();
         for(int i = 0; i < ds.Tables[0].Rows.Count; i++)
             positions.Add(ds.Tables[0].Rows[i].ItemArray[2]);
@@ -1007,8 +576,7 @@ public partial class officer_election : System.Web.UI.Page
         resultList.DataBind();
 
         //if user is not admin, cannot see "view result detail" row
-        if (!User.IsInRole("admin") || !User.IsInRole("nec"))
-            resultList.Columns[2].Visible = false;
+        resultList.Columns[2].Visible = !User.IsInRole("admin") && !User.IsInRole("nec");
     }
 
     //sends user to 
@@ -1029,6 +597,6 @@ public partial class officer_election : System.Web.UI.Page
     protected void adminButton_OnClick(Object sender, EventArgs e)
     {
         dbLogic.turnOffPhase("result");
-        Response.Redirect("home.aspx");
+        Response.Redirect("/officer_election.aspx");
     } 
 }

@@ -27,9 +27,14 @@
         <h1>Officer Election</h1>
     </div>
     
-    <div class="well">
-        <strong>Current Phase:</strong> 
-    </div>
+    <asp:Panel runat="server" ID="JulioButtonPanel">
+        <div class="well">
+            <asp:Hyperlink ID="CancelElection" Visible="true" Text="Cancel Election"
+                    NavigateUrl="/terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
+            <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
+            <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
+        </div>
+    </asp:Panel>
     
     <asp:ScriptManager runat="server" />
     
@@ -95,7 +100,7 @@
     </asp:Panel>
     
     <!--Slate Approval -->
-    <asp:Panel ID="lblSlate" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerSlate" Enabled="false" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Slate Approval</h1>
             NEC Members:  Please review and approve the slate below.  If there is a strong reason not to approve the slate, 
@@ -178,7 +183,7 @@
     <!--End Slate Approval-->
 
     <!--Petition-->
-    <asp:Panel ID="lblPetition" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerPetition" Enabled="false" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Petition Period</h1>
             The current election is in the petition phase.  You can petition yourself or other faculty 
@@ -271,7 +276,7 @@
     <!--End Petition-->
 
     <!--Acceptance 2 phase-->
-    <asp:Panel ID="lblAccept2" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerPetitionAccept" Enabled="false" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Petition Acceptance Period</h1>
             The current election is in a petition acceptance period.  This period acts as a buffer to give extra time to accept petition-based nominations.
@@ -292,7 +297,7 @@
 
     <!--Approval-->
         <!--Only admin will see this phase-->
-    <asp:Label ID="lblApproval" runat="server" Enabled="false" Visible="false">
+    <asp:Label ID="OfficerApproval" runat="server" Enabled="false" Visible="false">
         <div id="bodyCopy">
             <h1>Eligibility Approval Period</h1>
             This is a special phase that will end as soon as all eligibility forms have been approved or disapproved.
@@ -312,7 +317,7 @@
     <!--End Approval-->
 
     <!--Voting-->
-    <asp:Panel ID="lblVoting" Enabled="false" visible="false" runat="server">
+    <asp:Panel ID="OfficerVoting" Enabled="false" visible="false" runat="server">
 
         <div id="bodyCopy">
             <h1>Voting Period</h1>
@@ -396,7 +401,7 @@
     <!--End Voting-->
 
     <!--Results-->
-    <asp:Panel ID="lblResults" Visible="false" Enabled="false" style="text-align: center;" runat="server">
+    <asp:Panel ID="OfficerResults" Visible="false" Enabled="false" style="text-align: center;" runat="server">
             <h1>Results of the Election</h1><br />
             
             <asp:GridView ID="resultList" CssClass="simpleGrid" OnRowCommand="resultList_RowCommand" style="margin-left: auto; margin-right: auto;" AutoGenerateColumns="false" runat="server">

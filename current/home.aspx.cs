@@ -37,7 +37,6 @@ public partial class home : System.Web.UI.Page
         setView();
         
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        ITransaction transaction = session.BeginTransaction();
         
         IList<DatabaseEntities.CommitteeElection> committee_elections;
         if(!is_admin)
@@ -67,8 +66,6 @@ public partial class home : System.Web.UI.Page
                 WaitingCommittees.Text = waiting_committees.ToString();
             }
         }
-        
-        DatabaseEntities.NHibernateHelper.Finished(transaction);
     }
     
     public bool IsAdmin() {return is_admin;}

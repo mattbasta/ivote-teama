@@ -520,17 +520,18 @@ public class databaseLogic
 
     public void updateVotePhase()
     {
-        genericQueryInserter("UPDATE timeline SET datetime_end =  DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
+        genericQueryInserter("UPDATE timeline SET datetime_end = DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
     }
 
-    public void turnOnPhase(string phase)
+    public void turnOnPhase(string phase, DateTime end_date)
     {
-        genericQueryUpdater("UPDATE timeline set iscurrent= 1 WHERE name_phase = '" + phase + "';");
+        string str_end_date = end_date.ToString("yyyy-MM-dd hh:mm");
+        genericQueryUpdater("UPDATE timeline set iscurrent = 1 AND datetime_end = " + str_end_date + " WHERE name_phase = '" + phase + "';");
     }
 
     public void turnOffPhase(string phase)
     {
-        genericQueryUpdater("UPDATE timeline set iscurrent= 0 WHERE name_phase = '" + phase + "';");
+        genericQueryUpdater("UPDATE timeline set iscurrent = 0 WHERE name_phase = '" + phase + "';");
     }
 
     public string currentPhase()
@@ -548,7 +549,23 @@ public class databaseLogic
         {
             closeConnection();
         }
-        
+    }
+
+    public DateTime currentPhaseEndDateTime()
+    {
+        try
+        {
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT datetime_end FROM timeline WHERE iscurrent = 1;", connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            return DateTime.Parse(ds.Tables[0].Rows[0].ItemArray[0].ToString());
+        }
+        catch { return DateTime.Now; }
+        finally
+        {
+            closeConnection();
+        }
     }
 
     //^^^^^^^^^^nomination_accept^^^^^^^^^^
@@ -935,6 +952,8 @@ public class databaseLogic
      * ******************************************/
     public bool canSkipPhase()
     {
+        if(currentPhase() == "approval")
+            return canSkipAdminPhase();
         openConnection();
         adapter = new MySqlDataAdapter("select * from nomination_accept where accepted is NULL;", connection);
         ds = new DataSet();
