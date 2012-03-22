@@ -451,14 +451,14 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^flag_voted methods^^^^^^^^^^
-    public void insertFlagVoted(string id, string code)
+    public void insertFlagVoted(int id, string code)
     {
-        genericQueryInserter("INSERT INTO flag_voted (idunion_members, code_confirm) VALUES (" + id + ", '" + code + "')");
+        genericQueryInserter("INSERT INTO flag_voted (idunion_members, code_confirm) VALUES (" + id.ToString() + ", '" + code + "')");
     }
 
-    public bool isUserNewVoter(string id)
+    public bool isUserNewVoter(int id)
     {
-        return genericQueryCounter("SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id + ";") == 0;
+        return genericQueryCounter("SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id.ToString() + ";") == 0;
     }
 
     //^^^^^^^^^^wts methods^^^^^^^^^^
@@ -490,12 +490,12 @@ public class databaseLogic
     }
 
 
-    public bool isUserWTS(string id, string position)
+    public bool isUserWTS(int id, string position)
     {
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + id + " AND position='" + position + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + id.ToString() + " AND position='" + position + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -565,12 +565,12 @@ public class databaseLogic
     }
 
     //******NOTE***** The user will have multiple positions that this can be true for, might want to modify ******NOTE******
-    public bool isUserNominatedPending(string id)
+    public bool isUserNominatedPending(int id)
     {
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND accepted IS NULL;", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND accepted IS NULL;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -584,12 +584,12 @@ public class databaseLogic
 
     }
 
-    public bool isUserNominatedFromPetitionPending(string id)
+    public bool isUserNominatedFromPetitionPending(int id)
     {
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND from_petition = 1 AND accepted IS NULL;", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND from_petition = 1 AND accepted IS NULL;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -604,12 +604,12 @@ public class databaseLogic
     }
 
     //checks if the user already has an entry for the position
-    public bool isUserNominated(string id, string position)
+    public bool isUserNominated(int id, string position)
     {
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND position='" + position + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND position='" + position + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             closeConnection();
