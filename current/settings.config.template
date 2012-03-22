@@ -20,5 +20,6 @@
     <add key="smtpPort" value=""/>
     <add key="smtpUser" value=""/>
     <add key="smtpPassword" value=""/>
+    <add key="smtpEnableSSL" value=""/>
 
 </appSettings>

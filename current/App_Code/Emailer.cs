@@ -39,7 +39,7 @@ public class emailer
         userName = System.Configuration.ConfigurationManager.AppSettings["smtpUser"];
         userPass = System.Configuration.ConfigurationManager.AppSettings["smtpPassword"];
         portNumber = int.Parse(System.Configuration.ConfigurationManager.AppSettings["smtpPort"]);
-        enableSSL = false;
+        enableSSL = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["smtpEnableSSL"]);
         myCredentials = new System.Net.NetworkCredential(userName, userPass);
     }
 
@@ -53,13 +53,10 @@ public class emailer
 
             SmtpClient smtp = new SmtpClient();
             smtp.Host = host;
-            smtp.EnableSsl = false;
+            smtp.EnableSsl = enableSSL;
             smtp.UseDefaultCredentials = true;
-            //System.Net.NetworkCredential myCredentials = new System.Net.NetworkCredential();
-            // myCredentials.UserName = userName;
-            //myCredentials.Password = userPass;
-            //smtp.Credentials = myCredentials;
-            smtp.Port = 25;
+            smtp.Credentials = myCredentials;
+            smtp.Port = portNumber;
             smtp.Send(mail);
             return "Email Sent Successfully";
         }
