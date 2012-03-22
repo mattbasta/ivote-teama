@@ -89,6 +89,11 @@ namespace DatabaseEntities
         /// </summary>
         public virtual bool IsAdmin { get; set; }
         /// <summary>
+        /// True if the user is an faculty level user.
+        /// False otherwise.
+        /// </summary>
+        public virtual bool IsFaculty { get; set; }
+        /// <summary>
         /// True if the user is an NEC level user.
         /// False otherwise.
         /// </summary>
@@ -103,6 +108,7 @@ namespace DatabaseEntities
         ///  False otherwise.
         /// </summary>
         public virtual bool IsUnion { get; set; }
+
         /// <summary>
         ///  True if the user is a member of a bargaining-unit committee.
         ///  False otherwise.
@@ -140,6 +146,7 @@ namespace DatabaseEntities
         /// <param name="passwordHint">The user's password hint</param>
         /// <param name="isAdmin">Whether ot not the user is an admin</param>
         /// <param name="isNEC">Whether or not the user is an NEC member</param>
+        /// <param name="isFaculty">Whether or not the user is an faculty member</param>
         /// <param name="isTenured">Whether or not the user is tenured</param>
         /// <param name="isUnion">Whether or not the user is in APSCUF</param>
         /// <param name="isBargainingUnit">Whether or not the user is in a bargainingunit committee</param>
@@ -149,7 +156,7 @@ namespace DatabaseEntities
         /// <param name="currentCommittee">The committee this user serves on</param>
         /// <returns>Returns a user object with the specified officer position</returns>
         public static User CreateUser(string email, string first, string last, string password,
-            string passwordHint, bool isAdmin, bool isNEC, bool isTenured, bool isUnion,
+            string passwordHint, bool isAdmin, bool isNEC, bool isFaculty,bool isTenured, bool isUnion,
             bool isBargainingUnit, DepartmentType department,
             OfficerPositionType officerPosition, bool canVote, int currentCommittee)
         {
@@ -161,6 +168,7 @@ namespace DatabaseEntities
             ret.PasswordHint = passwordHint;
             ret.IsAdmin = isAdmin;
             ret.IsNEC = isNEC;
+            ret.IsFaculty = isFaculty;
             ret.IsTenured = isTenured;
             ret.IsUnion = isUnion;
             ret.IsBargainingUnit = isBargainingUnit;

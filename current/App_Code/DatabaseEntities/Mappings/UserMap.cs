@@ -45,6 +45,8 @@ namespace DatabaseEntities
                 .Not.Nullable();
             Map(x => x.IsNEC)
                 .Not.Nullable();
+            Map(x => x.IsFaculty)
+                .Not.Nullable();
             Map(x => x.IsTenured)
                 .Not.Nullable();
             Map(x => x.IsUnion)

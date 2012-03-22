@@ -31,7 +31,8 @@ namespace DatabaseEntities
             Map(x => x.Election)
                 .Not.Nullable();
             Map(x => x.Statement)
-                .Not.Nullable();
+                .Not.Nullable()
+                .CustomSqlType("text");
         }
     }
 }
