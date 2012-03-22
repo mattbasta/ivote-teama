@@ -66,6 +66,14 @@
             </div>
         </div>
         <div class="control-group">
+            <asp:Label CssClass="control-label" ID="CurrComm" runat="server" AssociatedControlID="CurrentCommittee">Current Committee:</asp:Label>
+            <div class="controls">
+                <asp:DropDownList ID="CurrentCommittee" runat="server">
+                    <asp:ListItem Value="-1">None</asp:ListItem>
+                </asp:DropDownList>
+            </div>
+        </div>
+        <div class="control-group">
             <label class="control-label">User Roles</label>
             <div class="controls">
                 <label class="checkbox"><asp:CheckBox ID="IsAdmin" runat="server" /> Administrator</label>
@@ -88,9 +96,6 @@
             <a href="/users.aspx" class="btn">Back</a>
         </div>
     </fieldset>
-    
-    
-    
     
 </asp:Content>
 

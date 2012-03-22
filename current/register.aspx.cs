@@ -18,9 +18,15 @@ public partial class Account_Register : System.Web.UI.Page
     VerifyEmail sendEmail = new VerifyEmail();
     protected void Page_Load(object sender, EventArgs e)
     {
-        //Populate dropdown menu from DepartmentType enum.
-        foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
-            DeptDropDown.Items.Add(dept.ToString());
+        if(!Page.IsPostBack) {
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            //Populate dropdown menu from DepartmentType enum.
+            foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
+                DeptDropDown.Items.Add(dept.ToString());
+                
+            foreach(DatabaseEntities.Committee c in session.CreateCriteria(typeof(DatabaseEntities.Committee)).List())
+                CurrentCommittee.Items.Add(new ListItem(c.Name, c.ID.ToString()));
+        }
    }
 
     protected void submit(object sender, EventArgs e)
@@ -76,10 +82,10 @@ public partial class Account_Register : System.Web.UI.Page
         user.Email = email;
         user.Password = DatabaseEntities.User.Hash("");
         user.PasswordHint = "";
-        user.CurrentCommittee = -1;
 
         user.LastLogin = DateTime.Now;
 
+        user.CurrentCommittee = Convert.ToInt32(CurrentCommittee.SelectedValue);
         user.Department = (DepartmentType)Enum.Parse(typeof(DepartmentType), department);
 
         return user;

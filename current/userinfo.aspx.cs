@@ -33,6 +33,15 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         
+        if(!Page.IsPostBack) {
+            //Populate dropdown menu from DepartmentType enum.
+            foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
+                DeptDropDown.Items.Add(dept.ToString());
+                
+            foreach(DatabaseEntities.Committee c in session.CreateCriteria(typeof(DatabaseEntities.Committee)).List())
+                CurrentCommittee.Items.Add(new ListItem(c.Name, c.ID.ToString()));
+        }
+        
         DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, id);
         if(user == null)
             throw new HttpException(404, "User '" + id.ToString() + "' not found.");
@@ -50,11 +59,6 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
             
             CanVote.Enabled = false;
         }
-        
-        //Populate dropdown menu from DepartmentType enum.
-        foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
-            DeptDropDown.Items.Add(dept.ToString());
-
     }
     
     protected void SetupUser(DatabaseEntities.User user) 
@@ -66,6 +70,7 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         FirstName.Text = user.FirstName;
         LastName.Text = user.LastName;
         DeptDropDown.SelectedItem.Text = user.Department.ToString();
+        CurrentCommittee.SelectedValue = user.CurrentCommittee.ToString();
         LabelFullname.Text = "Edit " + user.FirstName + " " + user.LastName;
         
         IsAdmin.Checked = user.IsAdmin;
@@ -79,13 +84,6 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         
     }
 
-    //returns user to orginal page
-    protected void returnToUsersPage(object sender, EventArgs e)
-    {
-        Response.Redirect("users.aspx");
-    }
-
-
     //ADD CHECK AGAINST EMAIL IN THE DATABASE
     protected void ButtonSave_Clicked(object sender, EventArgs e)
     {
@@ -97,6 +95,7 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         user.FirstName = FirstName.Text;
         user.LastName = LastName.Text;
         user.Email = Email.Text;
+        user.CurrentCommittee = Convert.ToInt32(CurrentCommittee.SelectedValue);
         user.Department = (DatabaseEntities.DepartmentType)Enum.Parse(typeof(DatabaseEntities.DepartmentType), DeptDropDown.SelectedValue);
         
         user.IsAdmin = IsAdmin.Checked;
