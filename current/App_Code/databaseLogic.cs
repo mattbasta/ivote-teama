@@ -18,6 +18,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using System.Configuration;
 using System.Text.RegularExpressions;
+
 using DatabaseEntities;
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -90,12 +91,10 @@ public class databaseLogic
             adapter = new MySqlDataAdapter(commandString, connection);
             ds = new DataSet();
             adapter.Fill(ds, "query");
-            closeConnection();
         }
         catch
-        {
-            closeConnection();
-        }
+        {}
+        closeConnection();
     }
 
     //generic counter method
@@ -194,12 +193,14 @@ public class databaseLogic
 
 
     //update a password
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void updatePassword(string id, string password)
     {
         string query = "UPDATE user SET password='" + password + "' WHERE idunion_members=" + id + ";";
         genericQueryUpdater(query);
     }
 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void updatePassword2(string id, string password)
     {
         string query = "UPDATE user SET password='" + password + "' WHERE username='" + id + "';";
@@ -209,6 +210,7 @@ public class databaseLogic
 
     //insert a new user
     //    First value is 0 for auto-increment
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void insertUser(int ID, string user)
     {
         string query = "INSERT INTO user (idunion_members, username) VALUES (" + ID + ", '" + user + "');";
@@ -216,56 +218,15 @@ public class databaseLogic
     }
     //insert a union member
     //    First value is 0 for auto-increment
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void insertUnion(string[] union)
     {
         string query = "INSERT INTO union_members (last_name, first_name, email, department) VALUES ('" + union[0] + "', '" + union[1] + "', '" + union[2] + "', '" + union[3] + "');";
         genericQueryInserter(query);
     }
 
-    //returns the users unionID based on the username
-    public string returnUnionIDFromUsername(string username)
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT idunion_members FROM union_members WHERE email = '" + username + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "id");
-            string id = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return id;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return "";
-    }
-
-    //returns the users username based on their union_members id
-    public string returnUsernameFromUnionID(string unionID)
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT username FROM user WHERE idunion_members = '" + unionID + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "username");
-            string username = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return username;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return "";
-    }
-
-
     //(CODE FIX 10:48am, 10/4, Included idunion_members after ORDER BY to return correct value)
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public int returnLastUnionAdded()
     {
         openConnection();
@@ -286,6 +247,7 @@ public class databaseLogic
         return -1;
     }
 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public int returnLastUserAdded()
     {
         openConnection();
@@ -306,6 +268,7 @@ public class databaseLogic
         return -1;
     }
 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public DataSet returnAllUsers()
     {
         openConnection();
@@ -325,6 +288,7 @@ public class databaseLogic
         return null;
     }
 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string selectFullName(string id)
     {
         openConnection();
@@ -346,6 +310,7 @@ public class databaseLogic
     }
 
     //delete a user
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void deleteUser(string iduser)
     {
         string query = "DELETE FROM user WHERE iduser = '" + iduser + "';";
@@ -353,6 +318,7 @@ public class databaseLogic
     }
 
     //completely deletes a user from database
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void deleteAccountCompletely(string idunion)
     {
         string query = "DELETE FROM user WHERE idunion_members = '" + idunion + "';";
@@ -362,6 +328,7 @@ public class databaseLogic
         genericQueryDeleter(query);
     }
 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void updateUser(string ID, string[] UserInfo)
     {
         string query = "update union_members set last_name='" + UserInfo[0] + "', first_name='" + UserInfo[1] + "', email='" + UserInfo[2] + "', phone='" + UserInfo[3] + "', department='" + UserInfo[4] + "' WHERE idunion_members = " + ID + ";";
@@ -372,13 +339,16 @@ public class databaseLogic
     //^^^^^^^^^^union_memebers methods^^^^^^^^^^
 
     //select all user info from union_members
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void selectAllUserInfo()
     {
+        
         string query = "SELECT * FROM union_members ORDER BY last_name ASC;";
         genericQuerySelector(query);
     }
 
-    //select a user in the user table based on the union_members key 
+    //select a user in the user table based on the union_members key
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public void selectUserInfoFromUnionId(String id)
     {
         string query = "SELECT * FROM union_members WHERE idunion_members = '" + id + "';";
@@ -387,6 +357,7 @@ public class databaseLogic
 
 
     //select a users email in the union_members table based on the unionID 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string selectEmailFromID(int id)
     {
         openConnection();
@@ -407,6 +378,7 @@ public class databaseLogic
         return "";
     }
 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string[] getEmails()
     {
         openConnection();
@@ -428,6 +400,7 @@ public class databaseLogic
     }
 
     //retrieve only the ADMIN role emails
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string[] getAdminEmails()
     {
         openConnection();
@@ -449,6 +422,7 @@ public class databaseLogic
     }
 
     //retrieve only the NEC role emails
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string[] getNECEmails()
     {
         openConnection();
@@ -471,6 +445,7 @@ public class databaseLogic
 
 
     //retrieve only the emails for a NULL accept/reject
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string[] getNullEmails()
     {
         openConnection();
@@ -493,6 +468,7 @@ public class databaseLogic
 
 
     //select a users unionID in the user table based on the username 
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public int selectIDFromEmail(String email)
     {
         openConnection();
@@ -513,13 +489,7 @@ public class databaseLogic
         return -1;
     }
 
-    public void SelectPeopleFromSearch(string criteria)
-    {
-        string query = "SELECT * FROM union_members WHERE MATCH (first_name, last_name, department) AGAINST ('" + criteria + "');";
-        genericQuerySelector(query);
-    }
-
-
+    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public DataSet getFirstAndLast(String query)
     {
         openConnection();
@@ -540,30 +510,6 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
-
-    ////select all email addresses from union_members
-    //public void selectAllEmail()
-    //{
-    //    string query = "SELECT email FROM union_members;";
-    //    genericQuerySelector(query);
-    //}
-
-    ////deletes all email addresses from union_members
-    //public void deleteAllEmail()
-    //{
-    //    string query = "DELETE FROM union_members WHERE email LIKE '%@live.kutztown.edu'";
-    //    genericQueryDeleter(query);
-    //}
-
-    ////insert an email address based on primary key
-    //public void insertEmailByKey(int ID, String newEmail)
-    //{
-    //    string query = "INSERT INTO union_members.email WHERE ID = idunion_members";
-
-    //   // INSERT INTO union_members
-    //   // VALUES ('newEmail')
-    //   // WHERE idunion_members = ID;
-    //}
 
     //update based on primary key
 
@@ -609,33 +555,6 @@ public class databaseLogic
         }
         return "";
     }
-
-/*    //checks if email exists in the database already (when adding a new user)
-    //returns true if email is found in db
-    public bool checkIfEmailExists(string newEmail)
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT idunion_members FROM union_members WHERE email='" + newEmail + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email_verification");
-            string email = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            if (email != "")
-                return true;
-            else
-                return false;
-        }
-        catch
-        {
-            closeConnection();
-            return false;
-        }
-
-    }
-*/
 
     //^^^^^^^^^^petition methods^^^^^^^^^^
 
@@ -753,6 +672,7 @@ public class databaseLogic
 
     public void selectTallyInfoForPosition(string position)
     {
+        // TODO: Update this to the new DB stuff.
         string query = "SELECT T.*, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM tally T, union_members UM WHERE T.position = '" + position + "' AND UM.idunion_members = T.id_union;;";
         genericQuerySelector(query);
     }
@@ -767,11 +687,7 @@ public class databaseLogic
     public bool isUserNewVoter(string id)
     {
         string query = "SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id + ";";
-
-        if (genericQueryCounter(query) == 0)
-            return true;
-        else
-            return false;
+        return genericQueryCounter(query) == 0;
     }
 
     //^^^^^^^^^^wts methods^^^^^^^^^^
@@ -779,6 +695,7 @@ public class databaseLogic
     //selects all info for nomination approval, including the users first and last name returned as a data row "full name"
     public void selectInfoForApprovalTable()
     {
+        // TODO: Update this
         string query = "SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members;";
         genericQuerySelector(query);
     }
@@ -800,6 +717,7 @@ public class databaseLogic
 
     public void selectDetailFromWTS(string id)
     {
+        // TODO: Update this
         string query = "SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members AND WTS.idunion_members = " + id + ";";
         genericQuerySelector(query);
     }
@@ -893,10 +811,10 @@ public class databaseLogic
             ds = new DataSet();
             adapter.Fill(ds, "blah");
             string phase = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
             return phase;
         }
-        catch
+        catch {}
+        finally
         {
             closeConnection();
         }
@@ -1067,6 +985,7 @@ public class databaseLogic
     //get all the info to populate the ballot
     public void selectAllForBallot(string position)
     {
+        // TODO: Update this
         string query = "SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
                        "FROM wts WTS, union_members UM " +
                        "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');";
@@ -1076,6 +995,7 @@ public class databaseLogic
     //counts how many people are nominated for a position
     public int countHowManyCandidatesForPosition(string position)
     {
+        // TODO: Update this
         string query = "SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
                        "FROM wts WTS, union_members UM " +
                        "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');";
@@ -1084,6 +1004,7 @@ public class databaseLogic
 
     public bool IsThereCandidatesForPoisition(string position)
     {
+        // TODO: Update this
         string query = "SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
                        "FROM wts WTS, union_members UM " +
                        "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');";
@@ -1123,6 +1044,7 @@ public class databaseLogic
     //gets position and winner from results table
     public void getPosAndWinner()
     {
+        // TODO: Update this
         string query = "SELECT R.position, R.id_union, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM results R, union_members UM  WHERE UM.idunion_members = R.id_union;";
         genericQuerySelector(query);
     }

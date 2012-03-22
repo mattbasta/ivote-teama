@@ -46,7 +46,7 @@ $(document).ready(function() {
     </asp:UpdatePanel>
 
     <div class="accountInfo">
-        <fieldset class="form form-horizontal" runat="server">
+        <fieldset class="form form-horizontal">
             <legend>Account Information</legend>
             <div class="control-group">
                 <asp:Label CssClass="control-label" ID="EmailLabel" runat="server" AssociatedControlID="Email">E-mail:</asp:Label>
@@ -82,7 +82,7 @@ $(document).ready(function() {
             <div class="control-group">
                 <asp:Label CssClass="control-label" ID="Dept" runat="server" AssociatedControlID="DeptDropDown">Department:</asp:Label>
                 <div class="controls">
-                    <asp:DropDownList ID="DeptDropDown" runat="server" >
+                    <asp:DropDownList ID="DeptDropDown" runat="server" CssClass="input-small">
                         <asp:ListItem>Select...</asp:ListItem>
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator ID="DeptRequired" runat="server" ControlToValidate="DeptDropDown"
@@ -92,13 +92,28 @@ $(document).ready(function() {
                 </div>
             </div>
             <div class="control-group">
+                <asp:Label CssClass="control-label" ID="CurrComm" runat="server" AssociatedControlID="CurrentCommittee">Current Committee:</asp:Label>
+                <div class="controls">
+                    <asp:DropDownList ID="CurrentCommittee" runat="server">
+                        <asp:ListItem Value="-1">None</asp:ListItem>
+                    </asp:DropDownList>
+                </div>
+            </div>
+            <div class="control-group">
                 <label class="control-label">User Roles</label>
                 <div class="controls">
-                    <asp:RadioButtonList ID="RadioButtonListRoles" runat="server">
-                        <asp:ListItem Value="faculty" Selected="True" Text="This is a FACULTY account" />
-                        <asp:ListItem Value="pres" Text="This is an NEC account" />
-                        <asp:ListItem Value="admin" Text="This is a PEER ADMIN account" />
-                    </asp:RadioButtonList>
+                    <label class="checkbox"><asp:CheckBox ID="IsAdmin" runat="server" /> Administrator</label>
+                    <label class="checkbox"><asp:CheckBox ID="IsNEC" runat="server" /> NEC</label>
+                    <!-- <label class="checkbox"><asp:CheckBox ID="IsFaculty" runat="server" /> Faculty</label> TODO: BUG 31 -->
+                    <label class="checkbox"><asp:CheckBox ID="IsTenured" runat="server" /> Tenured Faculty</label>
+                    <label class="checkbox"><asp:CheckBox ID="IsUnion" runat="server" /> Union Member</label>
+                    <label class="checkbox"><asp:CheckBox ID="IsBU" runat="server" /> Bargaining Unit</label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">User Permissions</label>
+                <div class="controls">
+                    <label class="checkbox"><asp:CheckBox ID="CanVote" runat="server" /> Allowed to Vote</label>
                 </div>
             </div>
             <div class="form-actions">
