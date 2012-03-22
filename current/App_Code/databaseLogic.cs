@@ -91,12 +91,10 @@ public class databaseLogic
             adapter = new MySqlDataAdapter(commandString, connection);
             ds = new DataSet();
             adapter.Fill(ds, "query");
-            closeConnection();
         }
         catch
-        {
-            closeConnection();
-        }
+        {}
+        closeConnection();
     }
 
     //generic counter method
@@ -689,11 +687,7 @@ public class databaseLogic
     public bool isUserNewVoter(string id)
     {
         string query = "SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id + ";";
-
-        if (genericQueryCounter(query) == 0)
-            return true;
-        else
-            return false;
+        return genericQueryCounter(query) == 0;
     }
 
     //^^^^^^^^^^wts methods^^^^^^^^^^
@@ -817,10 +811,10 @@ public class databaseLogic
             ds = new DataSet();
             adapter.Fill(ds, "blah");
             string phase = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
             return phase;
         }
-        catch
+        catch {}
+        finally
         {
             closeConnection();
         }
