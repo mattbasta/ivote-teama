@@ -173,9 +173,25 @@ public class iVoteLoginProvider : MembershipProvider
     public override bool ValidateUser(string email, string password)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        
         DatabaseEntities.User testUser = DatabaseEntities.User.Authenticate(session, email, password);
 
-        return (testUser != null);
+        if (testUser != null)
+        {
+            //Update LastLogin to current date.
+            ITransaction transaction = session.BeginTransaction();
+            testUser.LastLogin = DateTime.Now;
+
+            session.SaveOrUpdate(testUser);
+            DatabaseEntities.NHibernateHelper.Finished(transaction);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 
 
