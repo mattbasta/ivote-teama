@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+
 using DatabaseEntities;
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -14,18 +15,19 @@ using NHibernate;
 
 public partial class Account_Register : System.Web.UI.Page
 {
-    databaseLogic dbLogic = new databaseLogic();
     VerifyEmail sendEmail = new VerifyEmail();
-    iVoteRoleProvider roleProvider = new iVoteRoleProvider();
     protected void Page_Load(object sender, EventArgs e)
     {
-
-        //Populate dropdown menu from DepartmentType enum.
-        foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
-        {
-            DeptDropDown.Items.Add(dept.ToString());
+        if(!Page.IsPostBack) {
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            //Populate dropdown menu from DepartmentType enum.
+            foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
+                DeptDropDown.Items.Add(dept.ToString());
+                
+            foreach(DatabaseEntities.Committee c in session.CreateCriteria(typeof(DatabaseEntities.Committee)).List())
+                CurrentCommittee.Items.Add(new ListItem(c.Name, c.ID.ToString()));
         }
-    }
+   }
 
     protected void submit(object sender, EventArgs e)
     {
@@ -35,26 +37,24 @@ public partial class Account_Register : System.Web.UI.Page
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
 
             if (DatabaseEntities.User.CheckIfEmailExists(session, Email.Text)) //checks if new user's email address already exists
-            {
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
-            }
             else
             {
-                string[] union = { LastName.Text, FirstName.Text, Email.Text, DeptDropDown.SelectedValue };
-                //string[] username = Email.Text.Split(new char[] { '@' }); //Take only first part of users email and make it username (ex. asd123@yahoo.com. username = asd123)
-
                 string user = Email.Text;
 
-                dbLogic.insertUnion(union);  //Insert into Union_members table
-                int unionID = dbLogic.returnLastUnionAdded();
-
-                //dbLogic.insertUser(unionID, user);  //Insert into User table
-
                 User nUser = CreateUser(Email.Text, FirstName.Text, LastName.Text, DeptDropDown.SelectedValue);
+                
+                // Set up the user permissions and such.
+                nUser.IsAdmin = IsAdmin.Checked;
+                nUser.IsNEC = IsNEC.Checked;
+                // nUser.IsFaculty = IsFaculty.Checked; TODO: BUG 31
+                nUser.IsTenured = IsTenured.Checked;
+                nUser.IsUnion = IsUnion.Checked;
+                nUser.IsBargainingUnit = IsBU.Checked;
+                
+                nUser.CanVote = CanVote.Checked;
+                
                 DatabaseEntities.NHibernateHelper.UpdateDatabase(session, nUser);
-
-                string[] emailAddress = new string[1];
-                emailAddress[0] = Email.Text;
 
                 //email message sent to new user
                 String emailMessage = "";
@@ -66,7 +66,8 @@ public partial class Account_Register : System.Web.UI.Page
                 emailMessage += "Username: <b>" + user + "</b> <br /><br />";
 
                 // passes arguments to this class where it will send the email
-                sendEmail.verify(unionID, emailAddress, emailMessage);
+                string[] emailAddress = { user };
+                sendEmail.verify(nUser.ID, emailAddress, emailMessage);
 
                 SuccessPanel.Visible = true;
             }
@@ -75,30 +76,18 @@ public partial class Account_Register : System.Web.UI.Page
     
     private User CreateUser(String email, String firstName, String lastName, String department)
     {
-
         DatabaseEntities.User user = new DatabaseEntities.User();
         user.FirstName = firstName;
         user.LastName = lastName;
         user.Email = email;
         user.Password = DatabaseEntities.User.Hash("");
         user.PasswordHint = "";
-        user.CanVote = true;
-        user.CurrentCommittee = -1;
-        user.Department = DepartmentType.CSC;
-        user.IsAdmin = (RadioButtonListRoles.SelectedValue == "admin");
 
-        user.IsBargainingUnit = false;
-        user.IsNEC = (RadioButtonListRoles.SelectedValue == "nec");
-        user.IsTenured = false;
-        user.IsUnion = (RadioButtonListRoles.SelectedValue == "faculty");
         user.LastLogin = DateTime.Now;
-        user.CanVote = true;
 
-        DepartmentType nDepartment = (DepartmentType)Enum.Parse(typeof(DepartmentType), department);
-
-        user.Department = nDepartment;
+        user.CurrentCommittee = Convert.ToInt32(CurrentCommittee.SelectedValue);
+        user.Department = (DepartmentType)Enum.Parse(typeof(DepartmentType), department);
 
         return user;
-
     }
 }
