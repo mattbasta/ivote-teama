@@ -1023,7 +1023,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void adminButton_OnClick(Object sender, EventArgs e)
     {
-        dbLogic.admin_EndResultsPhase();
+        dbLogic.killPhase("result");
         Response.Redirect("home.aspx");
     } 
 }

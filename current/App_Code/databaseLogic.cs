@@ -25,6 +25,7 @@ using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
+using NHibernate.Criterion;
 
 
 public class databaseLogic
@@ -38,7 +39,6 @@ public class databaseLogic
     private string connectionString;
     private MySqlConnection connection;
     private MySqlCommand cmd;
-    private string commandString;
     private DataSet ds;
     private MySqlDataAdapter adapter;
     public string testing;
@@ -69,14 +69,9 @@ public class databaseLogic
     private void openConnection()
     {
         connection = new MySqlConnection(connectionString);
-        
-        try
-        {
-            connection.Open();
-        }
-        catch
-        {
-        }
+        // If we fail to open the connection, let that failure trickle down to
+        // a more specific error handler.
+        connection.Open();
     }
 
     //^^^^^^^^^^generic database methods^^^^^^^^^^
@@ -85,95 +80,60 @@ public class databaseLogic
     public void genericQuerySelector(string query)
     {
         openConnection();
-        try
-        {
-            commandString = query;
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "query");
-        }
-        catch
-        {}
+        adapter = new MySqlDataAdapter(query, connection);
+        ds = new DataSet();
+        adapter.Fill(ds, "query");
         closeConnection();
     }
 
     //generic counter method
     public int genericQueryCounter(string query)
     {
-        int count = -1;
-        openConnection();
         try
         {
-            commandString = query;
-            adapter = new MySqlDataAdapter(commandString, connection);
-            cmd.CommandType = CommandType.Text;
+            openConnection();
+            int count = -1;
+            adapter = new MySqlDataAdapter(query, connection);
             ds = new DataSet();
             adapter.Fill(ds, "query");
             count = ds.Tables[0].Rows.Count;
-            //count = Convert.ToInt32(cmd.ExecuteScalar());
-            closeConnection();
             return count;
         }
         catch
+        { return -1; }
+        finally
         {
             closeConnection();
         }
-        //this would be an error..
-        return count;
     }
 
     //generic updater method
     public void genericQueryUpdater(string query)
     {
         openConnection();
-        try
-        {
-            commandString = query;
-            cmd = new MySqlCommand(commandString, connection);
-            cmd.CommandType = CommandType.Text;
-            cmd.ExecuteNonQuery();
-            closeConnection();
-        }
-        catch
-        {
-            closeConnection();
-        }
+        cmd = new MySqlCommand(query, connection);
+        cmd.CommandType = CommandType.Text;
+        cmd.ExecuteNonQuery();
+        closeConnection();
     }
 
     //generic delete method
     public void genericQueryDeleter(string query)
     {
         openConnection();
-        commandString = query;
-        try
-        {
-            cmd = new MySqlCommand(commandString, connection);
-            cmd.CommandType = CommandType.Text;
-            cmd.ExecuteNonQuery();
-            closeConnection();
-        }
-        catch
-        {
-            closeConnection();
-        }
+        cmd = new MySqlCommand(query, connection);
+        cmd.CommandType = CommandType.Text;
+        cmd.ExecuteNonQuery();
+        closeConnection();
     }
 
     //generic insert method
     public void genericQueryInserter(string query)
     {
         openConnection();
-        try
-        {
-            commandString = query;
-            cmd.Connection = connection;
-            cmd.CommandText = commandString;
-            cmd.ExecuteNonQuery();
-            closeConnection();
-        }
-        catch
-        {
-            closeConnection();
-        }
+        cmd.Connection = connection;
+        cmd.CommandText = query;
+        cmd.ExecuteNonQuery();
         closeConnection();
     }
 
@@ -192,159 +152,23 @@ public class databaseLogic
     //^^^^^^^^^^user methods^^^^^^^^^^
 
 
-    //update a password
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void updatePassword(string id, string password)
-    {
-        string query = "UPDATE user SET password='" + password + "' WHERE idunion_members=" + id + ";";
-        genericQueryUpdater(query);
-    }
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void updatePassword2(string id, string password)
-    {
-        string query = "UPDATE user SET password='" + password + "' WHERE username='" + id + "';";
-        genericQueryUpdater(query);
-    }
-
-
-    //insert a new user
-    //    First value is 0 for auto-increment
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void insertUser(int ID, string user)
-    {
-        string query = "INSERT INTO user (idunion_members, username) VALUES (" + ID + ", '" + user + "');";
-        genericQueryInserter(query);
-    }
-    //insert a union member
-    //    First value is 0 for auto-increment
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void insertUnion(string[] union)
-    {
-        string query = "INSERT INTO union_members (last_name, first_name, email, department) VALUES ('" + union[0] + "', '" + union[1] + "', '" + union[2] + "', '" + union[3] + "');";
-        genericQueryInserter(query);
-    }
-
-    //(CODE FIX 10:48am, 10/4, Included idunion_members after ORDER BY to return correct value)
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public int returnLastUnionAdded()
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT idunion_members FROM union_members ORDER BY idunion_members DESC;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            int pictureURL = (int)ds.Tables[0].Rows[0].ItemArray[0];
-            closeConnection();
-            return pictureURL;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return -1;
-    }
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public int returnLastUserAdded()
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT iduser FROM user ORDER BY DESC;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            int pictureURL = (int)ds.Tables[0].Rows[0].ItemArray[0];
-            closeConnection();
-            return pictureURL;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return -1;
-    }
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public DataSet returnAllUsers()
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT * FROM union_members ORDER BY DESC;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds);
-            closeConnection();
-            return ds;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return null;
-    }
-
     [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string selectFullName(string id)
     {
-        openConnection();
         try
         {
-            commandString = "Select CONCAT (first_name, ' ', last_name) AS fullname FROM union_members Where idunion_members = '" + id + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("Select CONCAT (first_name, ' ', last_name) AS fullname FROM union_members Where idunion_members = '" + id + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "query");
-            string name = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return name;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
         catch
+        { return ""; }
+        finally
         {
             closeConnection();
         }
-        return "";
-    }
-
-    //delete a user
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void deleteUser(string iduser)
-    {
-        string query = "DELETE FROM user WHERE iduser = '" + iduser + "';";
-        genericQueryDeleter(query);
-    }
-
-    //completely deletes a user from database
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void deleteAccountCompletely(string idunion)
-    {
-        string query = "DELETE FROM user WHERE idunion_members = '" + idunion + "';";
-        genericQueryDeleter(query);
-
-        query = "DELETE FROM union_members WHERE idunion_members = '" + idunion + "';";
-        genericQueryDeleter(query);
-    }
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void updateUser(string ID, string[] UserInfo)
-    {
-        string query = "update union_members set last_name='" + UserInfo[0] + "', first_name='" + UserInfo[1] + "', email='" + UserInfo[2] + "', phone='" + UserInfo[3] + "', department='" + UserInfo[4] + "' WHERE idunion_members = " + ID + ";";
-        genericQueryUpdater(query);
-
-    }
-
-    //^^^^^^^^^^union_memebers methods^^^^^^^^^^
-
-    //select all user info from union_members
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void selectAllUserInfo()
-    {
-        
-        string query = "SELECT * FROM union_members ORDER BY last_name ASC;";
-        genericQuerySelector(query);
     }
 
     //select a user in the user table based on the union_members key
@@ -355,7 +179,6 @@ public class databaseLogic
         genericQuerySelector(query);
     }
 
-
     //select a users email in the union_members table based on the unionID 
     [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string selectEmailFromID(int id)
@@ -363,8 +186,7 @@ public class databaseLogic
         openConnection();
         try
         {
-            commandString = "SELECT email FROM union_members WHERE idunion_members='" + id + "' ;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            adapter = new MySqlDataAdapter("SELECT email FROM union_members WHERE idunion_members='" + id + "' ;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
             string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
@@ -384,8 +206,7 @@ public class databaseLogic
         openConnection();
         try
         {
-            commandString = "select email from union_members;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            adapter = new MySqlDataAdapter("select email from union_members;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email");
             closeConnection();
@@ -406,8 +227,8 @@ public class databaseLogic
         openConnection();
         try
         {
-            commandString = "SELECT UM.email FROM union_members UM, roles_users RU, user U WHERE RU.role='admin' AND  RU.username=U.username  AND U.idunion_members=UM.idunion_members";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            string query = "SELECT UM.email FROM union_members UM, roles_users RU, user U WHERE RU.role='admin' AND  RU.username=U.username  AND U.idunion_members=UM.idunion_members";
+            adapter = new MySqlDataAdapter(query, connection);
             ds = new DataSet();
             adapter.Fill(ds, "email");
             closeConnection();
@@ -422,25 +243,15 @@ public class databaseLogic
     }
 
     //retrieve only the NEC role emails
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public string[] getNECEmails()
+    public string[] getNECEmails(ISession session)
     {
-        openConnection();
-        try
-        {
-            commandString = "SELECT UM.email FROM union_members UM, roles_users RU, user U WHERE RU.role='admin' AND  RU.username=U.username  AND U.idunion_members=UM.idunion_members";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-
-        return null;
+        IList<DatabaseEntities.User> nec_users = session.CreateCriteria(typeof(DatabaseEntities.User))
+                                                        .Add(Restrictions.Eq("IsNEC", true))
+                                                        .List<DatabaseEntities.User>();
+        string[] emails = new string[nec_users.Count];
+        for(int i = 0; i < nec_users.Count; i++)
+            emails[i] = nec_users[i].Email;
+        return emails;
     }
 
 
@@ -451,8 +262,8 @@ public class databaseLogic
         openConnection();
         try
         {
-            commandString = "SELECT UM.email FROM union_members UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.idunion_members=NA.idunion_to";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            string query = "SELECT UM.email FROM union_members UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.idunion_members=NA.idunion_to";
+            adapter = new MySqlDataAdapter(query, connection);
             ds = new DataSet();
             adapter.Fill(ds, "email");
             closeConnection();
@@ -469,24 +280,15 @@ public class databaseLogic
 
     //select a users unionID in the user table based on the username 
     [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public int selectIDFromEmail(String email)
+    public int selectIDFromEmail(ISession session, String email)
     {
-        openConnection();
-        try
-        {
-            commandString = "SELECT idunion_members FROM union_members WHERE email='" + email + "' ;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            int pictureURL = (int)ds.Tables[0].Rows[0].ItemArray[0];
-            closeConnection();
-            return pictureURL;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return -1;
+        DatabaseEntities.User user =
+                session.CreateCriteria(typeof(DatabaseEntities.User))
+                       .Add(Restrictions.Eq("Email", email))
+                       .UniqueResult<DatabaseEntities.User>();
+        if(user == null)
+            return -1;
+        return user.ID;
     }
 
     [System.Obsolete("Use NHibernate-backed DB instead.")]
@@ -495,18 +297,17 @@ public class databaseLogic
         openConnection();
         try
         {
-            commandString = query;
-            adapter = new MySqlDataAdapter(commandString, connection);
+            adapter = new MySqlDataAdapter(query, connection);
             ds = new DataSet();
             adapter.Fill(ds, "query");
             closeConnection();
             return ds;
         }
-        catch
+        catch { return null; }
+        finally
         {
             closeConnection();
         }
-        return null;
     }
 
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
@@ -516,21 +317,18 @@ public class databaseLogic
     //insert verification codes
     public void insertCodes(int ID, String code1, String code2)
     {
-        string query = "INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + ID + ", '" + code1 + "', '" + code2 + "', NOW());";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + ID + ", '" + code1 + "', '" + code2 + "', NOW());");
     }
 
     public void insertCodes(string[] code)
     {
-        string query = "INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + code[0] + ", '" + code[1] + "', '" + code[2] + "', NOW());";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + code[0] + ", '" + code[1] + "', '" + code[2] + "', NOW());");
     }
 
     //deletes a code based on the code
     public void deleteCode(String code1)
     {
-        string query = "DELETE FROM email_verification WHERE code_verified = '" + code1 + "';";
-        genericQueryInserter(query);
+        genericQueryInserter("DELETE FROM email_verification WHERE code_verified = '" + code1 + "';");
     }
 
     //select a verified code
@@ -538,22 +336,19 @@ public class databaseLogic
     //check if verified code is in table and returnes user id if it is. (***CHANGED AGAIN idemail_verification to iduser***)
     public string checkConfirmCode(string code)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT iduser FROM email_verification WHERE code_verified='" + code + "' ORDER BY iduser DESC;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT iduser FROM email_verification WHERE code_verified='" + code + "' ORDER BY iduser DESC;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return pictureURL;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
-        catch
+        catch { return ""; }
+        finally
         {
             closeConnection();
         }
-        return "";
     }
 
     //^^^^^^^^^^petition methods^^^^^^^^^^
@@ -561,33 +356,26 @@ public class databaseLogic
     //select all
     public void selectAllPetitions(String id)
     {
-        string query = "SELECT * FROM petition;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT * FROM petition;");
     }
 
     //insert
     public void insertPetition(string[] petition)
     {
-        string query = "INSERT INTO petition (idunion_members, positions, idum_signedby) VALUES (" + petition[0] + ", '" + petition[1] + "', " + petition[2] + ");";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO petition (idunion_members, positions, idum_signedby) VALUES (" + petition[0] + ", '" + petition[1] + "', " + petition[2] + ");");
     }
 
     //check if user (who is about to insert a petition) has already inserted a petition for that person + position combo
     public bool isUserEnteringPetitionTwice(string[] petition)
     {
         string query = "SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "' AND idum_signedby = " + petition[2] + ";";
-
-        if (genericQueryCounter(query) == 0) //if there are no rows in the datadata set created, result is false
-            return false;
-        else
-            return true;
+        return genericQueryCounter(query) == 0; //if there are no rows in the datadata set created, result is false
     }
 
     //count how many petition there are for one person + position
     public int countPetitionsForPerson(string[] petition)
     {
-        string query = "SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "';";
-        return genericQueryCounter(query);
+        return genericQueryCounter("SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "';");
     }
 
 
@@ -596,61 +384,49 @@ public class databaseLogic
     //Select all positions
     public void selectAllPositions()
     {
-        string query = "SELECT * FROM positions";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT * FROM positions");
     }
 
     //Select all available positions
     public void selectAllAvailablePositions()
     {
-        string query = "SELECT * FROM election_position";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT * FROM election_position");
     }
-
-
 
     //Select the idposition from positions using the position title
     public string selectIDFromPosition(string position)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT idelection_position FROM election_position WHERE position = '" + position + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT idelection_position FROM election_position WHERE position = '" + position + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
-            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return pictureURL;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
-        catch
+        catch { return ""; }
+        finally
         {
             closeConnection();
         }
-        return "";
     }
-
 
     //Select the position title from positions using the idposition
     public string selectPositionFromID(string id)
     {
-
-        openConnection();
         try
         {
-            commandString = "SELECT position FROM election_position WHERE idelection_position = '" + id + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT position FROM election_position WHERE idelection_position = '" + id + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
-            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return pictureURL;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
-        catch
+        catch { return ""; }
+        finally
         {
             closeConnection();
         }
-        return "";
 
     }
 
@@ -659,35 +435,30 @@ public class databaseLogic
     //used to initialize a new tally row
     public void insertNewTally(string[] votingInfo)
     {
-        string query = "INSERT INTO tally (id_union, position, count) VALUES (" + votingInfo[0] + ", '" + votingInfo[1] + "', 0)";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + votingInfo[0] + ", '" + votingInfo[1] + "', 0)");
     }
 
     //updates the count for a specified tally row
     public void updateTally(string[] votingInfo)
     {
-        string query = "UPDATE tally SET count = count + 1 WHERE id_union = " + votingInfo[0] + " AND position = '" + votingInfo[1] + "';";
-        genericQueryUpdater(query);
+        genericQueryUpdater("UPDATE tally SET count = count + 1 WHERE id_union = " + votingInfo[0] + " AND position = '" + votingInfo[1] + "';");
     }
 
     public void selectTallyInfoForPosition(string position)
     {
         // TODO: Update this to the new DB stuff.
-        string query = "SELECT T.*, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM tally T, union_members UM WHERE T.position = '" + position + "' AND UM.idunion_members = T.id_union;;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT T.*, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM tally T, union_members UM WHERE T.position = '" + position + "' AND UM.idunion_members = T.id_union;");
     }
 
     //^^^^^^^^^^flag_voted methods^^^^^^^^^^
     public void insertFlagVoted(string id, string code)
     {
-        string query = "INSERT INTO flag_voted (idunion_members, code_confirm) VALUES (" + id + ", '" + code + "')";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO flag_voted (idunion_members, code_confirm) VALUES (" + id + ", '" + code + "')");
     }
 
     public bool isUserNewVoter(string id)
     {
-        string query = "SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id + ";";
-        return genericQueryCounter(query) == 0;
+        return genericQueryCounter("SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id + ";") == 0;
     }
 
     //^^^^^^^^^^wts methods^^^^^^^^^^
@@ -696,129 +467,88 @@ public class databaseLogic
     public void selectInfoForApprovalTable()
     {
         // TODO: Update this
-        string query = "SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members;");
     }
 
     //update the the eligiblity
     public void updateEligible(string id, string approval)
     {
-        string query = "UPDATE wts SET eligible = " + approval + " WHERE wts_id = '" + id + "';";
-        genericQuerySelector(query);
+        genericQuerySelector("UPDATE wts SET eligible = " + approval + " WHERE wts_id = '" + id + "';");
     }
 
 
     //insert into the wts table
     public void insertIntoWTS(string id, string statement, string position)
     {
-        string query = "INSERT INTO wts (idunion_members, position, date_applied, statement) VALUES ('" + id + "', '" + position + "', NOW() ,'" + statement + "');";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO wts (idunion_members, position, date_applied, statement) VALUES ('" + id + "', '" + position + "', NOW() ,'" + statement + "');");
     }
 
     public void selectDetailFromWTS(string id)
     {
         // TODO: Update this
-        string query = "SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members AND WTS.idunion_members = " + id + ";";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members AND WTS.idunion_members = " + id + ";");
     }
 
 
     public bool isUserWTS(string id, string position)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT * FROM wts WHERE idunion_members=" + id + " AND position='" + position + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + id + " AND position='" + position + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            string email = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            if (email != "")
-                return true;
-            else
-                return false;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
         }
-        catch
+        catch { return false; }
+        finally
         {
             closeConnection();
-            return false;
         }
     }
 
     //^^^^^^^^^^timeline^^^^^^^^^^
     public void selectPhaseNames()
     {
-        string query = "SELECT name_phase FROM timeline;";
-        genericQuerySelector(query);
-    }
-
-    public void selectPhaseDates()
-    {
-        string query = "SELECT datetime_end FROM timeline;";
-        genericQuerySelector(query);
-    }
-
-    public void selectPhaseNamesAndDates()
-    {
-        string query = "SELECT name_phase, datetime_end FROM timeline;";
-        genericQuerySelector(query);
-    }
-
-    public void selectPhaseDate(string phase)
-    {
-        string query = "SELECT datetime_end FROM timeline WHERE name_phase = '" + phase + "';";
-        genericQuerySelector(query);
-    }
-
-    public void insertTimeline()
-    {
-        string query = "";
-        genericQueryInserter(query);
+        genericQuerySelector("SELECT name_phase FROM timeline;");
     }
 
     public void updateTimeline(string date, string time, string phase)
     {
-        string query = "UPDATE timeline SET datetime_end = STR_TO_DATE('" + date + " " + time + "','%m/%d/%Y %H:%i') WHERE name_phase = '" + phase + "';";
-        genericQueryInserter(query);
+        genericQueryInserter("UPDATE timeline SET datetime_end = STR_TO_DATE('" + date + " " + time + "','%m/%d/%Y %H:%i') WHERE name_phase = '" + phase + "';");
     }
 
     public void updateVotePhase()
     {
-        string query = "UPDATE timeline SET datetime_end =  DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';";
-        genericQueryInserter(query);
+        genericQueryInserter("UPDATE timeline SET datetime_end =  DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
     }
 
     public void turnOnPhase(string phase)
     {
-        string query = "UPDATE timeline set iscurrent= 1 WHERE name_phase = '" + phase + "';";
-        genericQueryUpdater(query);
+        genericQueryUpdater("UPDATE timeline set iscurrent= 1 WHERE name_phase = '" + phase + "';");
     }
 
     public void turnOffPhase(string phase)
     {
-        string query = "UPDATE timeline set iscurrent= 0 WHERE name_phase = '" + phase + "';";
-        genericQueryUpdater(query);
+        genericQueryUpdater("UPDATE timeline set iscurrent= 0 WHERE name_phase = '" + phase + "';");
     }
 
     public string currentPhase()
     {
-        openConnection();
         try
         {
-            commandString = "SELECT name_phase FROM timeline WHERE iscurrent = 1;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT name_phase FROM timeline WHERE iscurrent = 1;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
-            string phase = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            return phase;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
-        catch {}
+        catch { return ""; }
         finally
         {
             closeConnection();
         }
-        return "";
+        
     }
 
     //^^^^^^^^^^nomination_accept^^^^^^^^^^
@@ -826,61 +556,49 @@ public class databaseLogic
     //inserts nomination into db
     public void insertNominationAccept(string[] accept)
     {
-        string query = "INSERT INTO nomination_accept (idunion_to, idunion_from, position) VALUES ('" + accept[0] + "','" + accept[1] + "','" + accept[2] + "');";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO nomination_accept (idunion_to, idunion_from, position) VALUES ('" + accept[0] + "','" + accept[1] + "','" + accept[2] + "');");
     }
 
     public void insertNominationAcceptFromPetition(string[] accept)
     {
-        string query = "INSERT INTO nomination_accept (idunion_to, idunion_from, position, from_petition) VALUES ('" + accept[0] + "','" + accept[1] + "','" + accept[2] + "', " + accept[3] + ");";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO nomination_accept (idunion_to, idunion_from, position, from_petition) VALUES ('" + accept[0] + "','" + accept[1] + "','" + accept[2] + "', " + accept[3] + ");");
     }
 
     //******NOTE***** The user will have multiple positions that this can be true for, might want to modify ******NOTE******
     public bool isUserNominatedPending(string id)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND accepted IS NULL;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND accepted IS NULL;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            string email = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            if (email != "")
-                return true;
-            else
-                return false;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
         }
         catch
+        { return false; }
+        finally
         {
             closeConnection();
-            return false;
         }
 
     }
 
     public bool isUserNominatedFromPetitionPending(string id)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND from_petition = 1 AND accepted IS NULL;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND from_petition = 1 AND accepted IS NULL;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            string email = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            if (email != "")
-                return true;
-            else
-                return false;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
         }
         catch
+        { return false; }
+        finally
         {
             closeConnection();
-            return false;
         }
 
     }
@@ -888,45 +606,39 @@ public class databaseLogic
     //checks if the user already has an entry for the position
     public bool isUserNominated(string id, string position)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND position='" + position + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id + " AND position='" + position + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            string email = ds.Tables[0].Rows[0].ItemArray[0].ToString();
             closeConnection();
-            if (email != "")
-                return true;
-            else
-                return false;
+            return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
         }
         catch
+        { return false; }
+        finally
         {
             closeConnection();
-            return false;
         }
 
     }
 
     public string selectDescriptionFromPositionName(string posName)
     {
-        openConnection();
         try
         {
-            commandString = "SELECT description FROM election_position WHERE position='" + posName + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT description FROM election_position WHERE position='" + posName + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            closeConnection();
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
-
         }
         catch
+        { return ""; }
+        finally
         {
             closeConnection();
-            return "";
         }
 
     }
@@ -934,49 +646,43 @@ public class databaseLogic
     //user has accepted nomination
     public void userAcceptedNom(string id, string position)
     {
-        string query = "UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + id + "' AND position='" + position + "';";
-        genericQueryUpdater(query);
+        genericQueryUpdater("UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + id + "' AND position='" + position + "';");
     }
 
     //user has rejected nomination
     public void userRejectedNom(string id, string position)
     {
-        string query = "UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + id + "' AND position='" + position + "';";
-        genericQueryUpdater(query);
+        genericQueryUpdater("UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + id + "' AND position='" + position + "';");
     }
 
 
     //get all nominations that pertain to a user
     public void selectAllUserNoms(string id)
     {
-        string query = "SELECT * FROM nomination_accept WHERE idunion_to = " + id + " AND accepted IS NULL;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT * FROM nomination_accept WHERE idunion_to = " + id + " AND accepted IS NULL;");
     }
 
     //^^^^^^^^^^^^^^election methods^^^^^^^^^^^^^^^^^^^
     public void insertElection()
     {
-        string query = "INSERT INTO election (name) VALUES ('Fall 2011');";
-        genericQueryInserter(query);
-        query = "INSERT INTO flag_NEC values(1,1,0,0)";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO election (name) VALUES ('Fall 2011');");
+        genericQueryInserter("INSERT INTO flag_NEC values(1,1,0,0)");
     }
 
     public string returnLatestElectionId()
     {
         try
         {
-            commandString = "SELECT idelection FROM election ORDER BY idelection DESC;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            adapter = new MySqlDataAdapter("SELECT idelection FROM election ORDER BY idelection DESC;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
-            closeConnection();
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
         catch
+        { return ""; }
+        finally
         {
             closeConnection();
-            return "";
         }
     }
 
@@ -986,40 +692,32 @@ public class databaseLogic
     public void selectAllForBallot(string position)
     {
         // TODO: Update this
-        string query = "SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                       "FROM wts WTS, union_members UM " +
-                       "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
+                             "FROM wts WTS, union_members UM " +
+                             "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');");
     }
 
     //counts how many people are nominated for a position
     public int countHowManyCandidatesForPosition(string position)
     {
         // TODO: Update this
-        string query = "SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                       "FROM wts WTS, union_members UM " +
-                       "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');";
-        return genericQueryCounter(query);
+        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
+                                   "FROM wts WTS, union_members UM " +
+                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');");
     }
 
     public bool IsThereCandidatesForPoisition(string position)
     {
         // TODO: Update this
-        string query = "SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                       "FROM wts WTS, union_members UM " +
-                       "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');";
-        int check = genericQueryCounter(query);
-        if (check > 0)
-            return true;
-        else
-            return false;
+        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
+                                   "FROM wts WTS, union_members UM " +
+                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');") > 0;
     }
 
     //gets all the current election positions
     public void selectAllBallotPositions()
     {
-        string query = "SELECT * FROM election_position;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT * FROM election_position;");
     }
 
 
@@ -1028,14 +726,9 @@ public class databaseLogic
     //adds the positions to positions table
     public void addPos(ArrayList positions, ArrayList vote, ArrayList description, ArrayList num, ArrayList votes)
     {
-        string query = "TRUNCATE TABLE election_position;";
-        genericQueryDeleter(query);
-        int i;
-        for (i = 0; i < positions.Count; i++)
-        {
-            query = "INSERT INTO election_position (position, tally_type, description, slots_plurality, votes_allowed) VALUES ('" + positions[i].ToString() + "', '" + vote[i].ToString() + "', '" + description[i].ToString() + "', " + num[i].ToString() + ", " + votes[i].ToString() + ");";
-            genericQueryInserter(query);
-        }
+        genericQueryDeleter("TRUNCATE TABLE election_position;");
+        for (int i = 0; i < positions.Count; i++)
+            genericQueryInserter("INSERT INTO election_position (position, tally_type, description, slots_plurality, votes_allowed) VALUES ('" + positions[i].ToString() + "', '" + vote[i].ToString() + "', '" + description[i].ToString() + "', " + num[i].ToString() + ", " + votes[i].ToString() + ");");
     }
 
 
@@ -1045,293 +738,38 @@ public class databaseLogic
     public void getPosAndWinner()
     {
         // TODO: Update this
-        string query = "SELECT R.position, R.id_union, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM results R, union_members UM  WHERE UM.idunion_members = R.id_union;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT R.position, R.id_union, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM results R, union_members UM  WHERE UM.idunion_members = R.id_union;");
     }
 
     public void insertWinners(string position, int id)
     {
-        string query = "INSERT INTO results (position, id_union) VALUES ('" + position + "', " + id + ");";
-        genericQueryInserter(query);
+        genericQueryInserter("INSERT INTO results (position, id_union) VALUES ('" + position + "', " + id + ");");
     }
 
     public bool checkNecApprove()
     {
-        string query = "SELECT approve FROM flag_nec where approve = 1;";
-        genericQuerySelector(query);
+        genericQuerySelector("SELECT approve FROM flag_nec where approve = 1;");
         DataSet ds = getResults();
-        if (ds.Tables[0].Rows.Count > 0)
-            return true;
-        else
-            return false;
+        return ds.Tables[0].Rows.Count > 0;
     }
 
     public void insertNecApprove()
     {
-        string query = "update flag_nec set approve = 1;";
-        genericQueryUpdater(query);
+        genericQueryUpdater("update flag_nec set approve = 1;");
     }
 
     public bool checkSlateApprove()
     {
-        string query = "select * from flag_nec where slate = 1";
-        genericQuerySelector(query);
-        DataSet ds = getResults();
-        if (ds.Tables[0].Rows.Count > 0)
-            return true;
-        else
-            return false;
+        genericQuerySelector("select * from flag_nec where slate = 1");
+        return getResults().Tables[0].Rows.Count > 0;
     }
 
     public void approveSlate()
     {
-        string query = "update flag_nec set slate = 1;";
-        genericQueryUpdater(query);
+        genericQueryUpdater("update flag_nec set slate = 1;");
     }
 
     //^^^^^^^^^^role and login provider methods (DO NOT MODIFY)^^^^^^^^^^
-
-    //retrieve roles for a given user. implemented because required by overload for role provider
-    public string[] getUsersInRole(string role)
-    {
-
-        openConnection();
-        try
-        {
-            commandString = "SELECT Username from roles_users WHERE role = '" + role + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "usersinroles");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return null;
-    }
-
-    //find users belonging to a given role. implemented because required by overload for role provider
-    public string[] findUsersInRole(string role, string user)
-    {
-        openConnection();
-        try
-        {
-            commandString = "Select username from roles_users where username = " + user + " and role = " + role + ";";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "usersinroles");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return null;
-    }
-
-    //get the roles attached to the input user. implemented because required by overload for role provider
-    public string[] getUserRoles(string user)
-    {
-
-        openConnection();
-        try
-        {
-            commandString = "SELECT role FROM roles_users WHERE username = '" + user + "';";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "usersinroles");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-
-        return null;
-    }
-
-    //take a set of roles away from a set of users. implemented because required by overload for role provider
-    public void removeUsersFromRoles(string[] users, string[] roles)
-    {
-        try
-        {
-            for (int i = 0; i < users.Length; i++)
-            {
-                for (int j = 0; j < roles.Length; j++)
-                {
-                    openConnection();
-                    commandString = "DELETE FROM roles_users WHERE username = '" + users[i] + "' and role = '" + roles[j] + "';";
-                    cmd.CommandText = commandString;
-                    cmd.Connection = connection;
-                    cmd.CommandType = CommandType.Text;
-                    cmd.ExecuteNonQuery();
-                    closeConnection();
-                }
-            }
-        }
-        catch
-        {
-            closeConnection();
-            //testing = "remove users from roles: " + e.Message;
-        }
-    }
-
-    public void addRole(string role)
-    {
-        //only exists because required by overload for role provider, obvisouly doesn't do anything
-    }
-
-    // get all roles from the membership provider tables. implemented because required by overload for role provider
-    public string[] getRoles()
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT roles from roles;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "roles");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-
-        return null;
-    }
-
-    //check if a given role exists. implemented because required by overload for role provider
-    public bool roleExists(string role)
-    {
-
-        openConnection();
-        try
-        {
-            commandString = "Select roles from roles where role = " + role + ";";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "roles");
-            closeConnection();
-            return (ds.Tables.Count > 0);
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return false;
-    }
-
-    //get users for verifying login information
-    public void getUsersL()
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT username, password FROM user;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "users");
-            closeConnection();
-        }
-        catch
-        {
-            closeConnection();
-        }
-    }
-
-    // batch encryption update
-    // KEEP AS IS
-    public void updateUserPasswords(string[] users, string[] passwords)
-    {
-
-        openConnection();
-        try
-        {
-            for (int i = 0; i < users.Length; i++)
-            {
-                commandString = "update user set password='" + passwords[i] + "' where username = '" + users[i] + "';";
-                cmd = new MySqlCommand(commandString, connection);
-                cmd.CommandType = CommandType.Text;
-                cmd.ExecuteNonQuery();
-
-            }
-            closeConnection();
-        }
-        catch
-        {
-            closeConnection();
-        }
-    }
-
-    //retrieve password for login
-    public DataTable getPassword(string username)
-    {
-        openConnection();
-        try
-        {
-            commandString = "SELECT password from user WHERE username=@whoAmI;";
-            adapter = new MySqlDataAdapter(commandString, connection);
-            adapter.SelectCommand.Parameters.AddWithValue("@whoAmI", username);
-            ds = new DataSet();
-            adapter.Fill(ds, "user");
-            closeConnection();
-            return ds.Tables.Count > 0 ? ds.Tables[0] : null;
-        }
-        catch
-        {
-            closeConnection();
-            return null;
-        }
-    }
-
-    //add a set of roles to a set of users
-    public void addUsersToRoles(string[] users, string[] roles)
-    {
-
-
-        try
-        {
-            for (int i = 0; i < users.Length; i++)
-            {
-                for (int j = 0; j < roles.Length; j++)
-                {
-                    if (!(isUserInRole(users[i], roles[j])))
-                    {
-                        openConnection();
-                        commandString = "INSERT INTO roles_users (username, role) VALUES ('" + users[i] + "', '" + roles[j] + "');";
-                        cmd.CommandText = commandString;
-                        cmd.Connection = connection;
-                        cmd.CommandType = CommandType.Text;
-                        cmd.ExecuteNonQuery();
-                        closeConnection();
-                    }
-                }
-            }
-        }
-        catch(Exception e)
-        {
-            closeConnection();
-            testing = "add users to roles_users: " + e.Message;
-        }
-    }
-
-    public bool isUserInRole(string username, string role)
-    {
-        openConnection();
-        commandString = "Select idroles_users FROM roles_users WHERE username = '" + username + "' and role = '" + role + "';";
-        adapter = new MySqlDataAdapter(commandString, connection);
-        ds = new DataSet();
-        adapter.Fill(ds, "usersinroles_users");
-        closeConnection();
-        return (ds.Tables[0].Rows.Count > 0);
-    }
-
 
     //EXTRA STUFF NEEDED FOR OTHER QUERIES
     private string[] parseTable()
@@ -1340,26 +778,14 @@ public class databaseLogic
 
         string[] retVal = new String[ds.Tables[0].Rows.Count];
         for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-        {
             retVal[i] = (string)ds.Tables[0].Rows[i].ItemArray[0];
-        }
         return retVal;
     }
-    /* Update user fields
-    public void UpdateUserFields(int ID, string[] UserInfo)
-    {
-                string query = "update users set email='" + UserInfo[0] + "',last_name='" + UserInfo[1] + "',first_name='" + UserInfo[2] + "',phone='" + UserInfo[3] + "',department='" + UserInfo[4] + "' where id = '" + ID + "';";
-                genericQueryUpdater(string query);
-
-    }*/
-
 
     //check to see if there are any pending eligibility forms to be completed
     public int returnEligibilityCount()
     {
-        commandString = "select * from wts where eligible is NULL;";
-        int count = genericQueryCounter(commandString);
-        return count;
+        return genericQueryCounter("select * from wts where eligible is NULL;");
     }
 
     //create timeline
@@ -1367,41 +793,36 @@ public class databaseLogic
     {
         int id_num;
         openConnection();
-        commandString = "select * from timeline;";
-        adapter = new MySqlDataAdapter(commandString, connection);
+        adapter = new MySqlDataAdapter("select * from timeline;", connection);
         ds = new DataSet();
         adapter.Fill(ds, "blah");
-        int count = Convert.ToInt32((ds.Tables[0].Rows.Count));
-        if (count == 0)
+        
+        if (Convert.ToInt32((ds.Tables[0].Rows.Count)) == 0)
             id_num = 1;
         else
         {
-            commandString = "select idtimeline from timeline order by idtimeline desc limit 1;";
-            adapter = new MySqlDataAdapter(commandString, connection);
+            adapter = new MySqlDataAdapter("select idtimeline from timeline order by idtimeline desc limit 1;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
             id_num = Convert.ToInt32(ds.Tables[0].Rows[0].ItemArray[0]) + 1;
         }
         //inserts//
         //null phase
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'nullphase'," + "STR_TO_DATE('" + Date[0] + " " + Time[0] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'nullphase'," + "STR_TO_DATE('" + Date[0] + " " + Time[0] + "','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
         id_num++;
 
         //nominate phase
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'nominate'," + "STR_TO_DATE('" + Date[1] + " " + Time[1] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'nominate'," + "STR_TO_DATE('" + Date[1] + " " + Time[1] + "','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
         id_num++;
 
         //first acceptance phase
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'accept1'," + "STR_TO_DATE('" + Date[2] + " " + Time[2] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'accept1'," + "STR_TO_DATE('" + Date[2] + " " + Time[2] + "','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
@@ -1409,24 +830,21 @@ public class databaseLogic
 
         //slate
         //this phase is ended when slate is approved
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'slate'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'slate'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
         id_num++;
 
         //petition phase
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'petition'," + "STR_TO_DATE('" + Date[3] + " " + Time[3] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'petition'," + "STR_TO_DATE('" + Date[3] + " " + Time[3] + "','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
         id_num++;
 
         //second acceptance phase
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'accept2'," + "STR_TO_DATE('" + Date[4] + " " + Time[4] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'accept2'," + "STR_TO_DATE('" + Date[4] + " " + Time[4] + "','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
@@ -1434,16 +852,14 @@ public class databaseLogic
 
         //approval
         //this phase is ended when all eligibility is checked.
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'approval'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'approval'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
         id_num++;
 
         //vote
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'vote'," + "STR_TO_DATE('" + Date[5] + " " + Time[5] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'vote'," + "STR_TO_DATE('" + Date[5] + " " + Time[5] + "','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
@@ -1451,26 +867,10 @@ public class databaseLogic
 
         //results
         //this phase is ended by a button push, so throw in a fake end date 1/1/2100 at 00:00
-        commandString = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'result'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
-        cmd.CommandText = commandString;
+        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'result'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
-
-        //end inserts
-
-        //string IDQuery = "select idtimeline from timeline order by idtimeline desc limit 1;";
-        //string query = "UPDATE timeline SET datetime_end = STR_TO_DATE('" + date + " " + time + "','%m/%d/%Y %H:%i') WHERE name_phase = '" + phase + "';";
-        //string query = "INSERT INTO timeline VALUES(
-    }
-
-    //End the results phase  
-    //sets the end date of the result phase to 01/01/1900 00:00
-    public void admin_EndResultsPhase() //DEPRECIATED
-    {
-        //depreciated function
-        //now used as alias
-        killPhase("result");
     }
 
     /********************************
@@ -1499,8 +899,7 @@ public class databaseLogic
         //truncate nomination_accept
         for (int i = 0; i < tables.Length; i++)
         {
-            commandString = "truncate table " + tables[i];
-            cmd.CommandText = commandString;
+            cmd.CommandText = "truncate table " + tables[i];
             cmd.Connection = connection;
             cmd.CommandType = CommandType.Text;
             cmd.ExecuteNonQuery();
@@ -1520,11 +919,8 @@ public class databaseLogic
         //open connection
         openConnection();
 
-        //query string
-        commandString = "delete from nomination_accept where accepted is NULL;";
-
         //execute query
-        cmd.CommandText = commandString;
+        cmd.CommandText = "delete from nomination_accept where accepted is NULL;";
         cmd.Connection = connection;
         cmd.CommandType = CommandType.Text;
         cmd.ExecuteNonQuery();
@@ -1540,17 +936,11 @@ public class databaseLogic
     public bool canSkipPhase()
     {
         openConnection();
-        commandString = "select * from nomination_accept where accepted is NULL;";
-        adapter = new MySqlDataAdapter(commandString, connection);
+        adapter = new MySqlDataAdapter("select * from nomination_accept where accepted is NULL;", connection);
         ds = new DataSet();
         adapter.Fill(ds, "blah");
-        int count = Convert.ToInt32((ds.Tables[0].Rows.Count));
         //query to see if any nominations are unaccepted
-
-        if (count > 0)
-            return false;
-        else
-            return true;
+        return Convert.ToInt32((ds.Tables[0].Rows.Count)) > 0;
     }
 
     /*********************************************
@@ -1560,67 +950,14 @@ public class databaseLogic
     public bool canSkipAdminPhase()
     {
         openConnection();
-        commandString = "select * from wts where eligible is NULL;";
-        adapter = new MySqlDataAdapter(commandString, connection);
+        adapter = new MySqlDataAdapter("select * from wts where eligible is NULL;", connection);
         ds = new DataSet();
         adapter.Fill(ds, "blah");
-        int count = Convert.ToInt32((ds.Tables[0].Rows.Count));
         //query to see if any nominations are unaccepted
-
-        if (count > 0)
-            return false;
-        else
-            return true;
+        return Convert.ToInt32((ds.Tables[0].Rows.Count)) > 0;
     }
-
-    /********************************************
-     * killPhase
-     * Kills a phase by name
-     * *****************************************/
-    public void killPhase(string phaseName)
-    {
-        //open connection
-        openConnection();
-
-        //send command
-        //note:  For concurrent elections, this will need to update for the correct election.  This
-        //current updates any elections in the table.
-        commandString = "update timeline set datetime_end = '1900-01-01 00:00:00' where name_phase = '" + phaseName + "'";
-        cmd.CommandText = commandString;
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-
-        //close connection
-        closeConnection();
-    }
-
-    /***********************************************
-     * getEndDate
-     * Returns a phase's end-date
-     * ********************************************/
-    public void getEndDate(string phase)
-    {
-        string query = "select datetime_end from timeline where name_phase = '" + phase + "';";
-        genericQuerySelector(query);
-
-        /*//open connection
-        openConnection();
-
-        //select data
-        commandString = "select datetime_end from timeline where name_phase = '" + phase + "';";
-        adapter = new MySqlDataAdapter(commandString, connection);
-        ds = new DataSet();
-        adapter.Fill(ds, "blah");
-        string enddate = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-
-        //close connection
-        closeConnection();
-
-        //return the date
-        return enddate;*/
-    }
-}  //END CLASS
+    
+}
 
 
 
