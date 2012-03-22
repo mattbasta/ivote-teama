@@ -43,6 +43,14 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
             ButtonDelete.OnClientClick = "javascript:return confirm('Are you sure what want to PERMANENTLY delete this user account?')";
         }
         
+        if(User.Identity.Name == user.Email)
+        {
+            ButtonDelete.Enabled = false;
+            ButtonDelete.CssClass = "btn btn-danger disabled pull-right";
+            
+            CanVote.Enabled = false;
+        }
+        
         //Populate dropdown menu from DepartmentType enum.
         foreach (DatabaseEntities.DepartmentType dept in Enum.GetValues(typeof(DatabaseEntities.DepartmentType)))
             DeptDropDown.Items.Add(dept.ToString());
@@ -65,6 +73,7 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         // IsFaculty.Checked = user.IsFaculty; TODO BUG 31
         IsTenured.Checked = user.IsTenured;
         IsUnion.Checked = user.IsUnion;
+        IsBU.Checked = user.IsBargainingUnit;
         
         CanVote.Checked = user.CanVote;
         
@@ -95,13 +104,15 @@ public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
         // user.IsFaculty = IsFaculty.Checked; TODO: BUG 31
         user.IsTenured = IsTenured.Checked;
         user.IsUnion = IsUnion.Checked;
+        user.IsBargainingUnit = IsBU.Checked;
         
         user.CanVote = CanVote.Checked;
         
         session.SaveOrUpdate(user);
         
+        SuccessPanel.Visible = true;
+        
         DatabaseEntities.NHibernateHelper.Finished(transaction);
-        Response.Redirect("users.aspx");
         
     }
 
