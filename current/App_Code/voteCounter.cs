@@ -118,32 +118,24 @@ public class voteCounter
         { }
 
     }
-
-
-
-
     
     /************* Helper methods **************/
 
     // this will be used for getting the total votes for the position
     protected void setTotalVotesForPosition()
     {
-        int i = 0; //counter
-        while (i < ds.Tables[0].Rows.Count)
+        for(int i = 0; i < ds.Tables[0].Rows.Count; i++)
         {
             totalForPosition += (int)ds.Tables[0].Rows[i].ItemArray[2];
-            i++;
         }
     }
 
     protected void setParalellArrays()
     {
-        int i = 0; //counter
-        while (i < ds.Tables[0].Rows.Count)
+        for(int i = 0; i < ds.Tables[0].Rows.Count; i++)
         {
             userIDs.Add(ds.Tables[0].Rows[i].ItemArray[0]);
             userVotes.Add(ds.Tables[0].Rows[i].ItemArray[2]);
-            i++;
         }
     }
 
@@ -176,58 +168,5 @@ public class voteCounter
                            "MM/dd/yyyy HH:mm", "M/dd/yyyy HH:mm", "MM/d/yyyy HH:mm"};
         DateTime newDate = DateTime.ParseExact(datetime, formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None);
         return newDate;
-    }
-
-    //Extends the voting period by 1 week
-    public void extendVotingWeek()
-    {
-        //variables not initially set
-        //int newDay = 0, newMonth = 0, newYear = 0;
-        //get end date of voting
-        dbLogic.getEndDate("vote");
-        DataSet phaseSet = dbLogic.getResults();
-        DataRow dr = phaseSet.Tables["query"].Rows[0];
-        DateTime newDate = createDateTime(dr["datetime_end"].ToString());
-
-        //newDate.AddDays(7);
-
-        /*
-
-        //set new enddate
-        strDay = newDay.ToString();
-        if (strDay.Length == 1)
-            strDay = "0" + strDay;
-
-        strMon = intMon.ToString();
-        if (strMon.Length == 1)
-            strMon = "0" + strMon;
-
-        string strYear = enddate.Substring(0, 4);
-        if (newYear != 0)
-            strYear = newYear.ToString();
-
-        enddate = strMon + "/" + strDay + "/" + strYear;  //strYear + "-" + strMon + "-" + strDay + " " + enddate.Substring(11, 8);
-        */
-        
-        //return enddate;
-        //update enddate in db
-        //dbLogic.updateTimeline2(newDate.ToString(), "vote");
-    }
-
-    //returns the number of days in a month
-    private int getDaysInMonth(int Month)
-    {
-        //february
-        if (Month == 2)
-            return 28;
-        //even months
-        else if (Month % 2 == 0)
-            return 30;
-        //odd months
-        else if (Month % 2 == 1)
-            return 31;
-
-        //else error
-        return -1;
     }
 }

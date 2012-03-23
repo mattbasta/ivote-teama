@@ -27,31 +27,23 @@ public partial class officer_election : System.Web.UI.Page
     
     bool is_admin;
 
+    private DatabaseEntities.User GetUser(ISession session) {
+        return DatabaseEntities.User.FindUser(session, User.Identity.Name);
+    }
+    
     protected void Page_Load(object sender, EventArgs e)
     {
-        setView();
         is_admin = User.IsInRole("admin");
-        if(is_admin)
-            AdminTabs.Visible = true;
         
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        
-        if(is_admin)
-        {
-            int waiting_committees = DatabaseEntities.Committee.NumberOfWaitingCommittees(session);
-            if(waiting_committees > 0)
-            {
-                WaitingCommittees.Visible = true;
-                WaitingCommittees.Text = waiting_committees.ToString();
-            }
-        }
-        
+        DatabaseEntities.User user = GetUser(session);
+        setView(user);
     }
     
     public bool IsAdmin() {return is_admin;}
 
     //sends user to homepage based on current phase and the users role
-    protected void setView()
+    protected void setView(DatabaseEntities.User user)
     {
         //if they are faculty
         if (User.IsInRole("faculty"))
@@ -78,7 +70,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure the phase can't be skipped
                 if (dbLogic.canSkipPhase())
                 {
-                    dbLogic.killPhase("accept1");
+                    dbLogic.turnOffPhase("accept1");
                     Response.Redirect("home.aspx");
                 }
               
@@ -99,7 +91,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure phase can't be ended, then display stateless
                 if (dbLogic.checkSlateApprove())
                 {
-                    dbLogic.killPhase("slate");
+                    dbLogic.turnOffPhase("slate");
                     Response.Redirect("home.aspx");
                 }
                 
@@ -140,7 +132,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure the phase can't be skipped
                 if (dbLogic.canSkipPhase())
                 {
-                    dbLogic.killPhase("accept2");
+                    dbLogic.turnOffPhase("accept2");
                     Response.Redirect("home.aspx");
                 }
 
@@ -159,7 +151,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure phase can't be ended, then display stateless
                 if (dbLogic.canSkipAdminPhase())
                 {
-                    dbLogic.killPhase("approval");
+                    dbLogic.turnOffPhase("approval");
                     Response.Redirect("home.aspx");
                 }
 
@@ -186,7 +178,7 @@ public partial class officer_election : System.Web.UI.Page
                 ListViewPositions.DataSource = emailSet;
                 ListViewPositions.DataBind();
 
-                if (dbLogic.isUserNewVoter(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)))
+                if (dbLogic.isUserNewVoter(user.ID))
                     PanelSlateWrapper.Visible = true;
                 else
                 {
@@ -246,7 +238,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure the phase can't be skipped
                 if (dbLogic.canSkipPhase())
                 {
-                    dbLogic.killPhase("accept1");
+                    dbLogic.turnOffPhase("accept1");
                     Response.Redirect("home.aspx");
                 }
 
@@ -271,7 +263,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure phase can't be ended, then display stateless
                 if (dbLogic.checkSlateApprove())
                 {
-                    dbLogic.killPhase("slate");
+                    dbLogic.turnOffPhase("slate");
                     Response.Redirect("home.aspx");
                 }
                 checkForEligibility();
@@ -314,7 +306,7 @@ public partial class officer_election : System.Web.UI.Page
                 bool canSkip = dbLogic.canSkipPhase();
                 if (canSkip)
                 {
-                    dbLogic.killPhase("accept2");
+                    dbLogic.turnOffPhase("accept2");
                     Response.Redirect("home.aspx");
                 }
 
@@ -338,7 +330,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure phase can't be ended, then display stateless
                 if (dbLogic.canSkipAdminPhase())
                 {
-                    dbLogic.killPhase("approval");
+                    dbLogic.turnOffPhase("approval");
                     Response.Redirect("home.aspx");
                 }
 
@@ -367,7 +359,7 @@ public partial class officer_election : System.Web.UI.Page
                 ListViewPositions.DataSource = emailSet;
                 ListViewPositions.DataBind();
 
-                if (dbLogic.isUserNewVoter(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)))
+                if (dbLogic.isUserNewVoter(user.ID))
                     PanelSlateWrapper.Visible = true;
                 else
                 {
@@ -436,7 +428,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure the phase can't be skipped
                 if (dbLogic.canSkipPhase())
                 {
-                    dbLogic.killPhase("accept1");
+                    dbLogic.turnOffPhase("accept1");
                     Response.Redirect("home.aspx");
                 }
 
@@ -459,7 +451,7 @@ public partial class officer_election : System.Web.UI.Page
                 ListViewPositions2.DataSource = emailSet;
                 ListViewPositions2.DataBind();
 
-                if (dbLogic.isUserNewVoter(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)))
+                if (dbLogic.isUserNewVoter(user.ID))
                     PanelSlateWrapper2.Visible = true;
                 else
                 {
@@ -470,7 +462,7 @@ public partial class officer_election : System.Web.UI.Page
                 //make sure phase can't be ended, then display stateless
                 if (dbLogic.checkSlateApprove())
                 {
-                    dbLogic.killPhase("slate");
+                    dbLogic.turnOffPhase("slate");
                     Response.Redirect("home.aspx");
                 }
 
@@ -514,7 +506,7 @@ public partial class officer_election : System.Web.UI.Page
                 bool canSkip = dbLogic.canSkipPhase();
                 if (canSkip)
                 {
-                    dbLogic.killPhase("accept2");
+                    dbLogic.turnOffPhase("accept2");
                     Response.Redirect("home.aspx");
                 }
 
@@ -535,7 +527,7 @@ public partial class officer_election : System.Web.UI.Page
                 bool canSkip1 = dbLogic.canSkipAdminPhase();
                 if (canSkip1)
                 {
-                    dbLogic.killPhase("approval");
+                    dbLogic.turnOffPhase("approval");
                     Response.Redirect("home.aspx");
                 }
 
@@ -565,7 +557,7 @@ public partial class officer_election : System.Web.UI.Page
                 ListViewPositions.DataSource = emailSet;
                 ListViewPositions.DataBind();
 
-                if (dbLogic.isUserNewVoter(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)))
+                if (dbLogic.isUserNewVoter(user.ID))
                 {
                     PanelSlateWrapper.Visible = true;
                     foreach (ListViewDataItem myItem in ListViewPositions.Items)
@@ -652,6 +644,8 @@ public partial class officer_election : System.Web.UI.Page
     //gridview actions
     protected void GridViewPositions_RowCommand(Object sender, GridViewCommandEventArgs e)
     {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = GetUser(session);
         if (String.Equals(e.CommandName, "positions"))
         {
             PanelSelected.Visible = true; //makes the panel visible to the user
@@ -660,8 +654,8 @@ public partial class officer_election : System.Web.UI.Page
             ButtonWTS.Text = "Nominate me for " + e.CommandArgument;
             ButtonNominate.Text = "Nominate a user for " + e.CommandArgument;
             HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
-            ButtonWTS.Enabled = !dbLogic.isUserNominated(dbLogic.returnUnionIDFromUsername(User.Identity.Name),
-                                                         e.CommandArgument.ToString()) || dbLogic.isUserWTS(dbLogic.returnUnionIDFromUsername(User.Identity.Name),
+            ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
+                                                         e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
                                                                                                             e.CommandArgument.ToString());
         }
     }
@@ -669,7 +663,9 @@ public partial class officer_election : System.Web.UI.Page
     //check if the user has a nomination pending
     protected void checkForNomination()
     {
-        if (dbLogic.isUserNominatedPending(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)))
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = GetUser(session);
+        if (dbLogic.isUserNominatedPending(user.ID))
         {
             PanelNominationPending.Visible = true;
             nom_pending.Visible = true;
@@ -750,9 +746,9 @@ public partial class officer_election : System.Web.UI.Page
      * FUNCTIONALITY
      * *****************************************/
     //Petition component code
-
     protected void search(object sender, EventArgs e)
     {
+/*
         dbLogic.SelectPeopleFromSearch(txtSearch.Text);
         DataSet emailSet = dbLogic.getResults();
         ListViewUsers.DataSource = emailSet;
@@ -763,30 +759,35 @@ public partial class officer_election : System.Web.UI.Page
 
         if (txtSearch.Text != "")
             btnViewAll.Visible = true;
+        */
     }
 
     protected void ListViewUsers_ItemCommand(Object sender, ListViewCommandEventArgs e)
     {
         if (String.Equals(e.CommandName, "nominate"))
         {
-            LabelChoosPosition.Text = "Please select the position you would<br /> like " + dbLogic.selectFullName(e.CommandArgument.ToString()) + " to be petitioned for:";
-            ButtonSubmit.OnClientClick = "return confirm('Are you sure you want to start this petition for " + dbLogic.selectFullName(e.CommandArgument.ToString()) + "?\\n(If accepted, you will not be able to withdraw your petition  later.)')";
-            HiddenFieldName.Value = dbLogic.selectFullName(e.CommandArgument.ToString());
-            HiddenField1.Value = e.CommandArgument.ToString();//
-
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, e.CommandArgument.ToString());
+            LabelChoosPosition.Text = "Please select the position you would<br /> like " + user.FirstName + " " + user.LastName + " to be petitioned for:";
+            ButtonSubmit.OnClientClick = "return confirm('Are you sure you want to start this petition for " + user.FirstName + " " + user.LastName + "?\\n(If accepted, you will not be able to withdraw your petition  later.)')";
+            HiddenFieldName.Value = dbLogic.selectFullName(user.FirstName + " " + user.LastName);
+            HiddenField1.Value = e.CommandArgument.ToString();
             PopupControlExtender1.Show();
         }
     }
-
     protected void clear(object sender, EventArgs e)
     {
+    /*
         ListViewUsers.Visible = false;
         btnViewAll.Visible = false;
+    */
     }
 
     protected void ButtonSubmit_Clicked(object sender, EventArgs e)
     {
-        string[] petitionInfo = { HiddenField1.Value, DropDownListPostions.SelectedItem.Text, dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name) };//
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = GetUser(session);
+        string[] petitionInfo = { HiddenField1.Value, DropDownListPostions.SelectedItem.Text, user.ID.ToString() };//
 
         //submit request
         if (!dbLogic.isUserEnteringPetitionTwice(petitionInfo)) //checks if user has already entered this petition
@@ -815,7 +816,7 @@ public partial class officer_election : System.Web.UI.Page
         else
             LabelFeedback.Text = "Submission rejected. You have already signed a petition for " + HiddenFieldName.Value + " to be on the next ballod for " + DropDownListPostions.SelectedItem.Text + ".";
 
-        //LabelFeedback.Text = HiddenFieldId.Value + ", " + DropDownListPostions.SelectedItem.Text + ", " + dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name) + "<br />" + dbLogic.countPetitionsForPerson(petitionInfo);
+        //LabelFeedback.Text = HiddenFieldId.Value + ", " + DropDownListPostions.SelectedItem.Text + ", " + user.ID + "<br />" + dbLogic.countPetitionsForPerson(petitionInfo);
 
         //reset form
         txtSearch.Text = "";
@@ -967,10 +968,14 @@ public partial class officer_election : System.Web.UI.Page
         }
 
         //create confirmation code
-        string code = System.Convert.ToBase64String(System.Web.Security.Membership.GeneratePassword(10, 0));
+        string code = System.Convert.ToBase64String(
+                          System.Text.Encoding.UTF8.GetBytes(
+                              System.Web.Security.Membership.GeneratePassword(10, 0)));
 
         //set flag that user has voted
-        dbLogic.insertFlagVoted(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name), code);
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = GetUser(session);
+        dbLogic.insertFlagVoted(user.ID, code);
 
         //hide slate
         PanelSlateWrapper.Visible = false;
@@ -1023,7 +1028,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void adminButton_OnClick(Object sender, EventArgs e)
     {
-        dbLogic.admin_EndResultsPhase();
+        dbLogic.turnOffPhase("result");
         Response.Redirect("home.aspx");
     } 
 }

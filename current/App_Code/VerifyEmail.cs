@@ -5,6 +5,13 @@ using System.Linq;
 using System.Web;
 using System.Data;
 
+using DatabaseEntities;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+
 /// <summary>
 /// Summary description for VerifyEmail
 /// </summary>
@@ -107,8 +114,9 @@ public class VerifyEmail
         emailMessage += " Please follow the link to approve the slate of nominated users: <a href=\"http://" + emailBaseUrl + "\"> link</a> ";
         emailMessage += "<br /><br />";
         emailMessage += emailQuestions;
-
-        string[] arrayAllEmail = dbLogic.getNECEmails();
+        
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        string[] arrayAllEmail = dbLogic.getNECEmails(session);
 
         //send emails out
         sendEmail.sendEmailToList(arrayAllEmail, emailMessage, "APSCUF iVote Slate Created, Action Required");
