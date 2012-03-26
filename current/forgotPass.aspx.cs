@@ -13,7 +13,6 @@ using NHibernate;
 
 public partial class phase1aSite_forgotPass : System.Web.UI.Page
 {
-    databaseLogic dbLogic = new databaseLogic();
     VerifyEmail sendEmail = new VerifyEmail();
     
     protected void Page_Load(object sender, EventArgs e)
@@ -27,7 +26,7 @@ public partial class phase1aSite_forgotPass : System.Web.UI.Page
         {
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
 
-            int unionID;
+            int userID;
             bool temp_error = false;
             string[] emailAddress = new string[1];
             emailAddress[0] = email.Text;
@@ -44,11 +43,11 @@ public partial class phase1aSite_forgotPass : System.Web.UI.Page
             }
             else
             {
-                // get unionID and from email
-                unionID = dbLogic.selectIDFromEmail(email.Text);
+                // get userID and from email
+                userID = DatabaseEntities.User.FindUser(session, email.Text).ID;
 
                 // send email to that person if the email exists
-                sendEmail.verify(unionID, emailAddress, emailMessage);
+                sendEmail.verify(userID, emailAddress, emailMessage);
             }
             
             //make form label invisible
