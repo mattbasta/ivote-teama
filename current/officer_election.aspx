@@ -32,7 +32,7 @@
                 NavigateUrl="/terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
-        <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline">
+        <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
             <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
                     CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
             or switch to
@@ -48,19 +48,17 @@
             <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
         </asp:Panel>
+        <asp:Panel ID="FunctionsStateless" Visible="false" runat="server" CssClass="juliobuttonbox">
+            <a class="btn btn-primary" href="/initiate.aspx">Initiate Officer Election</a>
+        </asp:Panel>
     </asp:Panel>
     
     <asp:ScriptManager runat="server" />
     
     <asp:Panel ID="OfficerStateless" Enabled="false" Visible="false" runat="server">
         <div class="alert alert-info">
-            <p>
-                <strong>No Active Officer Election</strong>
-                There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.
-            </p>
-            <asp:Panel ID="FunctionsStateless" Visible="false" runat="server">
-                <a class="btn btn-primary" href="/controlRoom.aspx">Initiate Officer Election</a>
-            </asp:Panel>
+            <strong>No Active Officer Election</strong>
+            There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.
         </div>
     </asp:Panel>
     
@@ -77,7 +75,7 @@
     
         <!-- TODO: For users with can_vote=False, do not show this section. -->
         <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
-        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+        <asp:UpdatePanel ID="NominateUpdatePanel" runat="server">
             <ContentTemplate>
                 <!--Display form/data for selected position -->
                 <asp:Panel ID="PanelSelected" CssClass="well" Visible="false" runat="server">
@@ -92,12 +90,12 @@
                 <!-- List of positions -->
                 <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
                      <Columns>
-                        <asp:TemplateField HeaderText="">
+                        <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
+                        <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonSelect" runat="server" commandname="positions" commandargument='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
+                                <asp:Button ID="ButtonSelect" runat="server" CommandName="positions" CommandArguments='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown"/>
                     </Columns>
                 </asp:GridView>
             </ContentTemplate>

@@ -48,7 +48,8 @@ public partial class officer_election : System.Web.UI.Page
     private void DaysLeftInPhase()
     {
         DaysRemaining.Text = "No election is currently in progress.";
-        if(phases.currentPhase == "nullphase")
+        if(phases.currentPhase == "nullphase" ||
+           phases.currentPhase == "")
             return;
         else if(phases.currentPhase != "results")
         {
