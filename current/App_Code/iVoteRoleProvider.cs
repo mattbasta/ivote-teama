@@ -98,7 +98,7 @@ public class iVoteRoleProvider : RoleProvider
             userRoles.Add("admin");
         if (nUser.IsNEC)
             userRoles.Add("nec");
-        if (nUser.IsUnion)  // TODO: Bug 31
+        if (nUser.IsFaculty)
             userRoles.Add("faculty");
         if (nUser.IsUnion)
             userRoles.Add("union");
@@ -121,7 +121,7 @@ public class iVoteRoleProvider : RoleProvider
                 usersInRole.Add(userTemp.Email);
             if (role == "nec" && userTemp.IsNEC)
                 usersInRole.Add(userTemp.Email);
-            if (role == "faculty" && userTemp.IsUnion)  // TODO: Bug 31
+            if (role == "faculty" && userTemp.IsFaculty)
                 usersInRole.Add(userTemp.Email);
             if (role == "union" && userTemp.IsUnion)
                 usersInRole.Add(userTemp.Email);
@@ -141,7 +141,7 @@ public class iVoteRoleProvider : RoleProvider
             return true;
         else if (role == "nec" && nUser.IsNEC)
             return true;
-        else if (role == "faculty" && nUser.IsUnion)  // TODO: Bug 31
+        else if (role == "faculty" && nUser.IsFaculty)
             return true;
         else if (role == "union" && nUser.IsUnion)
             return true;

@@ -47,7 +47,7 @@ public partial class Account_Register : System.Web.UI.Page
                 // Set up the user permissions and such.
                 nUser.IsAdmin = IsAdmin.Checked;
                 nUser.IsNEC = IsNEC.Checked;
-                // nUser.IsFaculty = IsFaculty.Checked; TODO: BUG 31
+                nUser.IsFaculty = IsFaculty.Checked;
                 nUser.IsTenured = IsTenured.Checked;
                 nUser.IsUnion = IsUnion.Checked;
                 nUser.IsBargainingUnit = IsBU.Checked;
