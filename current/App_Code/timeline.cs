@@ -86,7 +86,7 @@ public class timeline
         int[] phase_durations = {7, 7, 7, 7, 7, 7, 7};
         for(int i = 0; i < iter_phases.Length; i++)
             if(currentPhase == iter_phases[i])
-                return (int)dbLogic.currentPhaseEndDateTime().Subtract(DateTime.Now).TotalDays;
+                return (int)dbLogic.currentPhaseEndDateTime().AddDays(phase_durations[i]).Subtract(DateTime.Now).TotalDays;
         return 0;
     }
 

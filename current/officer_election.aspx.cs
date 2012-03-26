@@ -25,6 +25,8 @@ public partial class officer_election : System.Web.UI.Page
     voteCounter vc = new voteCounter();
     ArrayList positions = new ArrayList();
     
+    DatabaseEntities.User user;
+    
     bool is_admin;
 
     private DatabaseEntities.User GetUser(ISession session) {
@@ -35,10 +37,13 @@ public partial class officer_election : System.Web.UI.Page
     {
         
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User user = GetUser(session);
+        user = GetUser(session);
         is_admin = user.IsAdmin;
-        setView(user);
-        
+        setView();
+    }
+    
+    protected void Page_PreRender(object sender, EventArgs e)
+    {
         JulioButtonPanel.Visible = is_admin || user.IsNEC;
         JulioButtonPhase.SelectedValue = phases.currentPhase;
     }
@@ -62,7 +67,7 @@ public partial class officer_election : System.Web.UI.Page
     }
 
     //sends user to homepage based on current phase and the users role
-    protected void setView(DatabaseEntities.User user)
+    protected void setView()
     {
         CancelElection.Visible = true;
         
@@ -243,7 +248,7 @@ public partial class officer_election : System.Web.UI.Page
     protected void JulioButtonCustom_Clicked(Object sender, EventArgs e)
     {
         phases.changePhaseToCurrent(JulioButtonPhase.SelectedValue, true);
-        Response.Redirect("/officer_election.aspx");
+        Response.Redirect("/officer_election.aspx?" + JulioButtonPhase.SelectedValue);
     }
 
     //gridview actions
