@@ -8,14 +8,14 @@
     </ul>
     
     <!--Notifications-->
-    <asp:Panel ID="PanelNominationPending" Visible="false" Enabled="false" runat="server">
+    <asp:Panel ID="PanelNominationPending" Visible="false" runat="server">
         <div id="notifications">
-            <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" Enabled="false" runat="server">
+            <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>You have a nomination pending!</p>
                 <a href="/Nominations.aspx" class="btn btn-primary">View Nomination</a>
             </asp:Panel>
-            <asp:Panel ID="elig_pending" class="alert" Visible="false" Enabled="false" runat="server">
+            <asp:Panel ID="elig_pending" class="alert" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>There are eligibility forms that must be approved.</p>
                 <a href="/approvenominations.aspx" class="btn btn-warning">View Forms</a>
@@ -55,7 +55,7 @@
     
     <asp:ScriptManager runat="server" />
     
-    <asp:Panel ID="OfficerStateless" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerStateless" Visible="false" runat="server">
         <div class="alert alert-info">
             <strong>No Active Officer Election</strong>
             There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.
@@ -63,7 +63,7 @@
     </asp:Panel>
     
     
-    <asp:Panel ID="OfficerNominate" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerNominate" Visible="false" runat="server">
         <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
 
         <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
@@ -101,7 +101,7 @@
             </ContentTemplate>
         </asp:UpdatePanel>
     </asp:Panel>
-    <asp:Panel ID="OfficerNominationAccept" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerNominationAccept" Visible="false" runat="server">
         <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
         
         <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
@@ -113,7 +113,7 @@
     </asp:Panel>
     
     <!--Slate Approval -->
-    <asp:Panel ID="OfficerSlate" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerSlate" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Slate Approval</h1>
             NEC Members:  Please review and approve the slate below.  If there is a strong reason not to approve the slate, 
@@ -196,7 +196,7 @@
     <!--End Slate Approval-->
 
     <!--Petition-->
-    <asp:Panel ID="OfficerPetition" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerPetition" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Petition Period</h1>
             The current election is in the petition phase.  You can petition yourself or other faculty 
@@ -289,7 +289,7 @@
     <!--End Petition-->
 
     <!--Acceptance 2 phase-->
-    <asp:Panel ID="OfficerPetitionAccept" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerPetitionAccept" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Petition Acceptance Period</h1>
             The current election is in a petition acceptance period.  This period acts as a buffer to give extra time to accept petition-based nominations.
@@ -310,7 +310,7 @@
 
     <!--Approval-->
         <!--Only admin will see this phase-->
-    <asp:Label ID="OfficerApproval" runat="server" Enabled="false" Visible="false">
+    <asp:Label ID="OfficerApproval" runat="server" Visible="false">
         <div id="bodyCopy">
             <h1>Eligibility Approval Period</h1>
             This is a special phase that will end as soon as all eligibility forms have been approved or disapproved.
@@ -330,7 +330,7 @@
     <!--End Approval-->
 
     <!--Voting-->
-    <asp:Panel ID="OfficerVoting" Enabled="false" visible="false" runat="server">
+    <asp:Panel ID="OfficerVoting" visible="false" runat="server">
 
         <div id="bodyCopy">
             <h1>Voting Period</h1>
@@ -414,7 +414,7 @@
     <!--End Voting-->
 
     <!--Results-->
-    <asp:Panel ID="OfficerResults" Visible="false" Enabled="false" style="text-align: center;" runat="server">
+    <asp:Panel ID="OfficerResults" Visible="false" style="text-align: center;" runat="server">
             <h1>Results of the Election</h1><br />
             
             <asp:GridView ID="resultList" CssClass="simpleGrid" OnRowCommand="resultList_RowCommand" style="margin-left: auto; margin-right: auto;" AutoGenerateColumns="false" runat="server">
