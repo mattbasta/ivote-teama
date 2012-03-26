@@ -20,6 +20,16 @@
     font-size: 1.2em;
 }
 
+.juliobuttonbox {
+    border-top: 1px solid #ddd;
+    padding-top: 1em;
+}
+
+#MainContent_EmptyPositions,
+#MainContent_positionsList {
+    margin-top: 18px;
+}
+
 
 /* MISC  
 ----------------------------------------------------------*/

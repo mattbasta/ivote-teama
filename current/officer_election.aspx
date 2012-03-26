@@ -8,14 +8,14 @@
     </ul>
     
     <!--Notifications-->
-    <asp:Panel ID="PanelNominationPending" Visible="false" Enabled="false" runat="server">
+    <asp:Panel ID="PanelNominationPending" Visible="false" runat="server">
         <div id="notifications">
-            <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" Enabled="false" runat="server">
+            <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>You have a nomination pending!</p>
                 <a href="/Nominations.aspx" class="btn btn-primary">View Nomination</a>
             </asp:Panel>
-            <asp:Panel ID="elig_pending" class="alert" Visible="false" Enabled="false" runat="server">
+            <asp:Panel ID="elig_pending" class="alert" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>There are eligibility forms that must be approved.</p>
                 <a href="/approvenominations.aspx" class="btn btn-warning">View Forms</a>
@@ -27,25 +27,43 @@
         <h1>Officer Election</h1>
     </div>
     
-    <div class="well">
-        <strong>Current Phase:</strong> 
-    </div>
-    
-    <asp:ScriptManager runat="server" />
-    
-    <asp:Panel ID="OfficerStateless" Enabled="false" Visible="false" runat="server">
-        <div class="alert alert-info">
-            <strong>No Active Officer Election</strong>
-            There are currently no active election phases. This could mean that there is no election running, or that there is no 
-            action required on your part at this time.
-        </div>
-        <asp:Panel id="functions_stateless" style="margin-top:10px;" visible="false" runat="server">
-            <a class="btn" href="/controlRoom.aspx">Initiate Officer Election</a>
+    <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well">
+        <asp:Hyperlink ID="CancelElection" Visible="true" Text="Cancel Election"
+                NavigateUrl="/terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
+        <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
+        <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
+        <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
+            <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
+                    CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
+            or switch to
+            <asp:DropDownList runat="server" ID="JulioButtonPhase">
+                <asp:ListItem Value="nominate">Nomination</asp:ListItem>
+                <asp:ListItem Value="accept1">Nomination Acceptance</asp:ListItem>
+                <asp:ListItem Value="slate">Slate</asp:ListItem>
+                <asp:ListItem Value="petition">Petition</asp:ListItem>
+                <asp:ListItem Value="accept2">Petition Acceptance</asp:ListItem>
+                <asp:ListItem Value="approval">Approval</asp:ListItem>
+                <asp:ListItem Value="vote">Voting</asp:ListItem>
+            </asp:DropDownList>
+            <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
+                    CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
+        </asp:Panel>
+        <asp:Panel ID="FunctionsStateless" Visible="false" runat="server" CssClass="juliobuttonbox">
+            <a class="btn btn-primary" href="/initiate.aspx">Initiate Officer Election</a>
         </asp:Panel>
     </asp:Panel>
     
+    <asp:ScriptManager runat="server" />
     
-    <asp:Panel ID="OfficerNominate" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerStateless" Visible="false" runat="server">
+        <div class="alert alert-info">
+            <strong>No Active Officer Election</strong>
+            There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.
+        </div>
+    </asp:Panel>
+    
+    
+    <asp:Panel ID="OfficerNominate" Visible="false" runat="server">
         <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
 
         <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
@@ -57,7 +75,7 @@
     
         <!-- TODO: For users with can_vote=False, do not show this section. -->
         <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
-        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+        <asp:UpdatePanel ID="NominateUpdatePanel" runat="server">
             <ContentTemplate>
                 <!--Display form/data for selected position -->
                 <asp:Panel ID="PanelSelected" CssClass="well" Visible="false" runat="server">
@@ -72,18 +90,18 @@
                 <!-- List of positions -->
                 <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
                      <Columns>
-                        <asp:TemplateField HeaderText="">
+                        <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
+                        <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonSelect" runat="server" commandname="positions" commandargument='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
+                                <asp:Button ID="ButtonSelect" runat="server" CommandName="positions" CommandArguments='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown"/>
                     </Columns>
                 </asp:GridView>
             </ContentTemplate>
         </asp:UpdatePanel>
     </asp:Panel>
-    <asp:Panel ID="OfficerNominationAccept" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerNominationAccept" Visible="false" runat="server">
         <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
         
         <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
@@ -95,7 +113,7 @@
     </asp:Panel>
     
     <!--Slate Approval -->
-    <asp:Panel ID="lblSlate" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerSlate" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Slate Approval</h1>
             NEC Members:  Please review and approve the slate below.  If there is a strong reason not to approve the slate, 
@@ -178,7 +196,7 @@
     <!--End Slate Approval-->
 
     <!--Petition-->
-    <asp:Panel ID="lblPetition" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerPetition" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Petition Period</h1>
             The current election is in the petition phase.  You can petition yourself or other faculty 
@@ -271,7 +289,7 @@
     <!--End Petition-->
 
     <!--Acceptance 2 phase-->
-    <asp:Panel ID="lblAccept2" Enabled="false" Visible="false" runat="server">
+    <asp:Panel ID="OfficerPetitionAccept" Visible="false" runat="server">
         <div id="bodyCopy">
             <h1>Petition Acceptance Period</h1>
             The current election is in a petition acceptance period.  This period acts as a buffer to give extra time to accept petition-based nominations.
@@ -292,7 +310,7 @@
 
     <!--Approval-->
         <!--Only admin will see this phase-->
-    <asp:Label ID="lblApproval" runat="server" Enabled="false" Visible="false">
+    <asp:Label ID="OfficerApproval" runat="server" Visible="false">
         <div id="bodyCopy">
             <h1>Eligibility Approval Period</h1>
             This is a special phase that will end as soon as all eligibility forms have been approved or disapproved.
@@ -312,7 +330,7 @@
     <!--End Approval-->
 
     <!--Voting-->
-    <asp:Panel ID="lblVoting" Enabled="false" visible="false" runat="server">
+    <asp:Panel ID="OfficerVoting" visible="false" runat="server">
 
         <div id="bodyCopy">
             <h1>Voting Period</h1>
@@ -396,7 +414,7 @@
     <!--End Voting-->
 
     <!--Results-->
-    <asp:Panel ID="lblResults" Visible="false" Enabled="false" style="text-align: center;" runat="server">
+    <asp:Panel ID="OfficerResults" Visible="false" style="text-align: center;" runat="server">
             <h1>Results of the Election</h1><br />
             
             <asp:GridView ID="resultList" CssClass="simpleGrid" OnRowCommand="resultList_RowCommand" style="margin-left: auto; margin-right: auto;" AutoGenerateColumns="false" runat="server">
