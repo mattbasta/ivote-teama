@@ -41,11 +41,8 @@
                 <asp:RequiredFieldValidator ID="RequiredFieldValidator2" CssClass="red" ControlToValidate="TextBoxMessage" runat="server" ErrorMessage="You must type a message to send to all users." />
             </asp:Panel>
             <asp:Panel ID="PanelComplete" Visible="false" Enabled="false" runat="server">
-                The election has been offically terminated.<br />
-                All records associated with this election have been deleted.<br />
-                Email to all users successfully sent.<br /> <br />
-                <b>The system is considered reset and you may begin a new election at any time.</b><br /><br />
-                <a href="home.aspx">Return to the homepage</a>
+                <p>The election has been offically terminated. All associated records have been successfully deleted and termination emails have been distributed to users.</p>
+                <a class="btn btn-primary" href="/home.aspx">Return to the homepage</a>
             </asp:Panel>
         </ContentTemplate>
     </asp:UpdatePanel>

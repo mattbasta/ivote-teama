@@ -10,6 +10,7 @@ using System.Data;
 public class timeline
 {
     databaseLogic dbLogic = new databaseLogic();
+    VerifyEmail email = new VerifyEmail();
     public string currentPhase = "";
 
     public timeline()
@@ -17,39 +18,76 @@ public class timeline
         currentPhase = dbLogic.currentPhase();
 	}
 
-    //checks if it's the first time the specified phase has occured in the timeline
-    public bool firstTimeOccurence(string phase_name)
+    public bool changePhaseToCurrent(string phase, bool force=false)
     {
-        if (dbLogic.currentPhase() == phase_name) //not first time
+        if(dbLogic.currentPhase() == phase)
             return false;
-        else //first time
+        
+        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
+        int changed_to = 0;
+        for(int i = 0; i < iter_phases.Length; i++)
         {
-            //goes into timeline table and turns off all phases except the new current phase
-            dbLogic.selectPhaseNames();
-            DataSet phaseSet = dbLogic.getResults();
-            DataRow dr;
-            for (int i = 0; i < phaseSet.Tables["query"].Rows.Count; i++)
+            if(phase == iter_phases[i])
             {
-                String row_name = phaseSet.Tables["query"].Rows[i]["name_phase"].ToString();
-                if (row_name == phase_name)
-                    dbLogic.turnOnPhase(row_name);
-                else
-                    dbLogic.turnOffPhase(row_name);
+                dbLogic.turnOnPhase(iter_phases[i]);
+                changed_to = i;
+                break;
             }
-            return true;
-        }
-    }
-
-    public bool changePhaseToCurrent(string phase)
-    {
-        string[] iter_phases = {"nominate", "accept1", "petition", "accept2", "vote", "slate", "approval", "result"};
-        foreach(string i in iter_phases)
-        {
-            if(phase == i) dbLogic.turnOnPhase(i);
-            else dbLogic.turnOffPhase(i);
         }
         
-        return dbLogic.currentPhase() == phase;
+        if(dbLogic.canSkipPhase() && !force)
+            return changePhaseToCurrent(iter_phases[changed_to + 1]);
+        
+        switch(phase)
+        {
+            case "nominate":
+                email.phaseNomination();
+                break;
+            case "accept1":
+                email.phaseAccept1();
+                break;
+            case "slate":
+                email.phaseSlate();
+                break;
+            case "petition":
+                email.phasePetition();
+                dbLogic.phase_ClearNullNominations();
+                break;
+            case "accept2":
+                email.phaseAccept2();
+                break;
+            case "approval":
+                email.phaseApproval();
+                break;
+            case "vote":
+                email.phaseVote();
+                dbLogic.phase_ClearNullNominations();
+                break;
+            case "result":
+                email.phaseResults();
+                break;
+        }
+        
+        return true;
+    }
+
+    public bool bumpPhase()
+    {
+        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
+        for(int i = 0; i < iter_phases.Length - 1; i++)
+            if(currentPhase == iter_phases[i])
+                return changePhaseToCurrent(iter_phases[i + 1]);
+        return false;
+    }
+
+    public int daysRemaining()
+    {
+        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote"};
+        int[] phase_durations = {7, 7, 7, 7, 7, 7, 7};
+        for(int i = 0; i < iter_phases.Length; i++)
+            if(currentPhase == iter_phases[i])
+                return (int)dbLogic.currentPhaseEndDateTime().AddDays(phase_durations[i]).Subtract(DateTime.Now).TotalDays;
+        return 0;
     }
 
 }

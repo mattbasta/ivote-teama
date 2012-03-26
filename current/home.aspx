@@ -10,7 +10,7 @@
     <asp:ScriptManager ID="ScriptManager1" runat="server" />
     
     <!--Notifications-->
-    <asp:Panel ID="PanelNominationPending" Visible="false" Enabled="false" runat="server">
+    <asp:Panel ID="PanelNominationPending" Visible="false" runat="server">
         <div id="notifications">
             <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" Enabled="false" runat="server">
                 <strong>Notification</strong>

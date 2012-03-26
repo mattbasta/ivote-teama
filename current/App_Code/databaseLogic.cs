@@ -520,17 +520,13 @@ public class databaseLogic
 
     public void updateVotePhase()
     {
-        genericQueryInserter("UPDATE timeline SET datetime_end =  DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
+        genericQueryInserter("UPDATE timeline SET datetime_end = DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
     }
 
     public void turnOnPhase(string phase)
     {
-        genericQueryUpdater("UPDATE timeline set iscurrent= 1 WHERE name_phase = '" + phase + "';");
-    }
-
-    public void turnOffPhase(string phase)
-    {
-        genericQueryUpdater("UPDATE timeline set iscurrent= 0 WHERE name_phase = '" + phase + "';");
+        genericQueryUpdater("UPDATE timeline SET iscurrent = 0 WHERE 1;");
+        genericQueryUpdater("UPDATE timeline SET iscurrent = 1, datetime_end = NOW() WHERE name_phase = '" + phase + "';");
     }
 
     public string currentPhase()
@@ -548,7 +544,23 @@ public class databaseLogic
         {
             closeConnection();
         }
-        
+    }
+
+    public DateTime currentPhaseEndDateTime()
+    {
+        try
+        {
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT datetime_end FROM timeline WHERE iscurrent = 1;", connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            return DateTime.Parse(ds.Tables[0].Rows[0].ItemArray[0].ToString());
+        }
+        catch { return DateTime.Now; }
+        finally
+        {
+            closeConnection();
+        }
     }
 
     //^^^^^^^^^^nomination_accept^^^^^^^^^^
@@ -738,7 +750,7 @@ public class databaseLogic
     public void getPosAndWinner()
     {
         // TODO: Update this
-        genericQuerySelector("SELECT R.position, R.id_union, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM results R, union_members UM  WHERE UM.idunion_members = R.id_union;");
+        genericQuerySelector("SELECT position, id_union FROM results;");
     }
 
     public void insertWinners(string position, int id)
@@ -789,10 +801,16 @@ public class databaseLogic
     }
 
     //create timeline
-    public void createTimeline(String[] Date, String[] Time, string ElectionNum)
+    public void createTimeline()
     {
         int id_num;
         openConnection();
+        
+        resetElection();
+        
+        genericQueryInserter("INSERT INTO election (name) VALUES ('Officer Election');" +
+                             "INSERT INTO flag_NEC values(1,1,0,0)");
+        
         adapter = new MySqlDataAdapter("select * from timeline;", connection);
         ds = new DataSet();
         adapter.Fill(ds, "blah");
@@ -807,70 +825,10 @@ public class databaseLogic
             id_num = Convert.ToInt32(ds.Tables[0].Rows[0].ItemArray[0]) + 1;
         }
         //inserts//
-        //null phase
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'nullphase'," + "STR_TO_DATE('" + Date[0] + " " + Time[0] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
+        string[] iter_phases = {"nullphase", "nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
 
-        //nominate phase
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'nominate'," + "STR_TO_DATE('" + Date[1] + " " + Time[1] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //first acceptance phase
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'accept1'," + "STR_TO_DATE('" + Date[2] + " " + Time[2] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //slate
-        //this phase is ended when slate is approved
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'slate'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //petition phase
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'petition'," + "STR_TO_DATE('" + Date[3] + " " + Time[3] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //second acceptance phase
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'accept2'," + "STR_TO_DATE('" + Date[4] + " " + Time[4] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //approval
-        //this phase is ended when all eligibility is checked.
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'approval'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //vote
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'vote'," + "STR_TO_DATE('" + Date[5] + " " + Time[5] + "','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
-        id_num++;
-
-        //results
-        //this phase is ended by a button push, so throw in a fake end date 1/1/2100 at 00:00
-        cmd.CommandText = "Insert into timeline values(" + id_num.ToString() + "," + ElectionNum + "," + "'result'," + "STR_TO_DATE('01/01/2100 00:00','%m/%d/%Y %H:%i'), '0');";
-        cmd.Connection = connection;
-        cmd.CommandType = CommandType.Text;
-        cmd.ExecuteNonQuery();
+        foreach(string phase in iter_phases)
+            genericQueryInserter("INSERT INTO timeline (idelection, name_phase, datetime_end, iscurrent) VALUES (1, '" + phase + "', NOW(), " + (phase == "nominate" ? '1' : '0') + ");");
     }
 
     /********************************
@@ -935,6 +893,12 @@ public class databaseLogic
      * ******************************************/
     public bool canSkipPhase()
     {
+        string cp = currentPhase();
+        if(cp == "approval")
+            return canSkipAdminPhase();
+        else if(cp != "accept1")
+            return false;
+        
         openConnection();
         adapter = new MySqlDataAdapter("select * from nomination_accept where accepted is NULL;", connection);
         ds = new DataSet();
