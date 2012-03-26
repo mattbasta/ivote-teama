@@ -104,7 +104,7 @@ $(document).ready(function() {
                 <div class="controls">
                     <label class="checkbox"><asp:CheckBox ID="IsAdmin" runat="server" /> Administrator</label>
                     <label class="checkbox"><asp:CheckBox ID="IsNEC" runat="server" /> NEC</label>
-                    <!-- <label class="checkbox"><asp:CheckBox ID="IsFaculty" runat="server" /> Faculty</label> TODO: BUG 31 -->
+                    <label class="checkbox"><asp:CheckBox ID="IsFaculty" runat="server" /> Faculty</label>
                     <label class="checkbox"><asp:CheckBox ID="IsTenured" runat="server" /> Tenured Faculty</label>
                     <label class="checkbox"><asp:CheckBox ID="IsUnion" runat="server" /> Union Member</label>
                     <label class="checkbox"><asp:CheckBox ID="IsBU" runat="server" /> Bargaining Unit</label>
