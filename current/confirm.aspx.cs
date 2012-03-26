@@ -20,26 +20,24 @@ public partial class confirm : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        String code = getQueryValue(); //retrieves query value from url
+        String code = Request.QueryString["x"]; //retrieves query value from url
         String idunionQuery = "SELECT iduser FROM email_verification WHERE code_verified=" + code + ";";
-        String[] FirstLast = new String[2];
 
         //if there is a query code in the url
         if (code != "")
         {
             //retrieves timestamp from db (for testing purposes). if code is incorrect will return empty string
-            String name = dbLogic.checkConfirmCode(code);
+            String id = dbLogic.checkConfirmCode(code);
 
-            if (name != "")
+            if (id != "")
             {
                 PanelHide.Visible = true;
                 PanelError.Visible = false;
                 //if code exists
-                //Pull First and Last name from union_members and add to congrats message!
-                String getNames = "SELECT last_name, first_name, email FROM union_members WHERE idunion_members='" + name + "';";
-                FirstLast = getNameOfUser(getNames);
-                LabelFeedback.Text = "Hello <b>" + FirstLast[1] + " " + FirstLast[0] + "</b>. Thank you for verifying your account.<br />Please set up your new password below to complete your new account's activation.";
-                HiddenFieldPassword.Value = FirstLast[2];
+                DatabaseEntities.User user = getUser(int.Parse(id));
+
+                LabelFeedback.Text = "Hello <b>" + user.FirstName + " " + user.LastName + "</b>. Thank you for verifying your account.<br />Please set up your new password below to complete your new account's activation.";
+                HiddenFieldPassword.Value = user.Email;
                 fullCode = code;
             }
             else
@@ -58,19 +56,6 @@ public partial class confirm : System.Web.UI.Page
             PanelError.Visible = true;
         }
 
-        //LabelFeedback.Text = dbLogic.checkConfirmCode(code) + "!";
-    }
-
-    //gets the query value ONLY, if it exists
-    protected String getQueryValue()
-    {
-        if (Request.QueryString.ToString() != "")
-        {
-            String[] commandArgs = Request.QueryString.ToString().Split(new char[] { '=' }); //splits querystring into variable name and value
-            return commandArgs[1]; //returns query value
-        }
-        else
-            return "";
     }
 
     protected void ButtonSave_Clicked(object sender, EventArgs e)
@@ -82,7 +67,6 @@ public partial class confirm : System.Web.UI.Page
             DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, HiddenFieldPassword.Value);
             DatabaseEntities.User.UpdatePassword(session, user, TextBoxPassword.Text, "");
 
-            //dbLogic.updatePassword(HiddenFieldPassword.Value, encryptionHelper.encrypt(TextBoxPassword.Text)); //inserts new encrypted password
             dbLogic.deleteCode(fullCode); //deletes code row from database
 
             //Make form invisible
@@ -95,15 +79,12 @@ public partial class confirm : System.Web.UI.Page
     }
 
 
-    // gets first and last name of user (NOT FINISHED AS OF 8:49pm 10/4)
-    protected String[] getNameOfUser(String id)
+    // Gets user object form database based on ID
+    protected DatabaseEntities.User getUser(int id)
     {
-        DataSet ds = dbLogic.getFirstAndLast(id);
-        String[] name = new String[3];
-        name[0] = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-        name[1] = ds.Tables[0].Rows[0].ItemArray[1].ToString();
-        name[2] = ds.Tables[0].Rows[0].ItemArray[2].ToString();
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, id);
 
-        return name;
+        return user;
     }
 }
