@@ -67,7 +67,10 @@ public partial class Account_Register : System.Web.UI.Page
 
                 // passes arguments to this class where it will send the email
                 string[] emailAddress = { user };
-                sendEmail.verify(nUser.ID, emailAddress, emailMessage);
+
+                //Grab user again to update ID
+                User testUser = DatabaseEntities.User.FindUser(session, nUser.Email);
+                sendEmail.verify(testUser.ID, emailAddress, emailMessage);
 
                 SuccessPanel.Visible = true;
             }
