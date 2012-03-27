@@ -32,7 +32,6 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
     protected void search(object sender, EventArgs e)
     {
          string query = txtSearch.Text;
-         Response.Write("Searching for " + query);
 
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ListViewUsers.DataSource = session.CreateCriteria(typeof(DatabaseEntities.User))
@@ -40,7 +39,6 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
                                      Restrictions.Like("LastName", "%" + query + "%")))
                 .List<DatabaseEntities.User>();
 
-        Response.Write("Users: " + ((List<DatabaseEntities.User>)ListViewUsers.DataSource).Count);
         ListViewUsers.DataBind();
 
         ListViewUsers.Visible = true;
@@ -78,6 +76,8 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
 
         string[] petitionInfo = {HiddenFieldId.Value, DropDownListPostions.SelectedItem.Text , userObject.ID.ToString()};
 
+        Response.Write(petitionInfo.ToString());
+
         //submit request
         if (!dbLogic.isUserEnteringPetitionTwice(petitionInfo)) //checks if user has already entered this petition
         {
@@ -97,6 +97,7 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
             }
             else
             {
+                Response.Write("0: " + petitionInfo[0] + " 1: " + petitionInfo[1] + " 2: " + petitionInfo[2]);
                 dbLogic.insertPetition(petitionInfo);
                 if (dbLogic.countPetitionsForPerson(petitionInfo) == 1)
                 {

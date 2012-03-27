@@ -9,7 +9,6 @@
 To start or sign a petition for a faculty member to be on the upcoming slate, please search for them below and then click "Start Petition".
 
 <asp:ToolkitScriptManager runat="server" />
-<asp:UpdatePanel ID="UpdatePanel" runat="server" UpdateMode="Conditional">
 <Triggers>
 <asp:PostBackTrigger ControlID="ButtonSubmit" />
 </Triggers>
@@ -50,10 +49,9 @@ To start or sign a petition for a faculty member to be on the upcoming slate, pl
         </asp:ListView>
     </table>
 </ContentTemplate>
-        </asp:UpdatePanel>
 
     <asp:Panel ID="PanelChoosePosition" CssClass="modalPopup" runat="server">
-        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+
             <ContentTemplate>
                 <asp:Label ID="LabelChoosPosition" runat="server" Text="" /><br /><br />
                 <asp:HiddenField ID="HiddenFieldName" runat="server" />
@@ -63,7 +61,7 @@ To start or sign a petition for a faculty member to be on the upcoming slate, pl
                 <asp:Button ID="ButtonSubmit" runat="server" OnClick="ButtonSubmit_Clicked" Text="Submit Your Petition" />
                 <asp:Button ID="ButtonCancel" runat="server" OnClick="ButtonCancel_Clicked" Text="Cancel" />
              </ContentTemplate>
-        </asp:UpdatePanel>
+
     </asp:Panel>
 
     <asp:Button ID="Button1" runat="server" Text="" style="display: none" />
