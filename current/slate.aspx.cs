@@ -6,6 +6,12 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 using System.Web.Security;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Cfg;
 
 //Created by Adam Blank, 11/8/2011
 
@@ -16,12 +22,16 @@ public partial class slate : System.Web.UI.Page
     {
         if (!Page.IsPostBack)
         {
+
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, HttpContext.Current.User.Identity.Name);
+
             dbLogic.selectAllBallotPositions();
             DataSet emailSet = dbLogic.getResults();
             ListViewPositions.DataSource = emailSet;
             ListViewPositions.DataBind();
 
-            if (dbLogic.isUserNewVoter(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)))
+            if (dbLogic.isUserNewVoter(userObject.ID))
             {
                 PanelSlateWrapper.Enabled = true;
                 PanelSlateWrapper.Visible = true;
@@ -154,6 +164,9 @@ public partial class slate : System.Web.UI.Page
 
     protected void ButtonSubmitVotes_Clicked(object sender, EventArgs e)
     {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, HttpContext.Current.User.Identity.Name);
+
         foreach (ListViewDataItem myItem in ListViewPositions.Items)
         {
             LinkButton LinkButtonPosition = (LinkButton)myItem.FindControl("LinkButtonPostions");
@@ -174,7 +187,7 @@ public partial class slate : System.Web.UI.Page
         string code = getRanString();
 
         //set flag that user has voted
-        dbLogic.insertFlagVoted(dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name), code);
+        dbLogic.insertFlagVoted(userObject.ID, code);
 
         //hide slate
         PanelSlateWrapper.Enabled = false;
