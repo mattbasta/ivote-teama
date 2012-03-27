@@ -34,15 +34,15 @@ To start or sign a petition for a faculty member to be on the upcoming slate, pl
             <ItemTemplate>
                 <tr>
                     <td >
-                        <asp:Label ID="LabelName" text='<%#Eval("last_name") + ", " + Eval("first_name") %>' runat="server" />
+                        <asp:Label ID="LabelName" text='<%#Eval("LastName") + ", " + Eval("FirstName") %>' runat="server" />
                     </td>
                     <td >
-                        <asp:Label ID="Label1" text='<%#Eval("department") %>' runat="server" />
+                        <asp:Label ID="Label1" text='<%#Eval("Department") %>' runat="server" />
                     </td>
                     <td >
                        <asp:Button ID="ButtonNominate" 
                            commandname="nominate"
-                           commandargument='<%#Eval("idunion_members") %>' 
+                           commandargument='<%#Eval("ID") %>' 
                            text="Submit Petition" runat="server" />                
                     </td>
                 </tr>
