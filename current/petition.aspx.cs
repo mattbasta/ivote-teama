@@ -5,6 +5,13 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Cfg;
 
 public partial class wwwroot_experimental_petition : System.Web.UI.Page
 {
@@ -24,25 +31,34 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
 
     protected void search(object sender, EventArgs e)
     {
-        dbLogic.SelectPeopleFromSearch(txtSearch.Text);
-        DataSet emailSet = dbLogic.getResults();
-        ListViewUsers.DataSource = emailSet;
-        ListViewUsers.DataBind();
-        ListViewUsers.Visible = true;
+         string query = txtSearch.Text;
+         Response.Write("Searching for " + query);
 
-        //loadConfirmPopup();
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ListViewUsers.DataSource = session.CreateCriteria(typeof(DatabaseEntities.User))
+                .Add(Restrictions.Or(Restrictions.Like("FirstName", "%" + query + "%"),
+                                     Restrictions.Like("LastName", "%" + query + "%")))
+                .List<DatabaseEntities.User>();
+
+        Response.Write("Users: " + ((List<DatabaseEntities.User>)ListViewUsers.DataSource).Count);
+        ListViewUsers.DataBind();
+
+        ListViewUsers.Visible = true;
 
         if (txtSearch.Text != "")
             btnViewAll.Visible = true;
     }
 
     protected void ListViewUsers_ItemCommand(Object sender, ListViewCommandEventArgs e)
-    {
+    {        
         if (String.Equals(e.CommandName, "nominate"))
         {
-            LabelChoosPosition.Text = "Please select the position you would<br /> like " + dbLogic.selectFullName(e.CommandArgument.ToString()) + " to be petitioned for:";
-            ButtonSubmit.OnClientClick = "return confirm('Are you sure you want to start this petition for " + dbLogic.selectFullName(e.CommandArgument.ToString()) + "?\\n(If accepted, you will not be able to withdraw your petition  later.)')";
-            HiddenFieldName.Value = dbLogic.selectFullName(e.CommandArgument.ToString());
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, int.Parse(e.CommandArgument.ToString()));
+
+            LabelChoosPosition.Text = "Please select the position you would<br /> like " + userObject.FirstName + " " + userObject.LastName + " to be petitioned for:";
+            ButtonSubmit.OnClientClick = "return confirm('Are you sure you want to start this petition for " + userObject.FirstName + " " + userObject.LastName + "?\\n(If accepted, you will not be able to withdraw your petition  later.)')";
+            HiddenFieldName.Value = userObject.FirstName + " " + userObject.LastName;
             HiddenFieldId.Value = e.CommandArgument.ToString();
 
             PopupControlExtender1.Show();
@@ -57,7 +73,10 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
 
     protected void ButtonSubmit_Clicked(object sender, EventArgs e)
     {
-        string[] petitionInfo = {HiddenFieldId.Value, DropDownListPostions.SelectedItem.Text , dbLogic.returnUnionIDFromUsername(HttpContext.Current.User.Identity.Name)};
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, HttpContext.Current.User.Identity.Name);
+
+        string[] petitionInfo = {HiddenFieldId.Value, DropDownListPostions.SelectedItem.Text , userObject.ID.ToString()};
 
         //submit request
         if (!dbLogic.isUserEnteringPetitionTwice(petitionInfo)) //checks if user has already entered this petition
