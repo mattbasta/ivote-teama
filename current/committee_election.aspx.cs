@@ -132,30 +132,43 @@ public partial class committee_election : System.Web.UI.Page
         nominations_tab.Attributes["class"] = "";
         wts_tab.Attributes["class"] = "";
         
+        AdminWTSPanel.Visible = false;
+        AdminNominationsPanel.Visible = false;
+        AdminVotingPanel.Visible = false;
+        AdminCertificationPanel.Visible = false;
+        AdminConflictPanel.Visible = false;
+        AdminClosedPanel.Visible = false;
+        
         switch(tab_name) {
             case "WTSPhase":
                 wts_tab.Visible = true;
                 wts_tab.Attributes["class"] = "active";
+                AdminWTSPanel.Visible = true;
                 break;
             case "NominationPhase":
                 nominations_tab.Visible = true;
                 nominations_tab.Attributes["class"] = "active";
+                AdminNominationsPanel.Visible = true;
                 break;
             case "VotePhase":
                 votes_tab.Visible = true;
                 votes_tab.Attributes["class"] = "active";
+                AdminVotingPanel.Visible = true;
                 break;
             case "CertificationPhase":
                 certifications_tab.Visible = true;
                 certifications_tab.Attributes["class"] = "active";
+                AdminCertificationPanel.Visible = true;
                 break;
             case "ConflictPhase":
                 conflicts_tab.Visible = true;
                 conflicts_tab.Attributes["class"] = "active";
+                AdminConflictPanel.Visible = true;
                 break;
             case "ClosedPhase":
                 closed_tab.Visible = true;
                 closed_tab.Attributes["class"] = "active";
+                AdminClosedPanel.Visible = true;
                 break;
             default:
                 throw new HttpException(500, "Unexpected election phase.");
