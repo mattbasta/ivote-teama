@@ -29,6 +29,8 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
             IList<DatabaseEntities.CommitteeElection> active_election =
                     session.CreateCriteria(typeof(DatabaseEntities.CommitteeElection))
                                .Add(Restrictions.Eq("PertinentCommittee", committee.ID))
+                               .Add(Restrictions.Not(
+                                        Restrictions.Eq("Phase", DatabaseEntities.ElectionPhase.ClosedPhase)))
                                .List<DatabaseEntities.CommitteeElection>();
             
             TableRow tr = new TableRow();

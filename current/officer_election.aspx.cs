@@ -256,18 +256,15 @@ public partial class officer_election : System.Web.UI.Page
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         DatabaseEntities.User user = GetUser(session);
-        if (String.Equals(e.CommandName, "positions"))
-        {
-            PanelSelected.Visible = true; //makes the panel visible to the user
-            LabelSelected.Text = "<h3>Info for " + e.CommandArgument + ":</h3>" +
-                                 "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandArgument.ToString()) + "</p>";
-            ButtonWTS.Text = "Nominate me for " + e.CommandArgument;
-            ButtonNominate.Text = "Nominate a user for " + e.CommandArgument;
-            HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
-            ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
-                                                         e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
-                                                                                                            e.CommandArgument.ToString());
-        }
+        PanelSelected.Visible = true; //makes the panel visible to the user
+        LabelSelected.Text = "<h3>Info for " + e.CommandArgument + ":</h3>" +
+                             "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandArgument.ToString()) + "</p>";
+        ButtonWTS.Text = "Nominate me for " + e.CommandArgument;
+        ButtonNominate.Text = "Nominate a user for " + e.CommandArgument;
+        HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
+        ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
+                                                     e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
+                                                                                                        e.CommandArgument.ToString());
     }
 
     //check if the user has a nomination pending
