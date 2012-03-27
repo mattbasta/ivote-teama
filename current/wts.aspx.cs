@@ -14,7 +14,7 @@ using NHibernate.Cfg;
 
 public partial class experimental_WTS : System.Web.UI.Page
 {
-    
+
     databaseLogic dbLogic = new databaseLogic();
     DataSet ds = new DataSet();
     string query = "";
@@ -25,93 +25,95 @@ public partial class experimental_WTS : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-            string position = Request.QueryString["position"];
-            int positionID;
-            string committee = Request.QueryString["committee"];
-            int committeeID;
+        string position = Request.QueryString["position"];
+        int positionID;
+        string committee = Request.QueryString["committee"];
+        int committeeID;
 
- 
-                //Election ID is a number
 
-                //Check if is legacy officer election
-                if (position != null && int.TryParse(position, out positionID))
+        //Election ID is a number
+
+        //Check if is legacy officer election
+        if (position != null && int.TryParse(position, out positionID))
+        {
+            string queryVal = positionID.ToString(); //variable name of querystring
+            string positionTitle = dbLogic.selectPositionFromID(queryVal);
+            LabelHeader.Text = positionTitle + " Willingness To Serve Form:";
+            LabelExplain.Text = "If you are willing to hold a place in office as " + positionTitle + ", please fill out the following form:";
+            HiddenFieldPosition.Value = positionTitle;
+
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
+            id = userObject.ID.ToString();
+
+            ds = dbLogic.getResults();
+            info = new string[3] { id, id, HiddenFieldPosition.Value };
+
+            Name.Text = userObject.FirstName + " " + userObject.LastName;
+            Dept.Text = userObject.Department.ToString();
+
+            if (!String.IsNullOrEmpty(positionTitle))
+                Submit.Enabled = true;
+        }
+        //Check if is committee election
+        else if (committee != null && int.TryParse(committee, out committeeID))
+        {
+            //Open session
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            ITransaction transaction = session.BeginTransaction();
+
+            //Check if election exists
+            electionObject = DatabaseEntities.CommitteeElection.FindElection(session, committeeID);
+
+            if (electionObject != null && electionObject.Phase == DatabaseEntities.ElectionPhase.WTSPhase)
+            {
+                //Election is valid and in WTS phase.
+
+                //Lookup committee
+                DatabaseEntities.Committee committeeObject = DatabaseEntities.Committee.FindCommittee(session, electionObject.PertinentCommittee);
+
+
+                //Get user
+                userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
+                Name.Text = userObject.FirstName + " " + userObject.LastName;
+                Dept.Text = userObject.Department.ToString();
+
+                //Check if WTS already exists
+                List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, electionObject.ID);
+                bool wtsAlreadySubmitted = false;
+                foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
                 {
-                    string queryVal = positionID.ToString(); //variable name of querystring
-                    string positionTitle = dbLogic.selectPositionFromID(queryVal);
-                    LabelHeader.Text = positionTitle + " Willingness To Serve Form:";
-                    LabelExplain.Text = "If you are willing to hold a place in office as " + positionTitle + ", please fill out the following form:";
-                    HiddenFieldPosition.Value = positionTitle;
-
-                    id = dbLogic.returnUnionIDFromUsername(Page.User.Identity.Name.ToString());
-                    dbLogic.selectUserInfoFromUnionId(id);
-                    ds = dbLogic.getResults();
-                    info = new string[3] { id, id, HiddenFieldPosition.Value };
-
-                    Name.Text = ds.Tables[0].Rows[0].ItemArray[2].ToString() + " " + ds.Tables[0].Rows[0].ItemArray[1].ToString();
-                    Dept.Text = ds.Tables[0].Rows[0].ItemArray[5].ToString();
-
-                    if (!String.IsNullOrEmpty(positionTitle))
-                        Submit.Enabled = true;
+                    if (wts.Election == electionObject.ID && wts.User == userObject.ID)
+                        wtsAlreadySubmitted = true;
                 }
-                //Check if is committee election
-                else if (committee != null && int.TryParse(committee, out committeeID))
+
+                string positionTitle = committeeObject.Name;
+                HiddenFieldPosition.Value = positionTitle;
+                LabelHeader.Text = positionTitle + " Willingness To Serve Form:";
+
+                //Display
+                if (!wtsAlreadySubmitted)
                 {
-                    //Open session
-                    ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-                    ITransaction transaction = session.BeginTransaction();
-
-                    //Check if election exists
-                    electionObject = DatabaseEntities.CommitteeElection.FindElection(session, committeeID);
-
-                    if (electionObject != null && electionObject.Phase == DatabaseEntities.ElectionPhase.WTSPhase)
-                    {
-                        //Election is valid and in WTS phase.
-
-                        //Lookup committee
-                        DatabaseEntities.Committee committeeObject = DatabaseEntities.Committee.FindCommittee(session,electionObject.PertinentCommittee);
-
-
-                        //Get user
-                        userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
-                        Name.Text = userObject.FirstName + " " + userObject.LastName;
-                        Dept.Text = userObject.Department.ToString();
-
-                        //Check if WTS already exists
-                        List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, electionObject.ID);
-                        bool wtsAlreadySubmitted = false;
-                        foreach(DatabaseEntities.CommitteeWTS wts in wtsList)
-                        {
-                            if (wts.Election == electionObject.ID && wts.User == userObject.ID)
-                                wtsAlreadySubmitted = true;
-                        }
-
-                        string positionTitle = committeeObject.Name;
-                        HiddenFieldPosition.Value = positionTitle;
-                        LabelHeader.Text = positionTitle + " Willingness To Serve Form:";
-
-                        //Display
-                        if (!wtsAlreadySubmitted)
-                        {
-                            //No previous wts
-                            LabelExplain.Text = "If you are willing to hold a position in the " + positionTitle + " Committee , please fill out the following form:";
-                            Submit.Enabled = true;
-                        }
-                        else
-                        {
-                            //Previous wts
-                            LabelExplain.Text = "You have already submit a willingness to serve form for this election.";
-                            Submit.Enabled = false;
-                        }
-
-                    }
-
-
-                    DatabaseEntities.NHibernateHelper.Finished(transaction);
+                    //No previous wts
+                    LabelExplain.Text = "If you are willing to hold a position in the " + positionTitle + " Committee , please fill out the following form:";
+                    Submit.Enabled = true;
                 }
-            
+                else
+                {
+                    //Previous wts
+                    LabelExplain.Text = "You have already submit a willingness to serve form for this election.";
+                    Submit.Enabled = false;
+                }
+
+            }
 
 
-        
+            DatabaseEntities.NHibernateHelper.Finished(transaction);
+        }
+
+
+
+
     }
 
     protected bool checkAccept()
@@ -124,16 +126,16 @@ public partial class experimental_WTS : System.Web.UI.Page
 
     protected void submit(object sender, EventArgs e)
     {
-        
+
         if (checkAccept())
         {
             if (electionObject == null)
             {
                 //Handle legacy WTS
-                if (!dbLogic.isUserWTS(id, HiddenFieldPosition.Value))
+                if (!dbLogic.isUserWTS(int.Parse(id), HiddenFieldPosition.Value))
                 {
                     dbLogic.insertIntoWTS(id, Statement.Text, HiddenFieldPosition.Value);
-                    if (!dbLogic.isUserNominated(id, HiddenFieldPosition.Value))
+                    if (!dbLogic.isUserNominated(int.Parse(id), HiddenFieldPosition.Value))
                     {
                         dbLogic.insertNominationAccept(info);
                     }
@@ -165,16 +167,16 @@ public partial class experimental_WTS : System.Web.UI.Page
                 LabelExplain.Visible = false;
                 Confirm.Visible = true;
             }
-            
-        } 
+
+        }
         else
         {
-            AcceptError.Visible = true;   
+            AcceptError.Visible = true;
         }
     }
 
     protected bool checkWTS()
     {
-        return dbLogic.isUserWTS(id, HiddenFieldPosition.Value);
+        return dbLogic.isUserWTS(int.Parse(id), HiddenFieldPosition.Value);
     }
 }
