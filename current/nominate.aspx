@@ -33,16 +33,16 @@
         <ItemTemplate>
             <tr>
                 <td >
-                    <asp:Label ID="LabelName" text='<%#Eval("last_name") + ", " + Eval("first_name") %>' runat="server" />
+                    <asp:Label ID="LabelName" text='<%#Eval("LastName") + ", " + Eval("FirstName") %>' runat="server" />
                 </td>
                 <td >
-                    <asp:Label ID="Label1" text='<%#Eval("department") %>' runat="server" />
+                    <asp:Label ID="Label1" text='<%#Eval("Department") %>' runat="server" />
                 </td>
                 <td >
                    <asp:Button ID="ButtonNominate" 
                        commandname="nominate"
-                       OnClientClick='<%# Eval("first_name", "return confirm(\"Are you sure you want to nominate {0} for this poistion?\")") %>'
-                       commandargument='<%#Eval("idunion_members") %>' 
+                       OnClientClick='<%# Eval("FirstName", "return confirm(\"Are you sure you want to nominate {0} for this poistion?\")") %>'
+                       commandargument='<%#Eval("ID") %>' 
                        text="Nominate" runat="server" />                
                 </td>
             </tr>
