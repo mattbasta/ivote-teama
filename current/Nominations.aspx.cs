@@ -5,6 +5,12 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Cfg;
 
 public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
 {
@@ -24,12 +30,15 @@ public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
 
     protected void GridViewNominations_ItemCommand(object sender, GridViewCommandEventArgs e)
     {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
+
         if (String.Equals(e.CommandName, "accept"))
         {
-            if (dbLogic.isUserWTS(dbLogic.returnUnionIDFromUsername(username), e.CommandArgument.ToString()))
+            if (dbLogic.isUserWTS(userObject.ID, e.CommandArgument.ToString()))
             {
                 //change accepted in nomination_accept table to 1
-                dbLogic.userAcceptedNom( dbLogic.returnUnionIDFromUsername(username), e.CommandArgument.ToString());
+                dbLogic.userAcceptedNom(userObject.ID.ToString(), e.CommandArgument.ToString());
 
                 //confirm labels
                 ConfirmLabel.Text = "Thank you for accepting your nomination to the " + e.CommandArgument + " position!";
@@ -45,7 +54,7 @@ public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
         }
         else if (String.Equals(e.CommandName.ToString(), "reject"))
         {
-            dbLogic.userRejectedNom( dbLogic.returnUnionIDFromUsername(username), e.CommandArgument.ToString() );
+            dbLogic.userRejectedNom(userObject.ID.ToString(), e.CommandArgument.ToString());
             ConfirmLabel.Text = "Your rejection to the " + e.CommandArgument + " position has been acknowleged.";
             ConfirmLabel.Visible = true;
             bindData();
@@ -54,7 +63,10 @@ public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
 
     protected void bindData()
     {
-        dbLogic.selectAllUserNoms(dbLogic.returnUnionIDFromUsername(username));
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
+
+        dbLogic.selectAllUserNoms(userObject.ID.ToString());
         DataSet nominationSet = dbLogic.getResults();
         GridViewNominations.DataSource = nominationSet;
         GridViewNominations.DataBind();
