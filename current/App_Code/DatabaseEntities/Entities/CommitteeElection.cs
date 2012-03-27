@@ -92,6 +92,7 @@ namespace DatabaseEntities
             // form a query for the election with the given id
             var elections = session.CreateCriteria(typeof(CommitteeElection))
                 .Add(Restrictions.Eq("ID", id))
+                .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
                 .UniqueResult<CommitteeElection>();
 
             // and return it
