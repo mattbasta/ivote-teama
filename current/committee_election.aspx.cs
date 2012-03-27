@@ -117,7 +117,7 @@ public partial class committee_election : System.Web.UI.Page
         {
             int days_remaining = (int)election.NextPhaseDate(session).Subtract(election.PhaseStarted).TotalDays;
             if(days_remaining > 0)
-                DaysRemaining.Text = (days_remaining + 1).ToString() + " day(s) remaining for this phase.";
+                DaysRemaining.Text = days_remaining.ToString() + " day(s) remaining for this phase.";
             else
                 DaysRemaining.Text = "This phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
         }
