@@ -369,7 +369,7 @@ public class databaseLogic
     public bool isUserEnteringPetitionTwice(string[] petition)
     {
         string query = "SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "' AND idum_signedby = " + petition[2] + ";";
-        return genericQueryCounter(query) == 0; //if there are no rows in the datadata set created, result is false
+        return genericQueryCounter(query) != 0; //if there are no rows in the datadata set created, result is false
     }
 
     //count how many petition there are for one person + position

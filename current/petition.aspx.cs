@@ -76,7 +76,6 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
 
         string[] petitionInfo = {HiddenFieldId.Value, DropDownListPostions.SelectedItem.Text , userObject.ID.ToString()};
 
-        Response.Write(petitionInfo.ToString());
 
         //submit request
         if (!dbLogic.isUserEnteringPetitionTwice(petitionInfo)) //checks if user has already entered this petition
