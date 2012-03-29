@@ -775,14 +775,7 @@ public partial class committee_election : System.Web.UI.Page
 
         List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
 
-        foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
-        {
-            if (id == wts.User)
-            {
-                //Remove the wts
-                session.Delete(wts);
-            }
-        }
+        election.RevokeWTS(session, transaction, id);
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
     }

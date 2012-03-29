@@ -67,7 +67,6 @@
     </asp:Panel>
 
     <asp:Panel ID="AdminWTSPanel" runat="server" Visible="false">
-        Admin WTS Panel
         <asp:Panel ID="wtsAdminList" runat="server">
                 <asp:Table ID="wtsAdminTable" runat="server">
                 </asp:Table>
@@ -128,8 +127,8 @@
     </asp:Panel>
 
     <asp:Panel ID="FacultyWTS" runat="server" Visible="false">
-    Faculty WTS
             <asp:Panel ID="wtsPanelNew" runat="server">
+                <p>
                 Statement: <asp:TextBox ID="wtsStatement" runat="server" Height="226px" 
                     TextMode="MultiLine" Width="213px"></asp:TextBox><br />
                 </p>
