@@ -377,13 +377,19 @@ namespace DatabaseEntities
             // the max amount of nominees is twice the number of vacancies
             // so find the twice-the-number-of-vacancies-highest number
             List<int> count = nomCount.Values.ToList();
-            Committee committee = Committee.FindCommittee(session, ID);
+            Committee committee = Committee.FindCommittee(session, this.PertinentCommittee);
             count.Sort();
             count.Reverse();
-            int cutOff = 0;
+            
+            int cutOff = -1;
             if (count.Count != 0) // vacancies times 2 minus 1 to make it zero based...
-                cutOff= count[(committee.NumberOfVacancies(session) * 2) - 1];
-                
+            {
+                int num_vacs = committee.NumberOfVacancies(session) * 2 - 1;
+                if(num_vacs > count.Count)
+                    cutOff = -1;
+                else
+                    cutOff = count[num_vacs];
+            }
             // Only add users to the list of nominees if they surpass the cutoff value
             List<User> ret = new List<User>();
             foreach (User user in users)
