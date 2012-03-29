@@ -67,6 +67,7 @@ public partial class committee_election : System.Web.UI.Page
                     wtsEmail.Value = user.Email;
 
                     FacultyWTS.Visible = true;
+
                     break;
                 case ElectionPhase.NominationPhase:
                     if (CommitteeWTSNomination.FindCommitteeWTSNomination(session,
@@ -89,6 +90,7 @@ public partial class committee_election : System.Web.UI.Page
                         FacultyVoteComplete.Visible = true;
                     break;
             }
+
         }
 
         if (user.IsNEC && election.Phase == ElectionPhase.CertificationPhase)
@@ -159,43 +161,7 @@ public partial class committee_election : System.Web.UI.Page
                 
             switch(election.Phase) {
                 case ElectionPhase.WTSPhase:
-                    //*******************************
-                    //******** Admin WTS Load *******
-                    //*******************************
                     PhaseLiteral.Text = "WTS Phase";
-                    List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
-
-                    foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
-                    {
-                        DatabaseEntities.User wtsUser = DatabaseEntities.User.FindUser(session, wts.User);
-
-                        TableRow tr = new TableRow();
-
-                        Label revokeNameLabel = new Label();
-                        revokeNameLabel.Text = wtsUser.FirstName + " " + wtsUser.LastName;
-                        TableCell td1 = new TableCell();
-                        td1.Controls.Add(revokeNameLabel);
-
-                        Label revokeDeptLabel = new Label();
-                        revokeDeptLabel.Text = wtsUser.Department.ToString();
-                        TableCell td2 = new TableCell();
-                        td2.Controls.Add(revokeDeptLabel);
-
-                        Button revokeButton = new Button();
-                        revokeButton.Text = "Revoke";
-                        revokeButton.CommandArgument = wts.User.ToString();
-                        revokeButton.Click += new System.EventHandler(this.wtsRevoke_Click);
-                        TableCell td3 = new TableCell();
-                        td3.Controls.Add(revokeButton);
-
-                        tr.Cells.Add(td1);
-                        tr.Cells.Add(td2);
-                        tr.Cells.Add(td3);
-
-                        wtsAdminTable.Rows.Add(tr);
-
-                    }
-
                     break;
                 case ElectionPhase.NominationPhase:
                     PhaseLiteral.Text = "Nomination Phase";
@@ -214,6 +180,43 @@ public partial class committee_election : System.Web.UI.Page
                     CancelElection.Visible = false;
                     JulioButtonHider.Visible = false;
                     break;
+            }
+
+            //*******************************
+            //******** Admin WTS Load *******
+            //*******************************
+
+            List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
+
+            foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
+            {
+                DatabaseEntities.User wtsUser = DatabaseEntities.User.FindUser(session, wts.User);
+
+                TableRow tr = new TableRow();
+
+                Label revokeNameLabel = new Label();
+                revokeNameLabel.Text = wtsUser.FirstName + " " + wtsUser.LastName;
+                TableCell td1 = new TableCell();
+                td1.Controls.Add(revokeNameLabel);
+
+                Label revokeDeptLabel = new Label();
+                revokeDeptLabel.Text = wtsUser.Department.ToString();
+                TableCell td2 = new TableCell();
+                td2.Controls.Add(revokeDeptLabel);
+
+                Button revokeButton = new Button();
+                revokeButton.Text = "Revoke";
+                revokeButton.CommandArgument = wts.User.ToString();
+                revokeButton.Click += new System.EventHandler(this.wtsRevoke_Click);
+                TableCell td3 = new TableCell();
+                td3.Controls.Add(revokeButton);
+
+                tr.Cells.Add(td1);
+                tr.Cells.Add(td2);
+                tr.Cells.Add(td3);
+
+                wtsAdminTable.Rows.Add(tr);
+
             }
         }
 
