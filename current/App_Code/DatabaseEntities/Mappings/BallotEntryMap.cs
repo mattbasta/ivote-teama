@@ -1,4 +1,4 @@
-﻿// BallotEntryMap.cs
+// BallotEntryMap.cs
 // Written by: Brian Fairservice
 // Date Modified: 2/17/12
 // TODO:
@@ -17,7 +17,7 @@ namespace DatabaseEntities
     /// class onto the database.
     /// </summary>
     public class BallotEntryMap : ClassMap<BallotEntry>
-    {        
+    {
         public BallotEntryMap()
         {
             // Specify the name of the table ballot-entries will be inserted into.
@@ -33,3 +33,4 @@ namespace DatabaseEntities
         }
     }
 }
+

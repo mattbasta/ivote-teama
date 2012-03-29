@@ -1,4 +1,4 @@
-﻿// BallotEntry.cs
+// BallotEntry.cs
 // Written by: Brian Fairservice
 // Date Modified: 3/6/12
 // TODO: Write static helper functions
@@ -44,7 +44,7 @@ namespace DatabaseEntities
         /// <param name="session">A reference to the session.</param>
         /// <param name="election">The pertinent election.</param>
         /// <returns>A list of all ballot entries which apply to the specified election.</returns>
-        public static List<BallotEntry> FindBallotEntry(ISession session, 
+        public static List<BallotEntry> FindBallotEntry(ISession session,
             int election)
         {
             // formulate our query using NHibernate
@@ -57,3 +57,4 @@ namespace DatabaseEntities
         }
     }
 }
+

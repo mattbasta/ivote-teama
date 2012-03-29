@@ -1,4 +1,4 @@
-﻿// NhibernateHelper.cs
+// NhibernateHelper.cs
 // Written by: Brian Fairservice.
 // Date Modified: 2/23/12
 // TODO: Remove wrapper functions?
@@ -26,9 +26,9 @@ namespace DatabaseEntities
         /// <summary>
         /// This is the connection string used to connect to the MySQL database.
         /// </summary>
-        public static string ConnectionString = "Server=" + System.Configuration.ConfigurationManager.AppSettings["mysqlHost"] + 
+        public static string ConnectionString = "Server=" + System.Configuration.ConfigurationManager.AppSettings["mysqlHost"] +
             ";Database=" + System.Configuration.ConfigurationManager.AppSettings["mysqlDB"] +
-            ";Uid=" + System.Configuration.ConfigurationManager.AppSettings["mysqlUser"] + 
+            ";Uid=" + System.Configuration.ConfigurationManager.AppSettings["mysqlUser"] +
             ";Pwd=" + System.Configuration.ConfigurationManager.AppSettings["mysqlPassword"] + ";";
 
         /// <summary>
@@ -50,13 +50,15 @@ namespace DatabaseEntities
                     .Mappings(m => m.FluentMappings.Add<CommitteeWTSMap>())
                     .Mappings(m => m.FluentMappings.Add<CommitteeWTSNominationMap>())
                     .Mappings(m => m.FluentMappings.Add<CommitteeElectionMap>())
+                    .Mappings(m => m.FluentMappings.Add<ElectionConflictMap>())
+                    .Mappings(m => m.FluentMappings.Add<CertificationMap>())
                     .BuildSessionFactory();
         }
 
         /// <summary>
-        /// This method acquires a mysql session factory so we can make 
-        /// acquire a session to make changes to the database. It also 
-        /// automatically generates our database schema based off of the 
+        /// This method acquires a mysql session factory so we can make
+        /// acquire a session to make changes to the database. It also
+        /// automatically generates our database schema based off of the
         /// fluent mappings.
         /// </summary>
         /// <returns>
@@ -74,10 +76,12 @@ namespace DatabaseEntities
                     .Mappings(m => m.FluentMappings.Add<CommitteeWTSMap>())
                     .Mappings(m => m.FluentMappings.Add<CommitteeWTSNominationMap>())
                     .Mappings(m => m.FluentMappings.Add<CommitteeElectionMap>())
+                    .Mappings(m => m.FluentMappings.Add<ElectionConflictMap>())
+                    .Mappings(m => m.FluentMappings.Add<CertificationMap>())
                     .ExposeConfiguration(cfg =>
-                        {
-                            new SchemaExport(cfg).Create(false, true);
-                        })
+                    {
+                        new SchemaExport(cfg).Create(false, true);
+                    })
                     .BuildSessionFactory();
         }
 
@@ -97,7 +101,7 @@ namespace DatabaseEntities
 
         /// <summary>
         /// This function saves an object to the database, or, if the specified object
-        /// shares an ID with an entry already in the table, that entry's values are 
+        /// shares an ID with an entry already in the table, that entry's values are
         /// changed to the values in toSave.
         /// </summary>
         /// <param name="session">The current session.</param>
@@ -109,7 +113,7 @@ namespace DatabaseEntities
         }
 
         /// <summary>
-        /// This function completes the current transaction with the database.  Call it
+        /// This function completes the current transaction with the database. Call it
         /// when you are done operating on the database.
         /// </summary>
         /// <param name="transaction">The current transaction.</param>

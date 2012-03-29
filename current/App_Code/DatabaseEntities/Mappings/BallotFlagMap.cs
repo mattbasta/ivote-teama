@@ -1,4 +1,4 @@
-﻿// BallotFlag.cs
+// BallotFlag.cs
 // Written by: Brian Fairservice
 // Date Modified: 2/17/12
 // TODO:
@@ -33,3 +33,4 @@ namespace DatabaseEntities
         }
     }
 }
+

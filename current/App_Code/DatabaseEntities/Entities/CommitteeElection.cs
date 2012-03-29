@@ -164,7 +164,8 @@ namespace DatabaseEntities
             }
             else if (electionPhase == ElectionPhase.ConflictPhase)
             {
-                // not much needs to be done here.
+                ConflictLogic(session);
+                // maybe send out emails telling admins / NEC that there are conflicts?
             }
             else if (electionPhase == ElectionPhase.ClosedPhase)
             {
@@ -235,9 +236,8 @@ namespace DatabaseEntities
         /// <param name="session">A valid session.</param>
         /// <param name="ID">The ID of the election.</param>
         /// <returns>A dictionary storing each candidate and the
-        /// number of votes they recieved. Dictionary keys are of the form
-        /// [User.FirstName + User.LastName].  The corresponding value
-        /// is the number of votes.</returns>
+        /// number of votes they recieved. Dictionary keys are the user's email.  
+        /// The corresponding value is the number of votes.</returns>
         public static Dictionary<string, int> GetResults(ISession session,
             int ID)
         {
@@ -254,12 +254,12 @@ namespace DatabaseEntities
                     User thisUser = User.FindUser(session, votes[i].Candidate);
                     // If this candidate already has an entry in the return diciontary,
                     // increment the number of votes for him
-                    if (ret.ContainsKey(thisUser.FirstName + thisUser.LastName))
-                        ret[thisUser.FirstName + thisUser.LastName]++;
+                    if (ret.ContainsKey(thisUser.Email))
+                        ret[thisUser.Email]++;
                     // Otherwise, add an entry for that candidate and set his number of votes
                     // to one
                     else
-                        ret.Add(thisUser.FirstName + thisUser.LastName, 1);
+                        ret.Add(thisUser.Email, 1);
                 }
             }
             // After interating through all the votes, return the dictionary which
@@ -286,6 +286,144 @@ namespace DatabaseEntities
 
             session.SaveOrUpdate(toSubmit);
             session.Flush();
+        }
+
+        /// <summary>
+        /// Adds conflicts to the database depending upon the current state of the election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        protected virtual void ConflictLogic(ISession session)
+        {
+            ITransaction transaction = session.BeginTransaction();
+            // Get the current committee
+            Committee committee = Committee.FindCommittee(session, PertinentCommittee);
+
+            // Get the users who won the election.
+            Dictionary<string, int> winners = GetResults(session, ID);
+            List<User> winningUsers = new List<User>();
+            foreach (string email in winners.Keys)
+            {
+                winningUsers.Add(User.FindUser(session, email));
+            }
+
+            // Get the users on the committee.
+            List<User> members = User.FindUsers(session, committee.Name);
+
+            // List all of the departments currently present on the committee.
+            // and use a parallel list to store the ID of the other department
+            // member so we can add it to the conflict later.
+            List<DepartmentType> departments = new List<DepartmentType>();
+            List<int> secID = new List<int>();
+            foreach (User i in members)
+            {
+                departments.Add(i.Department);
+                secID.Add(i.ID);
+            }
+
+            // For each user who won, add a new conflict if their department
+            // is already present on the list. Adding, departments as we go.
+            // Also raise conflicts if the winning users hold officer positions,
+            // or if they already serve on a committee.
+            foreach (User i in winningUsers)
+            {
+                // check if they have a prior committment
+                if (i.OfficerPosition != OfficerPositionType.None ||
+                    i.CurrentCommittee != User.NoCommittee)
+                {
+                    ElectionConflict conflict = new ElectionConflict();
+                    conflict.Election = ID;
+                    conflict.FirstUser = i.ID;
+                    conflict.SecUser = ElectionConflict.SecondUserNotApplicable;
+                    conflict.Type = ConflictType.ElectedToMultipleCommittees;
+                    session.SaveOrUpdate(conflict);
+                }
+
+                // check for department-based conflicts
+                if(departments.Contains(i.Department))
+                {
+                    ElectionConflict conflict = new ElectionConflict();
+                    conflict.Election = ID;
+                    conflict.FirstUser = i.ID;
+                    conflict.SecUser = secID[departments.IndexOf(i.Department)];
+                    conflict.Type = ConflictType.TooManyDeptMembers;
+                    session.SaveOrUpdate(conflict);
+                }
+            }
+            session.Flush();
+            NHibernateHelper.Finished(transaction);
+        }
+
+        /// <summary>
+        /// Returns a list of all the users who were nominated for this election
+        /// after accounting for the results of the primary election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <returns>A list of all the nominees for this election.</returns>
+        public virtual List<User> GetNominees(ISession session)
+        {
+            // Get users for each election
+            List<User> users = DatabaseEntities.User.FindUsers(session, ID);
+            Dictionary<int, int> nomCount = new Dictionary<int, int>();
+
+            // Count nominations for each user.
+            foreach (DatabaseEntities.User aUser in users)
+                nomCount.Add(aUser.ID, 0);
+
+            List<CommitteeWTSNomination> nominations =
+                CommitteeWTSNomination.FindCommitteeWTSNominations(session, ID);
+            foreach (CommitteeWTSNomination nom in nominations)
+                nomCount[nom.Candidate]++;
+
+            // the max amount of nominees is twice the number of vacancies
+            // so find the twice-the-number-of-vacancies-highest number
+            List<int> count = nomCount.Values.ToList();
+            Committee committee = Committee.FindCommittee(session, ID);
+            count.Sort();
+            count.Reverse();
+            int cutOff = 0;
+            if (count.Count != 0) // vacancies times 2 minus 1 to make it zero based...
+                cutOff= count[(committee.NumberOfVacancies(session) * 2) - 1];
+                
+            // Only add users to the list of nominees if they surpass the cutoff value
+            List<User> ret = new List<User>();
+            foreach (User user in users)
+            {
+                if (nomCount[user.ID] >= cutOff)
+                    ret.Add(user);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Removes the CommitteeWTS, CommitteeWTSNominations and BallotEntry
+        /// objects which pertain to a user who had their WTS revoked.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="election">The election this operation pertains to.</param>
+        /// <param name="user">The user who had their WTS revoked.</param>
+        public virtual void RevokeWTS(ISession session, ITransaction transaction, int user)
+        {
+            // Find the committeeWTS.
+            CommitteeWTS cWTS = CommitteeWTS.FindCommitteeWTS(session, ID, user);
+            NHibernateHelper.Delete(session, cWTS);
+
+            // Find all the WTSNominations
+            List<CommitteeWTSNomination> cWTSNominations =
+                CommitteeWTSNomination.FindCommitteeWTSNominations(session, ID);
+            foreach (CommitteeWTSNomination nomination in cWTSNominations)
+            {
+                if (nomination.Candidate == user)
+                    NHibernateHelper.Delete(session, nomination);
+            }
+
+            // Find all the BallotEntries
+            List<BallotEntry> ballotEntries = 
+                BallotEntry.FindBallotEntry(session, ID);
+            foreach (BallotEntry entry in ballotEntries)
+            {
+                if (entry.Candidate == user)
+                    NHibernateHelper.Delete(session, entry);
+            }
         }
     }
 }

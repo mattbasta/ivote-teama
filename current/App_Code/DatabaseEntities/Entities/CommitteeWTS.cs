@@ -1,4 +1,4 @@
-﻿// CommitteeWTS.cs
+// CommitteeWTS.cs
 // Written by: Brian Fairservice
 // Date Modified: 3/6/12
 // TODO: Write static helper functions
@@ -54,7 +54,7 @@ namespace DatabaseEntities
         public static List<CommitteeWTS> FindCommitteeWTS(ISession session,
             int election)
         {
-            // pull a list of all the Committee WTS'  for the given election from the database.
+            // pull a list of all the Committee WTS' for the given election from the database.
             var entries = session.CreateCriteria(typeof(CommitteeWTS))
                 .Add(Restrictions.Eq("Election", election))
                 .List<CommitteeWTS>();
@@ -62,5 +62,27 @@ namespace DatabaseEntities
             // return that list
             return entries.ToList<CommitteeWTS>();
         }
+
+        /// <summary>
+        /// Returns a committee WTS object whic pertains to a user in an election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="election">The election id.</param>
+        /// <param name="user">The user whose WTS is being sought out.</param>
+        /// <returns>The CommitteeWTS object which pertains to the user in the election.</returns>
+        public static CommitteeWTS FindCommitteeWTS(ISession session,
+            int election, int user)
+        {
+            // pull a list of all the Committee WTS' for the given election from the database.
+            var entry = session.CreateCriteria(typeof(CommitteeWTS))
+                .Add(Restrictions.Eq("Election", election))
+                .Add(Restrictions.Eq("User", user))
+                .UniqueResult<CommitteeWTS>();
+
+            // return that list
+            return entry;
+        }
     }
 }
+
+

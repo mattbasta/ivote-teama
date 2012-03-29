@@ -1,4 +1,4 @@
-﻿// Nominations.cs
+// Nominations.cs
 // Written by: Brian Fairservice
 // Date Modified: 3/6/12
 // TODO: Write static helper functions
@@ -56,3 +56,5 @@ namespace DatabaseEntities
         }
     }
 }
+
+

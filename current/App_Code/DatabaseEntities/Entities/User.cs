@@ -264,6 +264,23 @@ namespace DatabaseEntities
         }
 
         /// <summary>
+        /// Returns a list of users who have submitted WTS for a given election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="id">The id of the pertinent election.</param>
+        /// <returns>A list of users who have submitted wts for the given election.</returns>
+        public static List<User> FindUsers(ISession session, int id)
+        {
+            List<CommitteeWTS> wts = CommitteeWTS.FindCommitteeWTS(session, id);
+            List<User> users = new List<User>();
+            foreach (CommitteeWTS cwts in wts)
+            {
+                users.Add(User.FindUser(session, cwts.User));
+            }
+            return users;
+        }
+
+        /// <summary>
         /// Returns a user with the specified email, if the correct password is
         /// supplied
         /// </summary>

@@ -1,4 +1,4 @@
-﻿// BallotFlag.cs
+// BallotFlag.cs
 // Written by: Brian Fairservice
 // Date Modified: 3/6/12
 // TODO: Write static helper functions
@@ -19,7 +19,7 @@ using NHibernate.Criterion;
 namespace DatabaseEntities
 {
     /// <summary>
-    /// This class represents a ballot-flag in the database.  Ballot flags are
+    /// This class represents a ballot-flag in the database. Ballot flags are
     /// used to track which users have voted already in a given election.
     /// </summary>
     public class BallotFlag
@@ -44,7 +44,7 @@ namespace DatabaseEntities
         /// <param name="session">A valid session</param>
         /// <param name="election">The id of the election.</param>
         /// <returns>A list of BallotFlags pertinent to the specified election.</returns>
-        public static List<BallotFlag> FindBallotFlag(ISession session,
+        public static List<BallotFlag> FindBallotFlags(ISession session,
             int election)
         {
             // formulate a query for all the ballot flags which are pertinent
@@ -55,6 +55,27 @@ namespace DatabaseEntities
 
             // and then return a list of all the pertinent ballot flags
             return entries.ToList<BallotFlag>();
+        }
+
+        /// <summary>
+        /// Finds a ballot flag pertaining to a given election, which flags
+        /// that a given user has already voted
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="election">The pertinent election.</param>
+        /// <param name="user">The user to check for.</param>
+        /// <returns>A ballot flag indicated that the specified user has voted in the specified election, or null.</returns>
+        public static BallotFlag FindBallotFlag(ISession session, int election,
+            int user)
+        {
+            // formulate a query for all the ballot flags which are pertinent
+            // to the specified election and specified user
+            var entry = session.CreateCriteria(typeof(BallotFlag))
+                .Add(Restrictions.Eq("Election", election))
+                .Add(Restrictions.Eq("User", user))
+                .UniqueResult<BallotFlag>();
+
+            return entry;
         }
     }
 }

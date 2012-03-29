@@ -1,4 +1,4 @@
-﻿// CommitteeElectionMap.cs
+// CommitteeElectionMap.cs
 // Written by: Brian Fairservice
 // Date Modified: 2/17/12
 // TODO:
@@ -16,7 +16,7 @@ namespace DatabaseEntities
     {
         public CommitteeElectionMap()
         {
-            // Specify the name of the table WTS nominations's will be 
+            // Specify the name of the table WTS nominations's will be
             // inserted into.
             Table("CommitteeElections");
             // ID is a self-incrementing, unique identifier for the election.
@@ -29,7 +29,7 @@ namespace DatabaseEntities
                 .Not.Nullable();
             Map(x => x.PhaseStarted)
                 .Not.Nullable();
-            // This value is an enum type.  By default, NHibernate maps enums to
+            // This value is an enum type. By default, NHibernate maps enums to
             // strings in the database.
             // We can use .CustomType<TYPE>() to change that.
             Map(x => x.Phase)

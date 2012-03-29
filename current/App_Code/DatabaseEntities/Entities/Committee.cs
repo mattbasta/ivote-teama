@@ -1,4 +1,4 @@
-﻿// Committee.cs
+// Committee.cs
 // Written by: Brian Fairservice
 // Date Modified: 3/6/12
 // TODO: Write static helper functions
@@ -81,9 +81,9 @@ namespace DatabaseEntities
             var committees = session.CreateCriteria(typeof(Committee))
                     .List<Committee>();
             int count = 0;
-            for(int i = 0; i < committees.Count; i++)
-                if(committees[i].NumberOfVacancies(session) > 0)
-                   count++;
+            for (int i = 0; i < committees.Count; i++)
+                if (committees[i].NumberOfVacancies(session) > 0)
+                    count++;
             return count - session.CreateCriteria(typeof(CommitteeElection))
                                    .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
                                    .List().Count;

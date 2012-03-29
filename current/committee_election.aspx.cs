@@ -21,6 +21,7 @@ public partial class committee_election : System.Web.UI.Page
     private Committee committee;
     private CommitteeElection election;
     private DatabaseEntities.User user;
+    private int ElectionID;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -29,6 +30,7 @@ public partial class committee_election : System.Web.UI.Page
             eid = int.Parse(Request.QueryString["id"]);
         else
             throw new HttpException(400, "Invalid election ID");
+        ElectionID = eid;
 
         ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
 
@@ -48,16 +50,42 @@ public partial class committee_election : System.Web.UI.Page
                     FacultyWTS.Visible = true;
                     break;
                 case ElectionPhase.NominationPhase:
-                    FacultyNomination.Visible = true;
+                    if (CommitteeWTSNomination.FindCommitteeWTSNomination(session,
+                        election.ID, user.ID) == null)
+                    {
+                        FacultyNomination.Visible = true;
+                        BuildUserNominationOptions();
+                    }
+                    else
+                        FacultyNominationComplete.Visible = true;
                     break;
                 case ElectionPhase.VotePhase:
-                    FacultyVote.Visible = true;
+                    if (BallotFlag.FindBallotFlag(session, election.ID, user.ID) ==
+                        null)
+                    {
+                        FacultyVote.Visible = true;
+                        BuildUserVoteOptions();
+                    }
+                    else
+                        FacultyVoteComplete.Visible = true;
                     break;
             }
         }
-        
-        if(user.IsNEC && election.Phase == ElectionPhase.CertificationPhase)
+
+        if (user.IsNEC && election.Phase == ElectionPhase.CertificationPhase)
+        {
             ActivateTab("CertificationPhase");
+            NECCertificationPanel.Visible = true;
+            BuildNECVoteTable();
+            if(Certification.FindCertification(session, election.ID, user.ID) != null)
+            {
+                NECCertifyAgreement.Visible = false;
+                CertifyCheckBox.Visible = false;
+                CertifyButton.Visible = false;
+                CertifyWarning.Visible = false;
+                NECCertificationComplete.Visible = true;
+            }
+        }
         if(user.IsAdmin) {
             DaysLeftInPhase(session);
             
@@ -65,14 +93,48 @@ public partial class committee_election : System.Web.UI.Page
             
             if(election.Phase >= ElectionPhase.ClosedPhase)
                 closed_tab.Visible = true;
-            if(election.Phase >= ElectionPhase.ConflictPhase)
+            if (election.Phase >= ElectionPhase.ConflictPhase)
+            {
+                List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, election.ID);
+                foreach (ElectionConflict conflict in conflicts)
+                {
+                    DatabaseEntities.User conflictUser1 =
+                        DatabaseEntities.User.FindUser(session, conflict.FirstUser);
+                    if (conflict.Type == ConflictType.ElectedToMultipleCommittees)
+                        BuildMultipleCommitteesConflictPanel(conflictUser1, conflict.ID);
+                    if (conflict.Type == ConflictType.TooManyDeptMembers)
+                    {
+                        DatabaseEntities.User conflictUser2 =
+                        DatabaseEntities.User.FindUser(session, conflict.SecUser);
+                        BuildTooManyDeptConflictPanel(conflictUser1,
+                            conflictUser2, conflictUser2.Department, conflict.ID);
+                    }
+                }
+                if (conflicts.Count == 0)
+                    AdminNoConflicts.Visible = true;
                 conflicts_tab.Visible = true;
-            if(election.Phase >= ElectionPhase.CertificationPhase)
+            }
+            if (election.Phase >= ElectionPhase.CertificationPhase)
+            {
+                int numberCertifications = Certification.FindCertifications(session, election.ID).Count;
+                AdminCertCount.Text = "There are currently "
+                     + numberCertifications.ToString();
+                if (numberCertifications >= 3)
+                    AdminCertCount.Text += ", which is enough to proceed to the next stage.";
+                else
+                    AdminCertCount.Text += " certifications.  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
-            if(election.Phase >= ElectionPhase.VotePhase)
+            }
+            if (election.Phase >= ElectionPhase.VotePhase)
+            {
                 votes_tab.Visible = true;
-            if(election.Phase >= ElectionPhase.NominationPhase)
+                BuildAdminVoteTable();
+            }
+            if (election.Phase >= ElectionPhase.NominationPhase)
+            {
                 nominations_tab.Visible = true;
+                BuildAdminNominationTable();
+            }
             if(election.Phase >= ElectionPhase.WTSPhase)
                 wts_tab.Visible = true;
                 
@@ -196,5 +258,424 @@ public partial class committee_election : System.Web.UI.Page
     protected void Tab_Clicked(Object sender, EventArgs e)
     {
         ActivateTab(((LinkButton)sender).CommandName);
+    }
+
+    /// <summary>
+    /// Build the admin / NEC nomination table: add names for each nominee,
+    /// add their number of primary votes, and add a boolean value indicating
+    /// whether or not they will go on to the election.
+    /// </summary>
+    private void BuildAdminNominationTable()
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        // Get users for each election
+        List<User> users = DatabaseEntities.User.FindUsers(session, election.ID);
+        Dictionary<int, int> nomCount = new Dictionary<int, int>();
+
+        // Count nominations for each user.
+        foreach (DatabaseEntities.User aUser in users)
+            nomCount.Add(aUser.ID, 0);
+
+        List<CommitteeWTSNomination> nominations =
+            CommitteeWTSNomination.FindCommitteeWTSNominations(session, ElectionID);
+        foreach (CommitteeWTSNomination nom in nominations)
+            nomCount[nom.Candidate]++;
+
+        // Pull a list of the nominees according to the current votes.
+        List<User> nominees = election.GetNominees(session);
+
+        foreach (DatabaseEntities.User user in users)
+        {
+            TableRow row = new TableRow();
+            TableCell name, votes, candidate;
+
+            name = new TableCell();
+            name.Controls.Add(
+                new LiteralControl(user.FirstName + " " + user.LastName));
+            row.Cells.Add(name);
+
+            votes = new TableCell();
+            votes.Controls.Add(
+                new LiteralControl(nomCount[user.ID].ToString()));
+            row.Cells.Add(votes);
+
+            candidate = new TableCell();
+            candidate.Controls.Add(
+                new LiteralControl(nominees.Contains(user) ? "True":"False"));
+            row.Cells.Add(candidate);
+
+            AdminNominationsTable.Rows.Add(row);
+        }
+    }
+
+    /// <summary>
+    /// Build the admin vote table: add cells for the nominee's names, and their
+    /// current number of votes.
+    /// </summary>
+    private void BuildAdminVoteTable()
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        // Get nominees for the election.
+        List<User> users = election.GetNominees(session);
+        Dictionary<int, int> voteCount = new Dictionary<int, int>();
+
+        // Count votes for each user.
+        foreach (DatabaseEntities.User aUser in users)
+        {
+            voteCount.Add(aUser.ID, 0);
+        }
+        List<BallotEntry> entries = BallotEntry.FindBallotEntry(session, election.ID);
+        foreach (BallotEntry entry in entries)
+            voteCount[entry.Candidate]++;
+
+
+        foreach (DatabaseEntities.User user in users)
+        {
+            TableRow row = new TableRow();
+            TableCell name, votes;
+
+            name = new TableCell();
+            name.Controls.Add(
+                new LiteralControl(user.FirstName + " " + user.LastName));
+            row.Cells.Add(name);
+
+            votes = new TableCell();
+            votes.Controls.Add(
+                new LiteralControl(voteCount[user.ID].ToString()));
+            row.Cells.Add(votes);
+
+            AdminVotingTable.Rows.Add(row);
+        }
+    }
+
+    private void BuildNECVoteTable()
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        // Get nominees for the election.
+        List<User> users = election.GetNominees(session);
+        Dictionary<int, int> voteCount = new Dictionary<int, int>();
+
+        // Count votes for each user.
+        foreach (DatabaseEntities.User aUser in users)
+        {
+            voteCount.Add(aUser.ID, 0);
+        }
+        List<BallotEntry> entries = BallotEntry.FindBallotEntry(session, election.ID);
+        foreach (BallotEntry entry in entries)
+            voteCount[entry.Candidate]++;
+
+
+        foreach (DatabaseEntities.User user in users)
+        {
+            TableRow row = new TableRow();
+            TableCell name, votes;
+
+            name = new TableCell();
+            name.Controls.Add(
+                new LiteralControl(user.FirstName + " " + user.LastName));
+            row.Cells.Add(name);
+
+            votes = new TableCell();
+            votes.Controls.Add(
+                new LiteralControl(voteCount[user.ID].ToString()));
+            row.Cells.Add(votes);
+
+            NECVotingTable.Rows.Add(row);
+        }
+    }
+
+    /// <summary>
+    /// Build the radio button list which lists all the nominees a user can vote
+    /// for in a primary election.
+    /// </summary>
+    private void BuildUserNominationOptions()
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+
+        // Get users for each election
+        List<User> users = DatabaseEntities.User.FindUsers(session, ElectionID);
+        foreach(User user in users)
+        {
+            ListItem toAdd = new ListItem(user.FirstName + " " + user.LastName);
+            toAdd.Value = user.ID.ToString();
+            FacultyNominationList.Items.Add(toAdd);
+        }
+    }
+
+    /// <summary>
+    /// Build the radio button list which allows users to select a nominee.
+    /// </summary>
+    private void BuildUserVoteOptions()
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+
+        // Get nominees for this election.
+        List<User> nominees = election.GetNominees(session);
+
+        foreach (User user in nominees)
+        {
+            ListItem toAdd = new ListItem(user.FirstName + " " + user.LastName);
+            toAdd.Value = user.ID.ToString();
+            FacultyVoteList.Items.Add(toAdd);
+
+        }
+    }
+
+    /// <summary>
+    /// Onclick, cast the user's vote based off of the currently selected radiobutton.
+    /// </summary>
+    protected void FacultyCastNomination_Click(Object sender, EventArgs e)
+    {
+        // begin our transaction.
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        // Get the identity of the voting user
+        User user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
+
+        // Add the WTSNomination if this user hasn't already cast one.
+        if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID)
+            == null)
+        {
+            CommitteeWTSNomination nomination = new CommitteeWTSNomination();
+            nomination.Election = election.ID;
+            nomination.Voter = user.ID;
+            nomination.Candidate = int.Parse(FacultyNominationList.SelectedValue);
+            session.SaveOrUpdate(nomination);
+            session.Flush();
+            FacultyNomination.Visible = false;
+            FacultyNominationComplete.Visible = true;
+        }
+        else
+            ; // We should never have to deal with this, though we can add error checking if need-be.
+        NHibernateHelper.Finished(transaction);
+    }
+
+    /// <summary>
+    /// OnClick, cast the user's vote based off of the currently selected radiobutton.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    protected void FacultyCastVote_Click(Object sender, EventArgs e)
+    {
+        // open the session
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        // get the user who has the page open
+        User user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
+
+
+        // store the new flag and entry if there is no flag pertaining to this user
+        // in this election
+        if (BallotFlag.FindBallotFlag(session, election.ID, user.ID) == null)
+        {
+            // form the ballot entry
+            BallotEntry entry = new BallotEntry();
+            entry.Election = election.ID;
+            entry.Candidate = int.Parse(FacultyVoteList.SelectedValue);
+
+            // form the ballot flag
+            BallotFlag flag = new BallotFlag();
+            flag.Election = election.ID;
+            flag.User = user.ID;
+
+            session.SaveOrUpdate(entry);
+            session.SaveOrUpdate(flag);
+            session.Flush();
+
+            FacultyVote.Visible = false;
+            FacultyVoteComplete.Visible = true;
+        }
+        else
+            ; // There ought to be no way to reach this line, though we could put error handling here if it is a problem.
+        
+        NHibernateHelper.Finished(transaction);
+    }
+
+    /// <summary>
+    /// This function builds a panel with the controls necessary to 
+    /// allow the admin to perform shared-department-conflict resolution.
+    /// </summary>
+    /// <param name="user1">The first user involved in the conflict.</param>
+    /// <param name="user2">The second user involved in the conflict.</param>
+    /// <param name="department">The department the two users share.</param>
+    private void BuildTooManyDeptConflictPanel(User user1, User user2,
+        DepartmentType department, int conflictID)
+    {
+        // create the panel
+        Panel panel = new Panel();
+        panel.ID = "ConflictPanel" + conflictID.ToString("0000");
+
+        // Create a label which explicates the conflict
+        Label message = new Label();
+        message.Text = user1.FirstName + " " + user1.LastName + " and "
+            + user2.FirstName + " " + user2.LastName + " were both elected to the "
+            + committee.Name + "but they are both members of the " + user1.Department.ToString()
+            + " department.  Only one member of each department may be elected to the committee.";
+        panel.Controls.Add(message);
+
+        // add a button which will allow the admin to disqualify the 
+        // first person in the conflict
+        Button first = new Button();
+        first.ID = user1.Email + conflictID.ToString("0000");
+        first.Text = "Disqualify " + user1.FirstName + " " + user1.LastName;
+        first.Click += new EventHandler(this.Disq_Click);
+        panel.Controls.Add(first);
+
+        // add a button which will allow the admin to disqualify the 
+        // second person in the conflict
+        Button second = new Button();
+        second.ID = user2.Email + conflictID.ToString("0000");
+        second.Text = "Disqualify " + user2.FirstName + " " + user2.LastName;
+        second.Click += new EventHandler(this.Disq_Click);
+        panel.Controls.Add(second);
+
+        AdminConflictPanel.Controls.Add(panel);
+    }
+
+    protected void Certify_Click(Object sender, EventArgs e)
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+        user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
+        // If the confirmation box is ticked, submit the certification
+        if (CertifyCheckBox.Checked == true)
+        {
+            Certification certification = new Certification();
+            certification.Election = election.ID;
+            certification.User = user.ID;
+            session.SaveOrUpdate(certification);
+            session.Flush();
+            CertifyCheckBox.Visible = false;
+            CertifyButton.Visible = false;
+            CertifyWarning.Visible = false;
+            NECCertifyAgreement.Visible = false;
+            NECCertificationComplete.Visible = true;
+        }
+        else // otherwise display the error label
+            CertifyWarning.Visible = true;
+
+        NHibernateHelper.Finished(transaction);
+    }
+
+    /// <summary>
+    /// This function creates a panel with the controls necessary to allow the admin
+    /// to perform multiple committee conflict resolution.
+    /// </summary>
+    /// <param name="user">The user involved in the conflict.</param>
+    private void BuildMultipleCommitteesConflictPanel(User user, int conflictID)
+    {
+        // create the panel
+        Panel panel = new Panel();
+        panel.ID = "ConflictPanel" + conflictID.ToString("0000");
+
+
+        // Create a label which explicates the conflict
+        Label message = new Label();
+        message.Text = user.FirstName + " " + user.LastName + " was elected to the "
+            + committee.Name;
+        message.Text += 
+            (user.CurrentCommittee != DatabaseEntities.User.NoCommittee) ? 
+            (" but he currently serves on the " + user.CurrentCommittee) :
+            (" but he is currently a(n) " + user.OfficerPosition.ToString());
+        message.Text += ".  This member may only hold one position at a time.";
+        panel.Controls.Add(message);
+
+        // add a button which will allow the admin to disqualify the 
+        // first person in the conflict
+        Button first = new Button();
+        first.ID = user.Email + conflictID.ToString("0000");
+        first.Text = "Disqualify " + user.FirstName + " " + user.LastName;
+        first.Click += new EventHandler(this.Disq_Click);
+        panel.Controls.Add(first);
+
+        // add a button which will allow the admin to disqualify the 
+        // second person in the conflict
+        Button second = new Button();
+        second.ID = "Ignore" + conflictID.ToString("0000");
+        second.Text = "Ignore conflict";
+        second.Click += new EventHandler(this.Ignore_Click);
+        panel.Controls.Add(second);
+
+        AdminConflictPanel.Controls.Add(panel);
+    }
+
+    /// <summary>
+    ///  The even handler for when the admin clicks on a disqualification button.
+    /// </summary>
+    protected void Disq_Click(Object sender, EventArgs e)
+    {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        Button sendButton = (Button)sender;
+        string toDisqualify = sendButton.ID.Substring(0, sendButton.ID.Length - 4);
+        DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, toDisqualify);
+        
+        // Disqualify the user by revoking their WTS
+        election.RevokeWTS(session, transaction, user.ID);
+
+        // remove the panel that represented this now resolved conflict
+        string idToFind = sendButton.ID.Substring(sendButton.ID.Length - 4,
+            4);
+
+        for (int i = 0; i < AdminConflictPanel.Controls.Count; i++)
+        {
+            if (AdminConflictPanel.Controls[i].ID == "ConflictPanel" + idToFind)
+            {
+                AdminConflictPanel.Controls.RemoveAt(i);
+                break;
+            }
+        }
+
+        // remove the election conflict
+        int id = int.Parse(idToFind);
+
+        ElectionConflict conflict = ElectionConflict.FindElectionConflict(session,
+            id);
+        NHibernateHelper.Delete(session, conflict);
+
+        // Check if we should display there are no more conflicts.
+        if (ElectionConflict.FindElectionConflicts(session, election.ID).Count == 0)
+            AdminNoConflicts.Visible = true;
+
+        NHibernateHelper.Finished(transaction);
+    }
+
+    /// <summary>
+    ///  The even handler for when the admin clicks on an ignore conflict button.
+    /// </summary>
+    protected void Ignore_Click(Object sender, EventArgs e)
+    {
+        Button sendButton = (Button)sender;
+
+        // remove the panel that represented this now resolved conflict and delete
+        // the election conflict
+        string idToFind = sendButton.ID.Substring(sendButton.ID.Length - 4,
+            4);
+
+        // remove the election conflict
+        int id = int.Parse(idToFind);
+
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        ElectionConflict conflict = ElectionConflict.FindElectionConflict(session,
+            id);
+        NHibernateHelper.Delete(session, conflict);
+
+        // remove the programmatically generated panel
+        for (int i = 0; i < AdminConflictPanel.Controls.Count; i++)
+        {
+            if (AdminConflictPanel.Controls[i].ID == "ConflictPanel" + idToFind)
+            {
+                AdminConflictPanel.Controls.RemoveAt(i);
+                break;
+            }
+        }
+
+
+        // Check if we should display there are no more conflicts.
+        if (ElectionConflict.FindElectionConflicts(session, election.ID).Count == 0)
+            AdminNoConflicts.Visible = true;
     }
 }

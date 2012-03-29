@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="committee_election.aspx.cs" Inherits="committee_election" %>
+﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" Codebehind="committee_election.aspx.cs" %>
 <%@ Register TagPrefix="asp" Namespace="AjaxControlToolkit" Assembly="AjaxControlToolkit"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
@@ -71,19 +71,45 @@
     </asp:Panel>
 
     <asp:Panel ID="AdminNominationsPanel" runat="server" Visible="false">
-        Admin Nominate Panel
+        <asp:Table ID="AdminNominationsTable" CssClass="table table-bordered" runat="server">
+            <asp:TableHeaderRow>
+                <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
+                <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
+                <asp:TableHeaderCell>Will Be Candidate</asp:TableHeaderCell>
+            </asp:TableHeaderRow>
+        </asp:Table>
     </asp:Panel>
 
     <asp:Panel ID="AdminVotingPanel" runat="server" Visible="false">
-        Admin Vote Panel
+        <asp:Table ID="AdminVotingTable" CssClass="table table-bordered" runat="server">
+            <asp:TableHeaderRow>
+                <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
+                <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
+            </asp:TableHeaderRow>
+        </asp:Table>
     </asp:Panel>
 
+    <asp:Panel ID="NECCertificationPanel" runat="server" Visible="false">
+        <asp:Table ID="NECVotingTable" CssClass="table table-bordered" runat="server">
+            <asp:TableHeaderRow>
+                <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
+                <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
+            </asp:TableHeaderRow>            
+        </asp:Table>
+        <asp:Label ID="NECCertifyAgreement" Text="As a member of the NEC, I certify that these election results are valid and have been properly collected.<br>" runat="server" />
+        <asp:CheckBox ID="CertifyCheckBox" Text="I hereby certify this election's results." TextAlign="Right" Checked="false" runat="server" />
+        <asp:Button ID="CertifyButton" Text="Submit Certification" runat="server" OnClick="Certify_Click" />
+        <asp:Label ID="CertifyWarning" Text="<br>Please tick the certification check box before submitting your certification!" runat="server" Visible="false" />
+        <asp:Label ID="NECCertificationComplete" runat="server" Visible="false" Text="Thank you for certifying the election results!"/>
+    </asp:Panel>
+
+
     <asp:Panel ID="AdminCertificationPanel" runat="server" Visible="false">
-        Admin Cert Panel
+        <asp:Label ID="AdminCertCount" Visible="true" runat="server" />
     </asp:Panel>
 
     <asp:Panel ID="AdminConflictPanel" runat="server" Visible="false">
-        Admin Conflict Panel
+        <asp:Label ID="AdminNoConflicts" Visible="false" Text="There are no conflicts to resolve." runat="server" />
     </asp:Panel>
 
     <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false">
@@ -99,11 +125,25 @@
     </asp:Panel>
 
     <asp:Panel ID="FacultyNomination" runat="server" Visible="false">
-    Faculty Primary
+        Please cast your vote in the primary election for one of the following nominees:
+        <asp:RadioButtonList ID="FacultyNominationList" runat="server" >
+        </asp:RadioButtonList>
+        <asp:Button ID="FacultyCastNomination" Text="Cast Vote" runat="server" OnClick="FacultyCastNomination_Click" />
+    </asp:Panel>
+
+    <asp:Panel ID="FacultyNominationComplete" runat="server" Visible="false">
+        Thank you for placing your vote in the primary election!
     </asp:Panel>
 
     <asp:Panel ID="FacultyVote" runat="server" Visible="false">
-    Faculty vote
+        Please cast your vote in the final election for one of the following nominees:
+        <asp:RadioButtonList ID="FacultyVoteList" runat="server" >
+        </asp:RadioButtonList>
+        <asp:Button ID="FacultyCastVote" Text="Cast Vote" runat="server" OnClick="FacultyCastVote_Click" />
+    </asp:Panel>
+
+    <asp:Panel ID="FacultyVoteComplete" runat="server" Visible="false">
+        Thank you for placing your vote in the final election!
     </asp:Panel>
 
 </asp:Content>
