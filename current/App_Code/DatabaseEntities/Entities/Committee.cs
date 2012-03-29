@@ -45,12 +45,9 @@ namespace DatabaseEntities
         public static Committee FindCommittee(ISession session, string name)
         {
             // Formulate a query for the committee based on the committee name
-            var committees = session.CreateCriteria(typeof(Committee))
+            return session.CreateCriteria(typeof(Committee))
                 .Add(Restrictions.Eq("Name", name))
                 .UniqueResult<Committee>();
-
-            // return the result
-            return committees;
         }
 
         /// <summary>
@@ -62,12 +59,9 @@ namespace DatabaseEntities
         public static Committee FindCommittee(ISession session, int id)
         {
             // formulate a query for the committee based off the id
-            var committees = session.CreateCriteria(typeof(Committee))
+            return session.CreateCriteria(typeof(Committee))
                 .Add(Restrictions.Eq("ID", id))
                 .UniqueResult<Committee>();
-
-            // and return it.
-            return committees;
         }
 
         /// <summary>
