@@ -160,7 +160,7 @@ public partial class committee_election : System.Web.UI.Page
             switch(election.Phase) {
                 case ElectionPhase.WTSPhase:
                     //*******************************
-                    //***** Faculty Admin Load ******
+                    //******** Admin WTS Load *******
                     //*******************************
                     PhaseLiteral.Text = "WTS Phase";
                     List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
