@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" Codebehind="committee_election.aspx.cs" %>
+﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" CodeFile="committee_election.aspx.cs" %>
 <%@ Register TagPrefix="asp" Namespace="AjaxControlToolkit" Assembly="AjaxControlToolkit"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
@@ -68,6 +68,13 @@
 
     <asp:Panel ID="AdminWTSPanel" runat="server" Visible="false">
         Admin WTS Panel
+        <asp:Panel ID="wtsAdminList" runat="server">
+                <asp:Table ID="wtsAdminTable" runat="server">
+                </asp:Table>
+        </asp:Panel>
+        <asp:Panel ID="wtsAdminConfirm" runat="server" Visible="false">
+            Users willingness to server has been revoked.
+        </asp:Panel>
     </asp:Panel>
 
     <asp:Panel ID="AdminNominationsPanel" runat="server" Visible="false">
@@ -122,6 +129,32 @@
 
     <asp:Panel ID="FacultyWTS" runat="server" Visible="false">
     Faculty WTS
+            <asp:Panel ID="wtsPanelNew" runat="server">
+                Statement: <asp:TextBox ID="wtsStatement" runat="server" Height="226px" 
+                    TextMode="MultiLine" Width="213px"></asp:TextBox><br />
+                </p>
+                <p>
+                    <asp:CheckBox ID="wtsConfirm" runat="server" 
+                        Text="I confirm that I am willing to serve as an APSCUF Official. " 
+                        ValidationGroup="wts" />
+                </p>
+                <p>
+                    <asp:CustomValidator ID="wtsAcceptValidator" runat="server" 
+                        ErrorMessage="Please confirm your willingness to server by checking the box above." 
+                        onservervalidate="wtsAcceptValidator_ServerValidate"></asp:CustomValidator>
+                </p>
+                <p>
+                    <asp:Button ID="wtsSubmit" runat="server" Text="Submit" 
+                        onclick="wtsSubmit_Click" />
+                </p>
+                <asp:HiddenField ID="wtsEmail" runat="server" />
+            </asp:Panel>
+            <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false">
+                You have already submitted a willing to server form for this election.
+            </asp:Panel>
+            <asp:Panel ID="wtsPanelDone" runat="server" Visible="false">
+                Your willingness to server has been successfully registered.
+            </asp:Panel>
     </asp:Panel>
 
     <asp:Panel ID="FacultyNomination" runat="server" Visible="false">
