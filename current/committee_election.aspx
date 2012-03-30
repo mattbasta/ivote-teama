@@ -32,7 +32,6 @@
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
         </asp:Panel>
     </asp:Panel>
-
     <asp:ToolkitScriptManager ID="AJAXManager" runat="Server" />
 
     <asp:Panel ID="AdminTabs" runat="server" Visible="false">
@@ -52,7 +51,8 @@
                 </li>
                 <li runat="server" ID="certifications_tab" Visible="false">
                     <asp:LinkButton Text="NEC Certifications" runat="server"
-                            OnClick="Tab_Clicked" CommandName="CertificationPhase" />
+                            OnClick="Tab_Clicked" CommandName="CertificationPhase"
+                            ID="certifications_tab_link" />
                 </li>
                 <li runat="server" ID="conflicts_tab" Visible="false">
                     <asp:LinkButton Text="Election Conflicts" runat="server"
@@ -67,116 +67,190 @@
     </asp:Panel>
 
     <asp:Panel ID="AdminWTSPanel" runat="server" Visible="false">
-        <asp:Panel ID="wtsAdminList" runat="server">
-                <asp:Table ID="wtsAdminTable" runat="server">
+        <fieldset>
+            <legend>Revoke Willingness to Serve</legend>
+            <asp:Panel ID="wtsAdminConfirm" runat="server" Visible="false">
+                <strong>WTS Revoked</strong>
+                User's willingness to serve has been revoked.
+            </asp:Panel>
+            <asp:Panel ID="wtsAdminList" runat="server">
+                <asp:Table ID="wtsAdminTable" runat="server" CssClass="table table-bordered">
+                    <asp:TableHeaderRow>
+                        <asp:TableHeaderCell>Name</asp:TableHeaderCell>
+                        <asp:TableHeaderCell>Department</asp:TableHeaderCell>
+                        <asp:TableHeaderCell>Actions</asp:TableHeaderCell>
+                    </asp:TableHeaderRow>
                 </asp:Table>
-        </asp:Panel>
-        <asp:Panel ID="wtsAdminConfirm" runat="server" Visible="false">
-            Users willingness to server has been revoked.
-        </asp:Panel>
+            </asp:Panel>
+        </fieldset>
     </asp:Panel>
 
     <asp:Panel ID="AdminNominationsPanel" runat="server" Visible="false">
-        <asp:Table ID="AdminNominationsTable" CssClass="table table-bordered" runat="server">
-            <asp:TableHeaderRow>
-                <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
-                <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
-                <asp:TableHeaderCell>Will Be Candidate</asp:TableHeaderCell>
-            </asp:TableHeaderRow>
-        </asp:Table>
+        <fieldset>
+            <legend>Review Primary Election Nominations</legend>
+            <asp:Table ID="AdminNominationsTable" CssClass="table table-bordered" runat="server">
+                <asp:TableHeaderRow>
+                    <asp:TableHeaderCell>Name</asp:TableHeaderCell>
+                    <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
+                    <asp:TableHeaderCell>Will Be Candidate?</asp:TableHeaderCell>
+                </asp:TableHeaderRow>
+            </asp:Table>
+        </fieldset>
     </asp:Panel>
 
     <asp:Panel ID="AdminVotingPanel" runat="server" Visible="false">
-        <asp:Table ID="AdminVotingTable" CssClass="table table-bordered" runat="server">
-            <asp:TableHeaderRow>
-                <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
-                <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
-            </asp:TableHeaderRow>
-        </asp:Table>
+        <fieldset>
+            <legend>Review Vote Tally</legend>
+            <asp:Table ID="AdminVotingTable" CssClass="table table-bordered" runat="server">
+                <asp:TableHeaderRow>
+                    <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
+                    <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
+                </asp:TableHeaderRow>
+            </asp:Table>
+        </fieldset>
     </asp:Panel>
 
-    <asp:Panel ID="NECCertificationPanel" runat="server" Visible="false">
-        <asp:Table ID="NECVotingTable" CssClass="table table-bordered" runat="server">
-            <asp:TableHeaderRow>
-                <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
-                <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
-            </asp:TableHeaderRow>            
-        </asp:Table>
-        <asp:Label ID="NECCertifyAgreement" Text="As a member of the NEC, I certify that these election results are valid and have been properly collected.<br>" runat="server" />
-        <asp:CheckBox ID="CertifyCheckBox" Text="I hereby certify this election's results." TextAlign="Right" Checked="false" runat="server" />
-        <asp:Button ID="CertifyButton" Text="Submit Certification" runat="server" OnClick="Certify_Click" />
-        <asp:Label ID="CertifyWarning" Text="<br>Please tick the certification check box before submitting your certification!" runat="server" Visible="false" />
-        <asp:Label ID="NECCertificationComplete" runat="server" Visible="false" Text="Thank you for certifying the election results!"/>
+    <asp:Panel ID="NECCertificationPanel" runat="server" Visible="false" CssClass="form form-horizontal">
+        <fieldset>
+            <legend>Review Vote Tally</legend>
+            <asp:Label ID="NECCertificationComplete" runat="server" Visible="false" CssClass="alert alert-success"
+                Text="Thank you for certifying the election results!"/>
+            <asp:Table ID="NECVotingTable" CssClass="table table-bordered" runat="server">
+                <asp:TableHeaderRow>
+                    <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
+                    <asp:TableHeaderCell>Votes</asp:TableHeaderCell>
+                </asp:TableHeaderRow>            
+            </asp:Table>
+            <div id="NECCertifyAgreement" runat="server">
+                <p>As a member of the NEC, I certify that these election results are valid and have been properly collected.</p>
+                <div class="control-group">
+                    <label class="control-label">Confirm</label>
+                    <div class="controls">
+                        <label class="checkbox">
+                            <asp:CheckBox ID="CertifyCheckBox" Checked="false" runat="server" />
+                            I hereby certify this election's results.
+                        </label>
+                        <asp:Label ID="CertifyWarning" Text="Please tick the certification check box before submitting your certification!"
+                            CssClass="help-block error" runat="server" Visible="false" />
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <asp:Button ID="CertifyButton" Text="Submit Certification"
+                        runat="server" OnClick="Certify_Click" CssClass="btn btn-primary" />
+                </div>
+            </div>
+        </fieldset>
     </asp:Panel>
 
 
     <asp:Panel ID="AdminCertificationPanel" runat="server" Visible="false">
-        <asp:Label ID="AdminCertCount" Visible="true" runat="server" />
+        <fieldset>
+            <legend>Review NEC Certification Activity</legend>
+            <p><asp:Label ID="AdminCertCount" Visible="true" runat="server" /></p>
+            <div class="progress progress-success">
+                <div class="bar" ID="necprogressbar" style="width:0;" runat="server"></div>
+            </div>
+        </fieldset>
     </asp:Panel>
 
     <asp:Panel ID="AdminConflictPanel" runat="server" Visible="false">
         <asp:Label ID="AdminNoConflicts" Visible="false" Text="There are no conflicts to resolve." runat="server" />
     </asp:Panel>
 
-    <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false">
-        Admin Closed Panel
+    <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false" CssClass="alert">
+        <strong>Election Closed</strong>
+        This election is currently closed. You can review the vote counts on the <b>Votes</b> tab.
     </asp:Panel>
     
-    <asp:Panel ID="FacultyClosed" runat="server" Visible="false">
-    Faculty Closed
+    
+    <asp:Panel ID="FacultyClosed" runat="server" Visible="false" CssClass="alert">
+        <strong>Election Closed</strong>
+        This election is currently closed. Thank you for participating.
     </asp:Panel>
 
-    <asp:Panel ID="FacultyWTS" runat="server" Visible="false">
+    <asp:Panel ID="FacultyWTS" runat="server" Visible="false" CssClass="form form-horizontal">
+        <fieldset>
+            <legend>Willingness to Serve</legend>
             <asp:Panel ID="wtsPanelNew" runat="server">
-                <p>
-                Statement: <asp:TextBox ID="wtsStatement" runat="server" Height="226px" 
-                    TextMode="MultiLine" Width="213px"></asp:TextBox><br />
-                </p>
-                <p>
-                    <asp:CheckBox ID="wtsConfirm" runat="server" 
-                        Text="I confirm that I am willing to serve as an APSCUF Official. " 
-                        ValidationGroup="wts" />
-                </p>
-                <p>
-                    <asp:CustomValidator ID="wtsAcceptValidator" runat="server" 
-                        ErrorMessage="Please confirm your willingness to server by checking the box above." 
-                        onservervalidate="wtsAcceptValidator_ServerValidate"></asp:CustomValidator>
-                </p>
-                <p>
+                <div class="control-group">
+                    <label class="control-label">Statement</label>
+                    <div class="controls">
+                        <asp:TextBox ID="wtsStatement" runat="server" TextMode="MultiLine" CssClass="input-xlarge" />
+                        <p class="help-block">Give a brief statement about your willingness to serve in this committee.</p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Confirm</label>
+                    <div class="controls">
+                        <label class="checkbox">
+                            <asp:CheckBox ID="wtsConfirm" runat="server" ValidationGroup="wts" />
+                            I confirm that I am willing to serve as an APSCUF Official.
+                        </label>
+                        <asp:CustomValidator ID="wtsAcceptValidator" runat="server" 
+                            ErrorMessage="Please confirm your willingness to server by checking the box above." 
+                            onservervalidate="wtsAcceptValidator_ServerValidate"
+                            CssClass="help-block error"/>
+                    </div>
+                </div>
+                <div class="form-actions">
                     <asp:Button ID="wtsSubmit" runat="server" Text="Submit" 
-                        onclick="wtsSubmit_Click" />
-                </p>
-                <asp:HiddenField ID="wtsEmail" runat="server" />
+                        onclick="wtsSubmit_Click" CssClass="btn btn-primary" />
+                </div>
             </asp:Panel>
-            <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false">
+            <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false" CssClass="alert alert-info">
+                <strong>Willingness to Serve Submitted</strong>
                 You have already submitted a willing to server form for this election.
             </asp:Panel>
-            <asp:Panel ID="wtsPanelDone" runat="server" Visible="false">
+            <asp:Panel ID="wtsPanelDone" runat="server" Visible="false" CssClass="alert alert-success">
+                <strong>Willingness to Serve Submitted</strong>
                 Your willingness to server has been successfully registered.
             </asp:Panel>
+        </fieldset>
     </asp:Panel>
 
-    <asp:Panel ID="FacultyNomination" runat="server" Visible="false">
-        Please cast your vote in the primary election for one of the following nominees:
-        <asp:RadioButtonList ID="FacultyNominationList" runat="server" >
-        </asp:RadioButtonList>
-        <asp:Button ID="FacultyCastNomination" Text="Cast Vote" runat="server" OnClick="FacultyCastNomination_Click" />
+    <asp:Panel ID="FacultyNomination" runat="server" Visible="false" CssClass="form form-horizontal">
+        <fieldset>
+            <legend>Primary Election</legend>
+            <p>Please cast your vote in the primary election for one of the following candidates.</p>
+            <div class="control-group">
+                <label class="control-label">Candidates</label>
+                <div class="controls" ID="FacultyNominationList" runat="server"></div>
+            </div>
+            <div class="form-actions">
+                <asp:Button ID="FacultyCastNomination" Text="Cast Vote" runat="server"
+                    OnClick="FacultyCastNomination_Click" CssClass="btn btn-primary" />
+            </div>
+        </fieldset>
     </asp:Panel>
 
     <asp:Panel ID="FacultyNominationComplete" runat="server" Visible="false">
-        Thank you for placing your vote in the primary election!
+        <div class="alert alert-success">
+            Thank you for placing your vote in the primary election!
+        </div>
     </asp:Panel>
 
-    <asp:Panel ID="FacultyVote" runat="server" Visible="false">
-        Please cast your vote in the final election for one of the following nominees:
-        <asp:RadioButtonList ID="FacultyVoteList" runat="server" >
-        </asp:RadioButtonList>
-        <asp:Button ID="FacultyCastVote" Text="Cast Vote" runat="server" OnClick="FacultyCastVote_Click" />
+    <asp:Panel ID="FacultyVote" runat="server" Visible="false" CssClass="form form-horizontal">
+        <fieldset>
+            <legend>General Election</legend>
+            <p>Please cast your vote in the final election for one of the following nominees:</p>
+            <div class="control-group">
+                <label class="control-label">Nominees</label>
+                <div class="controls">
+                    <asp:RadioButtonList ID="FacultyVoteList" runat="server" ></asp:RadioButtonList>
+                </div>
+            </div>
+            <div class="form-actions">
+                <asp:Button ID="FacultyCastVote" Text="Cast Vote" runat="server" OnClick="FacultyCastVote_Click"
+                    CssClass="btn btn-primary"/>
+            </div>
+            
+        </fieldset>
     </asp:Panel>
 
     <asp:Panel ID="FacultyVoteComplete" runat="server" Visible="false">
-        Thank you for placing your vote in the final election!
+        <div class="alert alert-success">
+            Thank you for placing your vote in the general election!
+        </div>
     </asp:Panel>
 
 </asp:Content>
-

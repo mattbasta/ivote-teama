@@ -92,7 +92,6 @@ namespace DatabaseEntities
             // form a query for the election with the given id
             var elections = session.CreateCriteria(typeof(CommitteeElection))
                 .Add(Restrictions.Eq("ID", id))
-                //.Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase))) TODO: Check if this should be ignored or not
                 .UniqueResult<CommitteeElection>();
 
             // and return it
@@ -124,7 +123,10 @@ namespace DatabaseEntities
             ret.VacanciesToFill = committee.NumberOfVacancies(session);
             // return null if there are no vacancies to fill or if there is
             // already an election for this committee
-            if (ret.VacanciesToFill <= 0 || FindElection(session, committee.ID) != null)
+            if (ret.VacanciesToFill <= 0 || session.CreateCriteria(typeof(CommitteeElection))
+                                                   .Add(Restrictions.Eq("PertinentCommittee", committee.ID))
+                                                   .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
+                                                   .UniqueResult<CommitteeElection>() != null)
                 return null;
             else
                 return ret;
@@ -209,6 +211,9 @@ namespace DatabaseEntities
             if (toReturn == ElectionPhase.NominationPhase &&
                 this.ShouldEnterNominationPhase(session) == false)
                 return ElectionPhase.VotePhase;
+            else if (toReturn == ElectionPhase.ConflictPhase &&
+                     ElectionConflict.FindElectionConflicts(session, ID).Count == 0)
+                return ElectionPhase.ClosedPhase;
             else
                 return toReturn;
         }
@@ -390,6 +395,7 @@ namespace DatabaseEntities
                 else
                     cutOff = count[num_vacs];
             }
+            
             // Only add users to the list of nominees if they surpass the cutoff value
             List<User> ret = new List<User>();
             foreach (User user in users)
