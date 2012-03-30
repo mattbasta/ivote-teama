@@ -49,9 +49,6 @@ public partial class experimental_WTS : System.Web.UI.Page
             ds = dbLogic.getResults();
             info = new string[3] { id, id, HiddenFieldPosition.Value };
 
-            Name.Text = userObject.FirstName + " " + userObject.LastName;
-            Dept.Text = userObject.Department.ToString();
-
             if (!String.IsNullOrEmpty(positionTitle))
                 Submit.Enabled = true;
         }
@@ -65,7 +62,8 @@ public partial class experimental_WTS : System.Web.UI.Page
             //Check if election exists
             electionObject = DatabaseEntities.CommitteeElection.FindElection(session, committeeID);
 
-            if (electionObject != null && electionObject.Phase == DatabaseEntities.ElectionPhase.WTSPhase)
+            if (electionObject != null &&
+                electionObject.Phase == DatabaseEntities.ElectionPhase.WTSPhase)
             {
                 //Election is valid and in WTS phase.
 
@@ -75,9 +73,6 @@ public partial class experimental_WTS : System.Web.UI.Page
 
                 //Get user
                 userObject = DatabaseEntities.User.FindUser(session, Page.User.Identity.Name.ToString());
-                Name.Text = userObject.FirstName + " " + userObject.LastName;
-                Dept.Text = userObject.Department.ToString();
-
                 //Check if WTS already exists
                 List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, electionObject.ID);
                 bool wtsAlreadySubmitted = false;
@@ -106,16 +101,9 @@ public partial class experimental_WTS : System.Web.UI.Page
                 }
 
             }
-
-
             DatabaseEntities.NHibernateHelper.Finished(transaction);
         }
-
-
-
-
     }
-
     protected bool checkAccept()
     {
         if (Accept.Checked == true)
@@ -126,7 +114,6 @@ public partial class experimental_WTS : System.Web.UI.Page
 
     protected void submit(object sender, EventArgs e)
     {
-
         if (checkAccept())
         {
             if (electionObject == null)
@@ -141,14 +128,14 @@ public partial class experimental_WTS : System.Web.UI.Page
                     }
                     dbLogic.userAcceptedNom(id, HiddenFieldPosition.Value);
                     AcceptError.Visible = false;
-                    UpdatePanel1.Visible = false;
+                    Fieldset2.Visible = false;
                     LabelExplain.Visible = false;
                     Confirm.Visible = true;
                 }
                 else
                 {
                     LabelExplain.Text = "You have already applied for this position.";
-                    UpdatePanel1.Visible = false;
+                    Fieldset2.Visible = false;
                 }
             }
             else
@@ -163,7 +150,7 @@ public partial class experimental_WTS : System.Web.UI.Page
                 DatabaseEntities.NHibernateHelper.Finished(transaction);
 
                 AcceptError.Visible = false;
-                UpdatePanel1.Visible = false;
+                Fieldset2.Visible = false;
                 LabelExplain.Visible = false;
                 Confirm.Visible = true;
             }

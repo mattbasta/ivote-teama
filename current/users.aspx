@@ -44,7 +44,7 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Email Address" SortExpression="Email">
                             <ItemTemplate>
-                                    <asp:HyperLink ID="HyperLink1" text='<%#Eval("Email")%>' NavigateUrl='<%#DataBinder.Eval(Container, "DataItem.Email","MAILTO:{0}")%>' runat="server">HyperLink</asp:HyperLink>
+                                <asp:HyperLink ID="HyperLink1" text='<%#Eval("Email")%>' NavigateUrl='<%#DataBinder.Eval(Container, "DataItem.Email","MAILTO:{0}")%>' runat="server">HyperLink</asp:HyperLink>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField HeaderText="Department" DataField="Department" NullDisplayText="None" SortExpression="Department"/>
