@@ -38,25 +38,25 @@
             <h2>Spring Semester, 2012</h2>
             <dl>
                 <dt>Matthew Basta</dt>
-                <dd>Team Leader & Tester</dd>
+                <dd>Team Leader and Tester</dd>
 
                 <dt>Nancy Rothermel</dt>
                 <dd>Project Manager</dd>
 
                 <dt>Ryan Groff</dt>
-                <dd>System Analysts & Designer</dd>
+                <dd>System Analysts and Designer</dd>
 
                 <dt>Roberto Rodriguez</dt>
-                <dd>System Analyst, Designer, & Tester</dd>
+                <dd>System Analyst, Designer, and Tester</dd>
+
+                <dt>Lee Fehrs</dt>
+                <dd>Application Tester</dd>
 
                 <dt>Andrew Bashore</dt>
-                <dd>System Designer & Developer</dd>
+                <dd>System Designer and Developer</dd>
                     
                 <dt>Brian Fairservice</dt>
-                <dd>Systems Analyst & Developer</dd>
-
-                <dt>Julio Ingar</dt>
-                <dd>System Developer</dd>
+                <dd>Systems Analyst and Developer</dd>
             </dl>
         </div>
     </div>
