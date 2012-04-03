@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" CodeFile="committee_election.aspx.cs" %>
+﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" Codebehind="committee_election.aspx.cs" %>
 <%@ Register TagPrefix="asp" Namespace="AjaxControlToolkit" Assembly="AjaxControlToolkit"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
@@ -31,6 +31,14 @@
             <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
         </asp:Panel>
+
+        <asp:Literal ID="DeltaLabel" Text="Adjust this phase's deadline by" runat="server" />
+        <asp:TextBox ID="DeltaText" runat="server" TextMode="SingleLine" MaxLength="2"  />
+        <asp:NumericUpDownExtender ID="Delta" runat="server" TargetControlID="DeltaText" Width="55" Maximum="14" Minimum="-14" />
+        <asp:Literal ID="DayLabel" Text="days past the original deadline." runat="server" />
+        <asp:Button ID="DeltaSubmit" Text="Delay/Rush" runat="server" 
+         CssClass="btn btn-primary btn-small" OnClick="DeltaSubmit_Click" />
+
     </asp:Panel>
     <asp:ToolkitScriptManager ID="AJAXManager" runat="Server" />
 

@@ -59,6 +59,16 @@ namespace DatabaseEntities
         /// </summary>
         public virtual int VacanciesToFill { get; set; }
 
+        /// <summary>
+        /// This number represents how many days the administrator delayed or 
+        /// rushed the election.
+        /// </summary>
+        public virtual int PhaseEndDelta { get; set; }
+
+        /// <summary>
+        /// The time that the delta was changed.
+        /// </summary>
+
         // Methods
         /// <summary>
         /// Returns the election which is running for the specified committee.
@@ -121,6 +131,7 @@ namespace DatabaseEntities
             ret.PhaseStarted = ret.Started;
             ret.Phase = ElectionPhase.WTSPhase;
             ret.VacanciesToFill = committee.NumberOfVacancies(session);
+            ret.PhaseEndDelta = 0;
             // return null if there are no vacancies to fill or if there is
             // already an election for this committee
             if (ret.VacanciesToFill <= 0 || session.CreateCriteria(typeof(CommitteeElection))
@@ -175,6 +186,7 @@ namespace DatabaseEntities
             }
             // Store the current date in the PhaseStarted field
             this.PhaseStarted = DateTime.Now;
+            this.PhaseEndDelta = 0;
 
             session.SaveOrUpdate(this);
             session.Flush();
@@ -184,16 +196,12 @@ namespace DatabaseEntities
         {
             // People have two weeks to submit their WTS
             if (this.Phase == ElectionPhase.WTSPhase)
-                return this.PhaseStarted.AddDays(14);
-            // The "ballot phase" is automatic/instantaneous when the phase is bumped.
-            //// The NEC has one week to compose the ballot
-            //else if (this.Phase == ElectionPhase.BallotPhase)
-            //    return this.PhaseStarted.AddDays(7);
+                return this.PhaseStarted.AddDays(14 + PhaseEndDelta);
             else if (this.Phase == ElectionPhase.NominationPhase)
-                return this.PhaseStarted.AddDays(7);
+                return this.PhaseStarted.AddDays(7 + PhaseEndDelta);
             // The voters have one week to cast their vote
             else if (this.Phase == ElectionPhase.VotePhase)
-                return this.PhaseStarted.AddDays(7);
+                return this.PhaseStarted.AddDays(7 + PhaseEndDelta);
             else
                 // after that, there are no dead-line restrictions.
                 return DateTime.MaxValue;

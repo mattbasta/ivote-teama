@@ -256,6 +256,8 @@ public partial class committee_election : System.Web.UI.Page
     
     protected void Page_PreRender(object sender, EventArgs e)
     {
+        if(user.IsAdmin)
+            DeltaText.Text = election.PhaseEndDelta.ToString();
         if(user.IsAdmin && election.Phase != ElectionPhase.ClosedPhase) {
             JulioButtonPanel.Visible = true;
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
@@ -610,6 +612,17 @@ public partial class committee_election : System.Web.UI.Page
             ; // There ought to be no way to reach this line, though we could put error handling here if it is a problem.
         
         NHibernateHelper.Finished(transaction);
+    }
+
+    protected void DeltaSubmit_Click(Object sender, EventArgs e)
+    {
+        ITransaction transaction = session.BeginTransaction();
+        election.PhaseEndDelta = int.Parse(DeltaText.Text);
+        session.SaveOrUpdate(election);
+        session.Flush();
+        NHibernateHelper.Finished(transaction);
+
+        Response.Redirect("/committee_election.aspx?id=" + election.ID.ToString());
     }
 
     /// <summary>
