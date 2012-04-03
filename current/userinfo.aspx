@@ -17,7 +17,7 @@
 
     <asp:Panel ID="SuccessPanel" runat="server" Visible="false" CssClass="alert alert-success">
         <strong>User updated successfully.</strong>
-        <p>The user has been successfully updated.</p>
+        The user has been successfully updated.
     </asp:Panel>
     
     <fieldset class="form form-horizontal">

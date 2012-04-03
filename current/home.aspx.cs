@@ -43,10 +43,12 @@ public partial class home : System.Web.UI.Page
             committee_elections =
                     session.CreateCriteria(typeof(DatabaseEntities.CommitteeElection))
                             .Add(Restrictions.Not(Restrictions.Eq("Phase", DatabaseEntities.ElectionPhase.ClosedPhase)))
+                            .AddOrder(Order.Desc("Started"))
                             .List<DatabaseEntities.CommitteeElection>();
         else
             committee_elections =
                     session.CreateCriteria(typeof(DatabaseEntities.CommitteeElection))
+                            .AddOrder(Order.Desc("Started"))
                             .List<DatabaseEntities.CommitteeElection>();
         
         if(committee_elections.Count == 0)

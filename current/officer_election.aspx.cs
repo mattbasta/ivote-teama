@@ -39,11 +39,11 @@ public partial class officer_election : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         user = GetUser(session);
         is_admin = user.IsAdmin;
-        setView();
     }
     
     protected void Page_PreRender(object sender, EventArgs e)
     {
+        setView();
         JulioButtonPanel.Visible = is_admin || user.IsNEC;
         JulioButtonPhase.SelectedValue = phases.currentPhase;
     }
@@ -233,12 +233,6 @@ public partial class officer_election : System.Web.UI.Page
         }
     }
 
-    //For server transferring with hyperlinks
-    protected void transfer(object sender, CommandEventArgs e)
-    {
-        Response.Redirect(e.CommandArgument.ToString());
-    }
-
     protected void JulioButton_Clicked(Object sender, EventArgs e)
     {
         phases.bumpPhase();
@@ -257,10 +251,10 @@ public partial class officer_election : System.Web.UI.Page
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         DatabaseEntities.User user = GetUser(session);
         PanelSelected.Visible = true; //makes the panel visible to the user
-        LabelSelected.Text = "<h3>Info for " + e.CommandArgument + ":</h3>" +
-                             "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandArgument.ToString()) + "</p>";
-        ButtonWTS.Text = "Nominate me for " + e.CommandArgument;
-        ButtonNominate.Text = "Nominate a user for " + e.CommandArgument;
+        LabelSelected.Text = "<h3>Info for " + e.CommandName + ":</h3>" +
+                             "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandName.ToString()) + "</p>";
+        ButtonWTS.Text = "Nominate me for " + e.CommandName;
+        ButtonNominate.Text = "Nominate a user for " + e.CommandName;
         HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
         ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
                                                      e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
@@ -296,7 +290,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void nominate(Object sender, EventArgs e)
     {
-        Response.Redirect("/nominate.aspx/" + HiddenFieldID.Value);
+        Response.Redirect("/nominate.aspx?position=" + HiddenFieldID.Value);
     }
 
     /********************************************

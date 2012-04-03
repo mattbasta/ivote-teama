@@ -30,6 +30,29 @@
     margin-top: 18px;
 }
 
+.nomination_user {
+    padding: 0 0 0.75em 2em;
+    position: relative;
+}
+.nomination_user + .nomination_user {
+    border-top: 1px solid #eee;
+    padding-top: 0.75em;
+}
+.nomination_user input {
+    position: absolute;
+    top: 0.2em;
+    left: 0;
+}
+.nomination_user + .nomination_user input {
+    top: 0.8em;
+}
+.nomination_user strong {
+    display: block;
+    font-size: 1.1em;
+    line-height: 1.4em;
+}
+.nomination_user p {margin: 0;}
+
 
 /* MISC  
 ----------------------------------------------------------*/

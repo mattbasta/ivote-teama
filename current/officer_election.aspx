@@ -67,10 +67,7 @@
         <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
 
         <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
-        <div class="buttonrow">
             <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
-            <a class="btn" href="/terminate.aspx">Cancel Election</a>
-        </div>
         </asp:Panel>
     
         <!-- TODO: For users with can_vote=False, do not show this section. -->
@@ -93,7 +90,7 @@
                         <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonSelect" runat="server" CommandName="positions" CommandArguments='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
+                                <asp:Button ID="ButtonSelect" runat="server" CommandName='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -107,7 +104,6 @@
         <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
         <div class="buttonrow">
             <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
-            <a class="btn" href="/terminate.aspx">Cancel Election</a>
         </div>
         </asp:Panel>
     </asp:Panel>
@@ -127,7 +123,6 @@
             <div class="column">
                 <b>Election Management</b><br />
                 <a href="approvenominations.aspx">Approve Eligibility</a><br />
-                <a href="terminate.aspx">Cancel election</a><br />
                 <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
                 <br />
             </div>
@@ -206,8 +201,7 @@
             <div class="column">
                 <b>Election Management</b><br />
                 <a href="approvenominations.aspx">Approve Eligibility</a><br />
-                <a href="terminate.aspx">Cancel Election</a><br />
-                <a href="slate.aspx"">View current Slate</a><br />
+                <a href="slate.aspx">View current Slate</a><br />
                 <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
                 <br />
             </div>
@@ -300,7 +294,6 @@
             <div class="column">
                 <b>Election Management</b><br />
                 <a href="approvenominations.aspx">Approve Eligibility</a><br />
-                <a href="terminate.aspx">Cancel election</a>
                 <br />
             </div>
         </asp:Panel>
@@ -318,13 +311,8 @@
 
         <!--Admin only-->
         <asp:Panel id="functions_approval" style="margin-top:10px;" visible="false" runat="server">
-            <div class="column">
-                <b>Election Management</b><br />
-                <a href="approvenominations.aspx">Approve Eligibility</a><br />
-                <a href="terminate.aspx">Cancel election</a><br />
-                <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
-                <br />
-            </div>
+            <a href="approvenominations.aspx">Approve Eligibility</a><br />
+            <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
     </asp:Label>
     <!--End Approval-->
@@ -337,17 +325,12 @@
             The current election is in the voting phase.  You must vote for the candidate you feel will best serve in each position.
         </div>
         <asp:Panel id="functions_voting" style="margin-top:10px;" visible="false" runat="server">
-            <div class="column">
-                <b>Election Management</b><br />
-                <a href="terminate.aspx">Cancel election</a><br />
-                <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
-            </div>
+            <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
         <div class="clear"></div>
     
         <!--The voting functionality will be available for this phase-->
         <div id="special">
-        <br />
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
                 <div style="color: Blue; padding-bottom: 6px;"><asp:Label ID="LabelFeedbackVote2" runat="server" Text="To begin the voting process, please select a position from the list below"></asp:Label></div>

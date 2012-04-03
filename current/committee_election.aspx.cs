@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
 using System.Data;
 using System.Web.Security;
 
@@ -22,6 +23,10 @@ public partial class committee_election : System.Web.UI.Page
     private CommitteeElection election;
     private DatabaseEntities.User user;
     private int ElectionID;
+    
+    private Dictionary<int, CheckBox> nomination_boxes = new Dictionary<int, CheckBox>();
+    
+    private ISession session;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -32,7 +37,7 @@ public partial class committee_election : System.Web.UI.Page
             throw new HttpException(400, "Invalid election ID");
         ElectionID = eid;
 
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        session = NHibernateHelper.CreateSessionFactory().OpenSession();
 
         // grab the objects based off the committee ID
         election = CommitteeElection.FindElection(session, eid);
@@ -64,7 +69,6 @@ public partial class committee_election : System.Web.UI.Page
                         wtsPanelExisting.Visible = true;
                         wtsPanelNew.Visible = false;
                     }
-                    wtsEmail.Value = user.Email;
 
                     FacultyWTS.Visible = true;
 
@@ -89,6 +93,10 @@ public partial class committee_election : System.Web.UI.Page
                     else
                         FacultyVoteComplete.Visible = true;
                     break;
+                case ElectionPhase.ClosedPhase:
+                    if (!user.IsNEC && !user.IsAdmin)
+                        FacultyClosed.Visible = true;
+                    break;
             }
 
         }
@@ -108,7 +116,7 @@ public partial class committee_election : System.Web.UI.Page
             }
         }
         if(user.IsAdmin) {
-            DaysLeftInPhase(session);
+            DaysLeftInPhase();
             
             ActivateTab(election.Phase.ToString());
             
@@ -138,13 +146,27 @@ public partial class committee_election : System.Web.UI.Page
             if (election.Phase >= ElectionPhase.CertificationPhase)
             {
                 int numberCertifications = Certification.FindCertifications(session, election.ID).Count;
-                AdminCertCount.Text = "There are currently "
-                     + numberCertifications.ToString();
-                if (numberCertifications >= 3)
-                    AdminCertCount.Text += ", which is enough to proceed to the next stage.";
+                AdminCertCount.Text = "There are currently " + numberCertifications.ToString();
+                if (numberCertifications >= 3) // TODO: Add a button to advance to the next phase.
+                    AdminCertCount.Text += " certifications, which is enough to proceed to the next stage.";
                 else
                     AdminCertCount.Text += " certifications.  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
+                
+                if(numberCertifications < 3) {
+                    HtmlGenericControl pretext = new HtmlGenericControl("span");
+                    pretext.InnerText = certifications_tab_link.Text;
+                    certifications_tab_link.Controls.Add(pretext);
+                    
+                    HtmlGenericControl badge = new HtmlGenericControl("span");
+                    badge.Attributes["class"] = "badge badge-info";
+                    badge.Attributes["style"] = "margin-left: 0.5em;";
+                    badge.InnerText = numberCertifications.ToString();
+                    certifications_tab_link.Controls.Add(badge);
+                }
+                
+                necprogressbar.Attributes["style"] = "width: " + Math.Min(100, numberCertifications / 3) + "%";
+                
             }
             if (election.Phase >= ElectionPhase.VotePhase)
             {
@@ -218,6 +240,16 @@ public partial class committee_election : System.Web.UI.Page
                 wtsAdminTable.Rows.Add(tr);
 
             }
+            if(wtsList.Count == 0) {
+                TableRow tr = new TableRow();
+                
+                TableCell td1 = new TableCell();
+                td1.Controls.Add(new LiteralControl("No WTS forms have been submitted yet."));
+                td1.ColumnSpan = 3;
+                tr.Controls.Add(td1);
+                
+                wtsAdminTable.Rows.Add(tr);
+            }
         }
 
     }
@@ -230,13 +262,18 @@ public partial class committee_election : System.Web.UI.Page
         }
     }
     
-    private void DaysLeftInPhase(ISession session)
+    private void DaysLeftInPhase()
     {
         DaysRemaining.Text = "The election is closed.";
         if(election.Phase != ElectionPhase.ClosedPhase)
         {
             int days_remaining = (int)election.NextPhaseDate(session).Subtract(election.PhaseStarted).TotalDays;
-            if(days_remaining > 0)
+            if(days_remaining > 1000) { // Not sure what MAXDATE translate to as an integer...
+                if(election.Phase == ElectionPhase.CertificationPhase)
+                    DaysRemaining.Text = "The phase should not be changed until the election has been certified by NEC members.";
+                else
+                    DaysRemaining.Text = "The phase should not be changed until some actions have occurred.";
+            } else if(days_remaining > 0)
                 DaysRemaining.Text = days_remaining.ToString() + " day(s) remaining for this phase.";
             else
                 DaysRemaining.Text = "This phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
@@ -297,7 +334,6 @@ public partial class committee_election : System.Web.UI.Page
 
     protected void JulioButton_Clicked(Object sender, EventArgs e)
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         ElectionPhase next_phase = election.NextPhase(session);
         election.SetPhase(session, next_phase);
         
@@ -306,7 +342,6 @@ public partial class committee_election : System.Web.UI.Page
 
     protected void JulioButtonCustom_Clicked(Object sender, EventArgs e)
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         ElectionPhase next_phase = (ElectionPhase)Enum.Parse(typeof(ElectionPhase), JulioButtonPhase.SelectedValue);
         election.SetPhase(session, next_phase);
         
@@ -325,7 +360,6 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     private void BuildAdminNominationTable()
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         // Get users for each election
         List<User> users = DatabaseEntities.User.FindUsers(session, election.ID);
         Dictionary<int, int> nomCount = new Dictionary<int, int>();
@@ -359,7 +393,7 @@ public partial class committee_election : System.Web.UI.Page
 
             candidate = new TableCell();
             candidate.Controls.Add(
-                new LiteralControl(nominees.Contains(user) ? "True":"False"));
+                new LiteralControl(nominees.Contains(user) ? "Yes" : "No"));
             row.Cells.Add(candidate);
 
             AdminNominationsTable.Rows.Add(row);
@@ -372,7 +406,6 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     private void BuildAdminVoteTable()
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         // Get nominees for the election.
         List<User> users = election.GetNominees(session);
         Dictionary<int, int> voteCount = new Dictionary<int, int>();
@@ -404,11 +437,21 @@ public partial class committee_election : System.Web.UI.Page
 
             AdminVotingTable.Rows.Add(row);
         }
+        
+        if(users.Count == 0) {
+            TableRow tr = new TableRow();
+            
+            TableCell td1 = new TableCell();
+            td1.Controls.Add(new LiteralControl("No ballots have been cast yet."));
+            td1.ColumnSpan = 3;
+            tr.Controls.Add(td1);
+            
+            AdminVotingTable.Rows.Add(tr);
+        }
     }
 
     private void BuildNECVoteTable()
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         // Get nominees for the election.
         List<User> users = election.GetNominees(session);
         Dictionary<int, int> voteCount = new Dictionary<int, int>();
@@ -448,15 +491,29 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     private void BuildUserNominationOptions()
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
-
+        if(Page.IsPostBack)
+            return;
+        
         // Get users for each election
         List<User> users = DatabaseEntities.User.FindUsers(session, ElectionID);
         foreach(User user in users)
         {
-            ListItem toAdd = new ListItem(user.FirstName + " " + user.LastName);
-            toAdd.Value = user.ID.ToString();
-            FacultyNominationList.Items.Add(toAdd);
+            HtmlGenericControl wrapper = new HtmlGenericControl("div");
+            wrapper.Attributes["class"] = "nomination_user";
+            CheckBox cb = new CheckBox();
+            nomination_boxes.Add(user.ID, cb);
+            wrapper.Controls.Add(cb);
+            
+            HtmlGenericControl name = new HtmlGenericControl("strong");
+            name.InnerHtml = user.FirstName + " " + user.LastName;
+            wrapper.Controls.Add(name);
+            
+            // TODO: Implement this!
+            HtmlGenericControl statement = new HtmlGenericControl("p");
+            statement.InnerHtml = "User's statement will go here. Currently unimplemented.";
+            wrapper.Controls.Add(statement);
+            
+            FacultyNominationList.Controls.Add(wrapper);
         }
     }
 
@@ -465,8 +522,9 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     private void BuildUserVoteOptions()
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
-
+        if(Page.IsPostBack)
+            return;
+        
         // Get nominees for this election.
         List<User> nominees = election.GetNominees(session);
 
@@ -485,7 +543,6 @@ public partial class committee_election : System.Web.UI.Page
     protected void FacultyCastNomination_Click(Object sender, EventArgs e)
     {
         // begin our transaction.
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
         // Get the identity of the voting user
@@ -495,11 +552,16 @@ public partial class committee_election : System.Web.UI.Page
         if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID)
             == null)
         {
-            CommitteeWTSNomination nomination = new CommitteeWTSNomination();
-            nomination.Election = election.ID;
-            nomination.Voter = user.ID;
-            nomination.Candidate = int.Parse(FacultyNominationList.SelectedValue);
-            session.SaveOrUpdate(nomination);
+            foreach(KeyValuePair<int, CheckBox> kvp in nomination_boxes) {
+                if(!kvp.Value.Checked)
+                    continue;
+                CommitteeWTSNomination nomination = new CommitteeWTSNomination();
+                nomination.Election = election.ID;
+                nomination.Voter = user.ID;
+                nomination.Candidate = kvp.Key;
+                session.SaveOrUpdate(nomination);
+                
+            }
             session.Flush();
             FacultyNomination.Visible = false;
             FacultyNominationComplete.Visible = true;
@@ -517,7 +579,6 @@ public partial class committee_election : System.Web.UI.Page
     protected void FacultyCastVote_Click(Object sender, EventArgs e)
     {
         // open the session
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
         // get the user who has the page open
@@ -594,7 +655,6 @@ public partial class committee_election : System.Web.UI.Page
 
     protected void Certify_Click(Object sender, EventArgs e)
     {
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
         // If the confirmation box is ticked, submit the certification
@@ -664,7 +724,6 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     protected void Disq_Click(Object sender, EventArgs e)
     {
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
         Button sendButton = (Button)sender;
@@ -716,9 +775,7 @@ public partial class committee_election : System.Web.UI.Page
         // remove the election conflict
         int id = int.Parse(idToFind);
 
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
-        ElectionConflict conflict = ElectionConflict.FindElectionConflict(session,
-            id);
+        ElectionConflict conflict = ElectionConflict.FindElectionConflict(session, id);
         NHibernateHelper.Delete(session, conflict);
 
         // remove the programmatically generated panel
@@ -743,7 +800,6 @@ public partial class committee_election : System.Web.UI.Page
         if (!Page.IsValid)
             return;
 
-        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
         DatabaseEntities.CommitteeElection.WillingToServe(session, user.ID, election.ID, wtsStatement.Text);
@@ -765,16 +821,13 @@ public partial class committee_election : System.Web.UI.Page
 
     protected void wtsRevoke_Click(object sender, EventArgs e)
     {
-        wtsAdminList.Visible = false;
         wtsAdminConfirm.Visible = true;
 
         int id = int.Parse(((Button)sender).CommandArgument);
 
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
         List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
-
         election.RevokeWTS(session, transaction, id);
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
