@@ -39,6 +39,14 @@ namespace DatabaseEntities
         /// The total number of positions in the committee
         /// </summary>
         public virtual int PositionCount { get; set; }
+        /// <summary>
+        /// Whether members must be in the bargaining unit
+        /// </summary>
+        public virtual bool BargainingUnitRequired { get; set; }
+        /// <summary>
+        /// Whether members must be tenured
+        /// </summary>
+        public virtual bool TenureRequired { get; set; }
 
         /// <summary>
         /// Returns a commitee object from the database based on its name.

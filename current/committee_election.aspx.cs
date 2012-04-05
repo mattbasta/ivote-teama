@@ -41,8 +41,11 @@ public partial class committee_election : System.Web.UI.Page
 
         // grab the objects based off the committee ID
         election = CommitteeElection.FindElection(session, eid);
+        if (election == null)
+            Response.Redirect("home.aspx");
         committee = Committee.FindCommittee(session, election.PertinentCommittee);
-
+        if (committee == null)
+            Response.Redirect("home.aspx");
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
         
         // If the user isn't an admin or nec...
