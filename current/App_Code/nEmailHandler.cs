@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.IO;
 
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -11,12 +12,15 @@ using NHibernate;
 using NHibernate.Cfg;
 
 /// <summary>
-/// Handles email notifications add during Spring 2012 for committee elections
+/// Handles email notifications added during Spring 2012 for committee elections
 /// </summary>
 public class nEmailHandler
 {
     emailer sendEmail;
     String emailBaseUrl;
+    databaseLogic dbLogic = new databaseLogic();
+    string template;
+    string footer;
 
 	public nEmailHandler()
 	{
@@ -44,8 +48,23 @@ public class nEmailHandler
         if (committee == null)
             return;
 
+        loadTemplate("emailCommitteeWTS");
         string subject = "APSCUF iVote Willingness to Serve - " + committee.Name;
-        string message = "http://" + emailBaseUrl + "/wts.aspx?election=" + committeeElection.ID;
+        string message = template;
+
+        message.Replace("##BASEURL##", emailBaseUrl);
+        message.Replace("##ID##", committeeElection.ID.ToString());
+
+        message += footer;
         sendEmail.sendEmailToList(allAddresses, message, subject);
+    }
+
+    private void loadTemplate(string sourceFile)
+    {
+        string fileName = HttpContext.Current.Server.MapPath("~/App_Data/emailtemplates/" + sourceFile + ".txt");
+        template = File.ReadAllText(fileName);
+
+        fileName = HttpContext.Current.Server.MapPath("~/App_Data/emailtemplates/emailFooter.txt");
+        footer = File.ReadAllText(fileName);
     }
 }

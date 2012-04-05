@@ -27,11 +27,6 @@ public class VerifyEmail
 
     public VerifyEmail()
 	{
-        emailQuestions = "";
-        emailQuestions += "Any questions or comments please email the current APSCUF-KU iVote system administrator.<br /><br />";
-        emailQuestions += "Team A<br />CSC 354<br /><br />";
-        emailQuestions += "(PLEASE DO NOT REPLY TO THIS EMAIL.)";
-
         emailBaseUrl = System.Configuration.ConfigurationManager.AppSettings["baseUrl"];
 
         allEmails = new ArrayList();
