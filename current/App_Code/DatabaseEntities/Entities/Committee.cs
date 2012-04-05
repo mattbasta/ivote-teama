@@ -32,6 +32,10 @@ namespace DatabaseEntities
         /// </summary>
         public virtual string Name { get; set; }
         /// <summary>
+        /// The description of the comittee.
+        /// </summary>
+        public virtual string Description { get; set; }
+        /// <summary>
         /// The total number of positions in the committee
         /// </summary>
         public virtual int PositionCount { get; set; }
