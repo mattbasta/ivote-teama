@@ -158,7 +158,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("Select CONCAT (first_name, ' ', last_name) AS fullname FROM union_members Where idunion_members = '" + id + "';", connection);
+            adapter = new MySqlDataAdapter("Select CONCAT (first_name, ' ', last_name) AS fullname FROM Where idunion_members = '" + id + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "query");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
@@ -447,7 +447,7 @@ public class databaseLogic
     public void selectTallyInfoForPosition(string position)
     {
         // TODO: Update this to the new DB stuff.
-        genericQuerySelector("SELECT T.*, CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM tally T, union_members UM WHERE T.position = '" + position + "' AND UM.idunion_members = T.id_union;");
+        genericQuerySelector("SELECT T.*, CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM tally T, users UM WHERE T.position = '" + position + "' AND UM.ID = T.id_union;");
     }
 
     //^^^^^^^^^^flag_voted methods^^^^^^^^^^
@@ -467,7 +467,7 @@ public class databaseLogic
     public void selectInfoForApprovalTable()
     {
         // TODO: Update this
-        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members;");
+        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM wts WTS, users UM WHERE UM.ID = WTS.idunion_members;");
     }
 
     //update the the eligiblity
@@ -486,7 +486,7 @@ public class databaseLogic
     public void selectDetailFromWTS(string id)
     {
         // TODO: Update this
-        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members AND WTS.idunion_members = " + id + ";");
+        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM wts WTS, users UM WHERE UM.ID = WTS.idunion_members AND WTS.idunion_members = " + id + ";");
     }
 
 
@@ -704,26 +704,26 @@ public class databaseLogic
     public void selectAllForBallot(string position)
     {
         // TODO: Update this
-        genericQuerySelector("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                             "FROM wts WTS, union_members UM " +
-                             "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');");
+        genericQuerySelector("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
+                             "FROM wts WTS, users UM " +
+                             "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + position + "');");
     }
 
     //counts how many people are nominated for a position
     public int countHowManyCandidatesForPosition(string position)
     {
         // TODO: Update this
-        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                                   "FROM wts WTS, union_members UM " +
-                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');");
+        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
+                                   "FROM wts WTS, users UM " +
+                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + position + "');");
     }
 
     public bool IsThereCandidatesForPoisition(string position)
     {
         // TODO: Update this
-        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                                   "FROM wts WTS, union_members UM " +
-                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');") > 0;
+        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
+                                   "FROM wts WTS, users UM " +
+                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + position + "');") > 0;
     }
 
     //gets all the current election positions
