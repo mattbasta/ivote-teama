@@ -255,10 +255,10 @@ public partial class officer_election : System.Web.UI.Page
                              "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandName.ToString()) + "</p>";
         ButtonWTS.Text = "Nominate me for " + e.CommandName;
         ButtonNominate.Text = "Nominate a user for " + e.CommandName;
-        HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
+        HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandName.ToString());
         ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
-                                                     e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
-                                                                                                        e.CommandArgument.ToString());
+                                                     e.CommandName.ToString()) || dbLogic.isUserWTS(user.ID,
+                                                                                                        e.CommandName.ToString());
     }
 
     //check if the user has a nomination pending
