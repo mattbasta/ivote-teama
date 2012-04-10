@@ -71,9 +71,9 @@
         </asp:Panel>
     
         <!-- TODO: For users with can_vote=False, do not show this section. -->
-        <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
         <asp:UpdatePanel ID="NominateUpdatePanel" runat="server">
             <ContentTemplate>
+                <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
                 <!--Display form/data for selected position -->
                 <asp:Panel ID="PanelSelected" CssClass="well" Visible="false" runat="server">
                     <asp:Label ID="LabelSelected" runat="server" Text="" />

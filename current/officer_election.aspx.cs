@@ -94,6 +94,7 @@ public partial class officer_election : System.Web.UI.Page
         switch(phases.currentPhase) {
             case "nominate":
                 OfficerNominate.Visible = true;
+                NominateUpdatePanel.Visible = user.CanVote;
                 PhaseLiteral.Text = "Nomination Phase";
                 
                 dbLogic.selectAllAvailablePositions();
