@@ -393,24 +393,6 @@ public class databaseLogic
         genericQuerySelector("SELECT * FROM election_position");
     }
 
-    //Select the idposition from positions using the position title
-    public string selectIDFromPosition(string position)
-    {
-        try
-        {
-            openConnection();
-            adapter = new MySqlDataAdapter("SELECT idelection_position FROM election_position WHERE position = '" + position + "';", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
-        }
-        catch { return ""; }
-        finally
-        {
-            closeConnection();
-        }
-    }
-
     //Select the position title from positions using the idposition
     public string selectPositionFromID(string id)
     {
@@ -466,8 +448,7 @@ public class databaseLogic
     //selects all info for nomination approval, including the users first and last name returned as a data row "full name"
     public void selectInfoForApprovalTable()
     {
-        // TODO: Update this
-        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members;");
+        genericQuerySelector("SELECT * FROM wts;");
     }
 
     //update the the eligiblity
@@ -485,8 +466,7 @@ public class databaseLogic
 
     public void selectDetailFromWTS(string id)
     {
-        // TODO: Update this
-        genericQuerySelector("SELECT WTS.*,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname FROM wts WTS, union_members UM WHERE UM.idunion_members = WTS.idunion_members AND WTS.idunion_members = " + id + ";");
+        genericQuerySelector("SELECT * FROM wts WHERE idunion_members = " + id + ";");
     }
 
 
@@ -703,10 +683,7 @@ public class databaseLogic
     //get all the info to populate the ballot
     public void selectAllForBallot(string position)
     {
-        // TODO: Update this
-        genericQuerySelector("SELECT WTS.idunion_members,  CONCAT(UM.first_name,' ', UM.last_name) AS fullname " +
-                             "FROM wts WTS, union_members UM " +
-                             "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.idunion_members AND WTS.position='" + position + "');");
+        genericQuerySelector("SELECT * FROM wts WHERE eligible=1 AND position='" + CleanInput(position) + "';");
     }
 
     //counts how many people are nominated for a position

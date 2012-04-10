@@ -5,6 +5,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <ul class="breadcrumb">
         <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
+        <li><a href="/officer_election.aspx">Officer Election</a> <span class="divider">/</span></li>
         <li class="active">Remove Entrants From Ballot</li>
     </ul>
     
@@ -31,7 +32,7 @@
                     <ItemTemplate>
                         <tr>
                             <td >
-                                <asp:Label ID="LabelFullname" runat="server" Text='<%#Eval("fullname") %>' />
+                                <asp:Label ID="LabelFullname" runat="server" Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' />
                                 <asp:HiddenField ID="HiddenFieldID" Value='<%#Eval("wts_id")%>' runat="server" />
                                 <asp:HiddenField ID="HiddenFieldEligible" Value='<%#Eval("eligible")%>' runat="server" />
                             </td>
@@ -41,7 +42,7 @@
                             <td>
                                 <asp:Button ID="ButtonRemove" 
                                 runat="server" CommandName="remove" CommandArgument='<%#Eval("wts_id") + "%" + Eval("idunion_members")%>'
-                                OnClientClick='<%# Eval("fullname", "return confirm(\"Are you sure you want to remove {0} from this election? (A Mass email will be sent out alerting ALL users of this action.)\")") %>'
+                                OnClientClick='Are you sure you want to remove this person from this election? An email will be sent out alerting ALL users.'
                                 Text="Remove From Ballot" CssClass="btn btn-danger btn-mini" />
                             </td>
                         </tr>

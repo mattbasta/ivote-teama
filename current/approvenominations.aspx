@@ -8,16 +8,21 @@
     
     <ul class="breadcrumb">
         <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
+        <li><a href="/officer_election.aspx">Officer Election</a> <span class="divider">/</span></li>
         <li class="active">Approve Officer Nominations</li>
     </ul>
     
     <div class="page-header">
         <h1>Approve Officer Nominations</h1>
     </div>
+    
+    <p>Approve or deny the eligibility of each Willingness-to-Serve form below.</p>
 
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
-            <p><asp:Label ID="LabelFeedback" runat="server" Text="Approve or deny the eligibility of each Willingness-to-Serve form below." /></p>
+            <asp:Panel ID="LabelFeedbackAlert" runat="server" CssClass="alert" Visible="false">
+                <asp:Label ID="LabelFeedback" runat="server" Text="Approve or deny the eligibility of each Willingness-to-Serve form below." />
+            </asp:Panel>
             <br />
             <table class="table table-bordered">
                 <tr>
@@ -34,7 +39,7 @@
                     <ItemTemplate>
                         <tr>
                             <td >
-                                <asp:Label ID="LabelFullname" runat="server" Text='<%#Eval("fullname") %>' />
+                                <asp:Label ID="LabelFullname" runat="server" Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' />
                                 <asp:HiddenField ID="HiddenFieldID" Value='<%#Eval("wts_id")%>' runat="server" />
                                 <asp:HiddenField ID="HiddenFieldEligible" Value='<%#Eval("eligible")%>' runat="server" />
                             </td>
@@ -57,7 +62,7 @@
             </table>
     
             <asp:Button ID="ButtonSave" runat="server" Text="Save Changes" CssClass="btn btn-primary" OnClick="Click_ButtonSave" />
-            <a href="/home.aspx" class="btn">Go Back</a>
+            <a href="/officer_election.aspx" class="btn">Go Back</a>
         </ContentTemplate>
     </asp:UpdatePanel>
 
