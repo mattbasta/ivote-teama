@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 
-public partial class wwwroot_finalsite_resultDetail : System.Web.UI.Page
+public partial class wwwroot_finalsite_ResultDetail : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
     protected void Page_Load(object sender, EventArgs e)

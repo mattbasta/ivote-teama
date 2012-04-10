@@ -12,7 +12,7 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
 
-public partial class finalsite_user_acceptance : System.Web.UI.Page
+public partial class finalsite_UserAcceptance : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
     VerifyEmail sendEmail = new VerifyEmail();

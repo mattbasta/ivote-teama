@@ -45,9 +45,9 @@ public class VerifyEmail
         
 
         String emailLinks = "";
-        emailLinks += "To proceed with this process, please click <a href=\"http://" + emailBaseUrl + "/confirm.aspx?x=" + code_confirm + "\">Here</a>.<br />";
+        emailLinks += "To proceed with this process, please click <a href=\"http://" + emailBaseUrl + "/Confirm.aspx?x=" + code_confirm + "\">Here</a>.<br />";
         emailLinks += "OR, copy and paste the following URL into your address bar.<br />";
-        emailLinks += "URL to verify your iVote account: http://" + emailBaseUrl + "/confirm.aspx?x=" + code_confirm + "<br /><br />";
+        emailLinks += "URL to verify your iVote account: http://" + emailBaseUrl + "/Confirm.aspx?x=" + code_confirm + "<br /><br />";
 
         emailMessage += emailLinks;
         emailMessage += emailQuestions;

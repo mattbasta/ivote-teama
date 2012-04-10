@@ -1,4 +1,4 @@
-﻿<%@ Page Title="User Nomination Acceptance" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="user_acceptance.aspx.cs" Inherits="finalsite_user_acceptance" %>
+﻿<%@ Page Title="User Nomination Acceptance" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="UserAcceptance.aspx.cs" Inherits="finalsite_UserAcceptance" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
 </asp:Content>

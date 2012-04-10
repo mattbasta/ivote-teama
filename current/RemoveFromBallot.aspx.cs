@@ -15,7 +15,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Cfg;
 
-public partial class wwwroot_finalsite_removeFromBallot : System.Web.UI.Page
+public partial class wwwroot_finalsite_RemoveFromBallot : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
     VerifyEmail email = new VerifyEmail();

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Remove from Ballot" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="removeFromBallot.aspx.cs" Inherits="wwwroot_finalsite_removeFromBallot" %>
+﻿<%@ Page Title="Remove from Ballot" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="RemoveFromBallot.aspx.cs" Inherits="wwwroot_finalsite_RemoveFromBallot" %>
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>

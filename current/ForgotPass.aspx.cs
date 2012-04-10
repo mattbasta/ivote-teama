@@ -11,7 +11,7 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 
-public partial class phase1aSite_forgotPass : System.Web.UI.Page
+public partial class phase1aSite_ForgotPass : System.Web.UI.Page
 {
     VerifyEmail sendEmail = new VerifyEmail();
     

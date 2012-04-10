@@ -3,13 +3,13 @@
     <siteMapNode url="~/" title=""  description="">
         <siteMapNode url="~/home.aspx" title="Home"  description="" />
         <siteMapNode url="~/About.aspx" title="About Us"  description="" />       
-        <siteMapNode url="~/petition.aspx" title="Petition" />
-        <siteMapNode url="~/slate.aspx" title="Slate" />
+        <siteMapNode url="~/Petition.aspx" title="Petition" />
+        <siteMapNode url="~/Slate.aspx" title="Slate" />
         <siteMapNode url="~/CPW.aspx" title="Change Password"/>
         <siteMapNode url="~/home.aspx/#" title="Admin" >
             <siteMapNode url="~/users.aspx" title="All Users"  />
-            <siteMapNode url="~/register.aspx" title="Add New User"  description="" />
-            <siteMapNode url="~/approvenominations.aspx" title="Approve Eligibility"  />
+            <siteMapNode url="~/Register.aspx" title="Add New User"  description="" />
+            <siteMapNode url="~/ApproveNominations.aspx" title="Approve Eligibility"  />
         </siteMapNode>  
     </siteMapNode>
 </siteMap>

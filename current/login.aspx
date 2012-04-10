@@ -38,7 +38,7 @@
                     <div class="form-actions">
                         <asp:Button ID="Button1" runat="server" CommandName="Login" Width="100" 
                             Text="Log In" ValidationGroup="LoginUserValidationGroup" CssClass="btn btn-primary"/>
-                        <a href="forgotPass.aspx" class="btn">Forgot Password?</a>
+                        <a href="ForgotPass.aspx" class="btn">Forgot Password?</a>
                     </div>
                 </div>
             </div>

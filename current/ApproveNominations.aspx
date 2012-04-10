@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Approve Nominations" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="approvenominations.aspx.cs" Inherits="wwwroot_experimental_approvenominations" %>
+﻿<%@ Page Title="Approve Nominations" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="ApproveNominations.aspx.cs" Inherits="wwwroot_experimental_ApproveNominations" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolKit" %>
 

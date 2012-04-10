@@ -15,7 +15,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Cfg;
 
-public partial class wwwroot_phase1aSite_userinfo : System.Web.UI.Page
+public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
 {
     //global variable "only" used for changing users roles
     int id = -1;

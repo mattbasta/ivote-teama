@@ -12,7 +12,7 @@
     </div>
     
     <div style="float:right;">
-        <a href="/register.aspx" class="btn btn-success">New User</a>
+        <a href="/Register.aspx" class="btn btn-success">New User</a>
     </div>
     <div class="tabbable">
         <ul class="nav nav-tabs">

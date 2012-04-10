@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Forgot Password" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="forgotPass.aspx.cs" Inherits="phase1aSite_forgotPass" %>
+﻿<%@ Page Title="Forgot Password" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="ForgotPass.aspx.cs" Inherits="phase1aSite_ForgotPass" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
 </asp:Content>
@@ -34,7 +34,7 @@
     <asp:Label ID="lblError" runat="server" Visible="false">
                 
                 The email address you have entered does not exist in our system.<br /><br />
-                <a href="forgotPass.aspx">Please enter it again.</a>
+                <a href="ForgotPass.aspx">Please enter it again.</a>
     </asp:Label>
 
 

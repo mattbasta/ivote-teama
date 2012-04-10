@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Terminate Current Election - iVote" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="terminate.aspx.cs" Inherits="wwwroot_finalsite_terminate" %>
+﻿<%@ Page Title="Terminate Current Election - iVote" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Terminate.aspx.cs" Inherits="wwwroot_finalsite_terminate" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">

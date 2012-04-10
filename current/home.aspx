@@ -20,7 +20,7 @@
             <asp:Panel ID="elig_pending" class="alert" Visible="false" Enabled="false" runat="server">
                 <strong>Notification</strong>
                 <p>There are eligibility forms that must be approved.</p>
-                <a href="/approvenominations.aspx" class="btn btn-warning">View Forms</a>
+                <a href="/ApproveNominations.aspx" class="btn btn-warning">View Forms</a>
             </asp:Panel>
         </div>
     </asp:Panel>

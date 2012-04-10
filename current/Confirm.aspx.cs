@@ -12,7 +12,7 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 
-public partial class confirm : System.Web.UI.Page
+public partial class Confirm : System.Web.UI.Page
 {
 
     String fullCode = "";

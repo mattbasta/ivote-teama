@@ -1,9 +1,9 @@
-<%@ Page Title="Confirmation" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="confirm.aspx.cs" Inherits="confirm" %>
+<%@ Page Title="Confirmation" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Confirm.aspx.cs" Inherits="Confirm" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <div class="page-header">
-        <h1><asp:Label ID="LabelFeedback" runat="server" Text="">Confirm!</asp:Label></h1>
+        <h1><asp:Label ID="LabelFeedback" runat="server" Text="">Confirmation</asp:Label></h1>
     </div>
 
     <asp:Panel ID="PanelError"  runat="server" Visible="false">

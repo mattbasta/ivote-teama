@@ -18,7 +18,7 @@
             <asp:Panel ID="elig_pending" class="alert" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>There are eligibility forms that must be approved.</p>
-                <a href="/approvenominations.aspx" class="btn btn-warning">View Forms</a>
+                <a href="/ApproveNominations.aspx" class="btn btn-warning">View Forms</a>
             </asp:Panel>
         </div>
     </asp:Panel>
@@ -29,7 +29,7 @@
     
     <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well">
         <asp:Hyperlink ID="CancelElection" Visible="true" Text="Cancel Election"
-                NavigateUrl="/terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
+                NavigateUrl="/Terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
         <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
@@ -67,7 +67,7 @@
         <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
 
         <asp:Panel id="functions_nominate" style="margin-top:10px;" visible="false" runat="server">
-            <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
+            <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
         </asp:Panel>
     
         <!-- TODO: For users with can_vote=False, do not show this section. -->
@@ -102,7 +102,7 @@
         <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
         
         <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
-            <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
+            <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
         </asp:Panel>
     </asp:Panel>
     
@@ -116,8 +116,8 @@
             <div class="clear"></div>
             <div class="column">
                 <b>Election Management</b><br />
-                <a href="approvenominations.aspx">Approve Eligibility</a><br />
-                <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
+                <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
+                <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
                 <br />
             </div>
         </asp:Panel>
@@ -189,9 +189,9 @@
         <asp:Panel id="functions_petition" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>Election Management</b><br />
-                <a href="approvenominations.aspx">Approve Eligibility</a><br />
-                <a href="slate.aspx">View current Slate</a><br />
-                <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
+                <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
+                <a href="Slate.aspx">View current Slate</a><br />
+                <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
                 <br />
             </div>
         </asp:Panel>
@@ -290,7 +290,7 @@
         <asp:Panel id="functions_accept2" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>Election Management</b><br />
-                <a href="approvenominations.aspx">Approve Eligibility</a><br />
+                <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
                 <br />
             </div>
         </asp:Panel>
@@ -305,8 +305,8 @@
 
         <!--Admin only-->
         <asp:Panel id="functions_approval" style="margin-top:10px;" visible="false" runat="server">
-            <a href="approvenominations.aspx">Approve Eligibility</a><br />
-            <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
+            <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
+            <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
     </asp:Label>
     <!--End Approval-->
@@ -319,7 +319,7 @@
             The current election is in the voting phase.  You must vote for the candidate you feel will best serve in each position.
         </div>
         <asp:Panel id="functions_voting" style="margin-top:10px;" visible="false" runat="server">
-            <a href="removeFromBallot.aspx">Remove Candidate(s) From Slate</a>
+            <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
         <div class="clear"></div>
     

@@ -303,7 +303,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void nominate(Object sender, EventArgs e)
     {
-        Response.Redirect("/nominate.aspx?position=" + HiddenFieldID.Value);
+        Response.Redirect("/Nominate.aspx?position=" + HiddenFieldID.Value);
     }
 
     /********************************************
@@ -626,7 +626,7 @@ public partial class officer_election : System.Web.UI.Page
     protected void resultList_RowCommand(Object sender, GridViewCommandEventArgs e)
     {
         if (String.Equals(e.CommandName, "position"))
-            Response.Redirect("resultDetail.aspx/" + e.CommandArgument.ToString());
+            Response.Redirect("ResultDetail.aspx/" + e.CommandArgument.ToString());
     }
 
     //nec must approve nomination before use

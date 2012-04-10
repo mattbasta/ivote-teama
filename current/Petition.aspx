@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Petition" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="petition.aspx.cs" Inherits="wwwroot_experimental_petition" %>
+﻿<%@ Page Title="Petition" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="Petition.aspx.cs" Inherits="wwwroot_experimental_petition" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 

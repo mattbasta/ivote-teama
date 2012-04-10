@@ -29,7 +29,7 @@ public partial class CPW : System.Web.UI.Page
             bool pw_correct = logger.ValidateUser(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text);
             if (pw_correct)
             {
-	        bool changePasswordSuccess = logger.ChangePassword(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text, newPW.Text);
+	        bool ChangePasswordSuccess = logger.ChangePassword(HttpContext.Current.User.Identity.Name.ToString(), oldPW.Text, newPW.Text);
                 FailurePanel.Visible = false;
                 SuccessPanel.Visible = true;
             }

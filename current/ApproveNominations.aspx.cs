@@ -15,7 +15,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Cfg;
 
-public partial class wwwroot_experimental_approvenominations : System.Web.UI.Page
+public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
     VerifyEmail email = new VerifyEmail();
