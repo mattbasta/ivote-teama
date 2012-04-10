@@ -233,7 +233,7 @@ public partial class officer_election : System.Web.UI.Page
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
                     LabelFeedback.Text = "You have already voted for this election.";
                 }
-            }
+            }            
             //results
             else if (phases.currentPhase == "result")
             {
@@ -270,9 +270,9 @@ public partial class officer_election : System.Web.UI.Page
         ButtonWTS.Text = "Nominate me for " + e.CommandName;
         ButtonNominate.Text = "Nominate a user for " + e.CommandName;
         HiddenFieldID.Value = e.CommandArgument.ToString();
-        ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
-                                                     e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
-                                                                                                        e.CommandArgument.ToString());
+        ButtonWTS.Enabled = !(dbLogic.isUserNominated(user.ID,
+                                                     e.CommandName.ToString()) || dbLogic.isUserWTS(user.ID,
+                                                                                                        e.CommandName.ToString()));
     }
 
     //check if the user has a nomination pending

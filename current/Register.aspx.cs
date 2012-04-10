@@ -35,6 +35,7 @@ public partial class Account_Register : System.Web.UI.Page
         if (Page.IsValid)
         {
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            ITransaction transaction = session.BeginTransaction();
 
             if (DatabaseEntities.User.CheckIfEmailExists(session, Email.Text)) //checks if new user's email address already exists
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
@@ -56,6 +57,7 @@ public partial class Account_Register : System.Web.UI.Page
                 nUser.CanVote = CanVote.Checked;
                 
                 DatabaseEntities.NHibernateHelper.UpdateDatabase(session, nUser);
+               
 
                 //email message sent to new user
                 String emailMessage = "";
@@ -72,6 +74,8 @@ public partial class Account_Register : System.Web.UI.Page
                 //Grab user again to update ID
                 User testUser = DatabaseEntities.User.FindUser(session, nUser.Email);
                 sendEmail.verify(testUser.ID, emailAddress, emailMessage);
+
+                NHibernateHelper.Finished(transaction);
 
                 SuccessPanel.Visible = true;
             }

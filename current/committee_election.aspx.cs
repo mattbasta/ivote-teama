@@ -23,9 +23,9 @@ public partial class committee_election : System.Web.UI.Page
     private CommitteeElection election;
     private DatabaseEntities.User user;
     private int ElectionID;
-    
+
     private Dictionary<int, CheckBox> nomination_boxes = new Dictionary<int, CheckBox>();
-    
+
     private ISession session;
 
     protected void Page_Load(object sender, EventArgs e)
@@ -33,17 +33,20 @@ public partial class committee_election : System.Web.UI.Page
         if (Request.QueryString["id"] == null ||
             Request.QueryString["id"] == "")
             throw new HttpException(400, "Invalid election ID");
-        
+
         ElectionID = int.Parse(Request.QueryString["id"]);
 
         session = NHibernateHelper.CreateSessionFactory().OpenSession();
 
         // grab the objects based off the committee ID
         election = CommitteeElection.FindElection(session, ElectionID);
+        if (election == null)
+            Response.Redirect("home.aspx");
         committee = Committee.FindCommittee(session, election.PertinentCommittee);
-
+        if (committee == null)
+            Response.Redirect("home.aspx");
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
-        
+
         // If the user isn't an admin or nec...
         if (user.CanVote)
         {
@@ -116,9 +119,9 @@ public partial class committee_election : System.Web.UI.Page
         }
         if(user.IsAdmin) {
             DaysLeftInPhase();
-            
+
             ActivateTab(election.Phase.ToString());
-            
+
             if(election.Phase >= ElectionPhase.ClosedPhase)
                 closed_tab.Visible = true;
             if (election.Phase >= ElectionPhase.ConflictPhase)
@@ -151,21 +154,21 @@ public partial class committee_election : System.Web.UI.Page
                 else
                     AdminCertCount.Text += " certifications.  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
-                
+
                 if(numberCertifications < 3) {
                     HtmlGenericControl pretext = new HtmlGenericControl("span");
                     pretext.InnerText = certifications_tab_link.Text;
                     certifications_tab_link.Controls.Add(pretext);
-                    
+
                     HtmlGenericControl badge = new HtmlGenericControl("span");
                     badge.Attributes["class"] = "badge badge-info";
                     badge.Attributes["style"] = "margin-left: 0.5em;";
                     badge.InnerText = numberCertifications.ToString();
                     certifications_tab_link.Controls.Add(badge);
                 }
-                
+
                 necprogressbar.Attributes["style"] = "width: " + Math.Min(100, numberCertifications / 3) + "%";
-                
+
             }
             if (election.Phase >= ElectionPhase.VotePhase)
             {
@@ -179,7 +182,7 @@ public partial class committee_election : System.Web.UI.Page
             }
             if(election.Phase >= ElectionPhase.WTSPhase)
                 wts_tab.Visible = true;
-                
+
             switch(election.Phase) {
                 case ElectionPhase.WTSPhase:
                     PhaseLiteral.Text = "WTS Phase";
@@ -242,18 +245,18 @@ public partial class committee_election : System.Web.UI.Page
             }
             if(wtsList.Count == 0) {
                 TableRow tr = new TableRow();
-                
+
                 TableCell td1 = new TableCell();
                 td1.Controls.Add(new LiteralControl("No WTS forms have been submitted yet."));
                 td1.ColumnSpan = 3;
                 tr.Controls.Add(td1);
-                
+
                 wtsAdminTable.Rows.Add(tr);
             }
         }
 
     }
-    
+
     protected void Page_PreRender(object sender, EventArgs e)
     {
         if(user.IsAdmin)
@@ -263,7 +266,7 @@ public partial class committee_election : System.Web.UI.Page
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
         }
     }
-    
+
     private void DaysLeftInPhase()
     {
         DaysRemaining.Text = "The election is closed.";
@@ -281,7 +284,7 @@ public partial class committee_election : System.Web.UI.Page
                 DaysRemaining.Text = "This phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
         }
     }
-    
+
     private void ActivateTab(string tab_name) {
         AdminTabs.Visible = true;
         closed_tab.Attributes["class"] = "";
@@ -290,14 +293,14 @@ public partial class committee_election : System.Web.UI.Page
         votes_tab.Attributes["class"] = "";
         nominations_tab.Attributes["class"] = "";
         wts_tab.Attributes["class"] = "";
-        
+
         AdminWTSPanel.Visible = false;
         AdminNominationsPanel.Visible = false;
         AdminVotingPanel.Visible = false;
         AdminCertificationPanel.Visible = false;
         AdminConflictPanel.Visible = false;
         AdminClosedPanel.Visible = false;
-        
+
         switch(tab_name) {
             case "WTSPhase":
                 wts_tab.Visible = true;
@@ -338,7 +341,7 @@ public partial class committee_election : System.Web.UI.Page
     {
         ElectionPhase next_phase = election.NextPhase(session);
         election.SetPhase(session, next_phase);
-        
+
         Response.Redirect("/committee_election.aspx?id=" + election.ID.ToString());
     }
 
@@ -346,7 +349,7 @@ public partial class committee_election : System.Web.UI.Page
     {
         ElectionPhase next_phase = (ElectionPhase)Enum.Parse(typeof(ElectionPhase), JulioButtonPhase.SelectedValue);
         election.SetPhase(session, next_phase);
-        
+
         Response.Redirect("/committee_election.aspx?id=" + election.ID.ToString());
     }
 
@@ -439,15 +442,15 @@ public partial class committee_election : System.Web.UI.Page
 
             AdminVotingTable.Rows.Add(row);
         }
-        
+
         if(users.Count == 0) {
             TableRow tr = new TableRow();
-            
+
             TableCell td1 = new TableCell();
             td1.Controls.Add(new LiteralControl("No ballots have been cast yet."));
             td1.ColumnSpan = 3;
             tr.Controls.Add(td1);
-            
+
             AdminVotingTable.Rows.Add(tr);
         }
     }
@@ -495,7 +498,7 @@ public partial class committee_election : System.Web.UI.Page
     {
         if(Page.IsPostBack)
             return;
-        
+
         // Get users for each election
         List<User> users = DatabaseEntities.User.FindUsers(session, ElectionID);
         foreach(User user in users)
@@ -505,16 +508,16 @@ public partial class committee_election : System.Web.UI.Page
             CheckBox cb = new CheckBox();
             nomination_boxes.Add(user.ID, cb);
             wrapper.Controls.Add(cb);
-            
+
             HtmlGenericControl name = new HtmlGenericControl("strong");
             name.InnerHtml = user.FirstName + " " + user.LastName;
             wrapper.Controls.Add(name);
-            
+
             // TODO: Implement this!
             HtmlGenericControl statement = new HtmlGenericControl("p");
             statement.InnerHtml = "User's statement will go here. Currently unimplemented.";
             wrapper.Controls.Add(statement);
-            
+
             FacultyNominationList.Controls.Add(wrapper);
         }
     }
@@ -526,7 +529,7 @@ public partial class committee_election : System.Web.UI.Page
     {
         if(Page.IsPostBack)
             return;
-        
+
         // Get nominees for this election.
         List<User> nominees = election.GetNominees(session);
 
@@ -551,7 +554,7 @@ public partial class committee_election : System.Web.UI.Page
         // Get the identity of the voting user
         User user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
 
-        
+
         // Add the WTSNomination if this user hasn't already cast one.
         if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID)
             == null)
@@ -564,7 +567,7 @@ public partial class committee_election : System.Web.UI.Page
                 nomination.Voter = user.ID;
                 nomination.Candidate = kvp.Key;
                 session.SaveOrUpdate(nomination);
-                
+
             }
             session.Flush();
             FacultyNomination.Visible = false;
@@ -612,7 +615,7 @@ public partial class committee_election : System.Web.UI.Page
         }
         else
             ; // There ought to be no way to reach this line, though we could put error handling here if it is a problem.
-        
+
         NHibernateHelper.Finished(transaction);
     }
 
@@ -628,7 +631,7 @@ public partial class committee_election : System.Web.UI.Page
     }
 
     /// <summary>
-    /// This function builds a panel with the controls necessary to 
+    /// This function builds a panel with the controls necessary to
     /// allow the admin to perform shared-department-conflict resolution.
     /// </summary>
     /// <param name="user1">The first user involved in the conflict.</param>
@@ -649,7 +652,7 @@ public partial class committee_election : System.Web.UI.Page
             + " department.  Only one member of each department may be elected to the committee.";
         panel.Controls.Add(message);
 
-        // add a button which will allow the admin to disqualify the 
+        // add a button which will allow the admin to disqualify the
         // first person in the conflict
         Button first = new Button();
         first.ID = user1.Email + conflictID.ToString("0000");
@@ -657,7 +660,7 @@ public partial class committee_election : System.Web.UI.Page
         first.Click += new EventHandler(this.Disq_Click);
         panel.Controls.Add(first);
 
-        // add a button which will allow the admin to disqualify the 
+        // add a button which will allow the admin to disqualify the
         // second person in the conflict
         Button second = new Button();
         second.ID = user2.Email + conflictID.ToString("0000");
@@ -708,14 +711,14 @@ public partial class committee_election : System.Web.UI.Page
         Label message = new Label();
         message.Text = user.FirstName + " " + user.LastName + " was elected to the "
             + committee.Name;
-        message.Text += 
-            (user.CurrentCommittee != DatabaseEntities.User.NoCommittee) ? 
+        message.Text +=
+            (user.CurrentCommittee != DatabaseEntities.User.NoCommittee) ?
             (" but he currently serves on the " + user.CurrentCommittee) :
             (" but he is currently a(n) " + user.OfficerPosition.ToString());
         message.Text += ".  This member may only hold one position at a time.";
         panel.Controls.Add(message);
 
-        // add a button which will allow the admin to disqualify the 
+        // add a button which will allow the admin to disqualify the
         // first person in the conflict
         Button first = new Button();
         first.ID = user.Email + conflictID.ToString("0000");
@@ -723,7 +726,7 @@ public partial class committee_election : System.Web.UI.Page
         first.Click += new EventHandler(this.Disq_Click);
         panel.Controls.Add(first);
 
-        // add a button which will allow the admin to disqualify the 
+        // add a button which will allow the admin to disqualify the
         // second person in the conflict
         Button second = new Button();
         second.ID = "Ignore" + conflictID.ToString("0000");
@@ -744,7 +747,7 @@ public partial class committee_election : System.Web.UI.Page
         Button sendButton = (Button)sender;
         string toDisqualify = sendButton.ID.Substring(0, sendButton.ID.Length - 4);
         DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, toDisqualify);
-        
+
         // Disqualify the user by revoking their WTS
         election.RevokeWTS(session, transaction, user.ID);
 

@@ -215,7 +215,8 @@ namespace DatabaseEntities
         public virtual ElectionPhase NextPhase(ISession session)
         {
             ElectionPhase toReturn = this.Phase;
-            toReturn += 1;
+            if(toReturn != ElectionPhase.ClosedPhase)
+                toReturn += 1;
             if (toReturn == ElectionPhase.NominationPhase &&
                 this.ShouldEnterNominationPhase(session) == false)
                 return ElectionPhase.VotePhase;

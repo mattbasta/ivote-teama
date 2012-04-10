@@ -28,7 +28,12 @@ namespace DatabaseEntities
             // cannot be null.
             Map(x => x.Name)
                 .Not.Nullable();
+            Map(x => x.Description);
             Map(x => x.PositionCount)
+                .Not.Nullable();
+            Map(x => x.BargainingUnitRequired)
+                .Not.Nullable();
+            Map(x => x.TenureRequired)
                 .Not.Nullable();
         }
     }
