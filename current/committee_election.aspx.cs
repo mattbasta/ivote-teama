@@ -30,17 +30,16 @@ public partial class committee_election : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        int eid;
-        if (Request.QueryString["id"] != null)
-            eid = int.Parse(Request.QueryString["id"]);
-        else
+        if (Request.QueryString["id"] == null ||
+            Request.QueryString["id"] == "")
             throw new HttpException(400, "Invalid election ID");
-        ElectionID = eid;
+        
+        ElectionID = int.Parse(Request.QueryString["id"]);
 
         session = NHibernateHelper.CreateSessionFactory().OpenSession();
 
         // grab the objects based off the committee ID
-        election = CommitteeElection.FindElection(session, eid);
+        election = CommitteeElection.FindElection(session, ElectionID);
         committee = Committee.FindCommittee(session, election.PertinentCommittee);
 
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
