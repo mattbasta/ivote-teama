@@ -3,28 +3,37 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
-
-<h1><asp:Label ID="LabelHeader" runat="server" Text=""></asp:Label></h1><br />
-
+    <ul class="breadcrumb">
+        <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
+        <li><a href="/officer_election.aspx">Officer Election</a> <span class="divider">/</span></li>
+        <li class="active">Nominations</li>
+    </ul>
+    
+    <div class="page-header">
+        <h1><asp:Label ID="LabelHeader" runat="server" Text=""></asp:Label></h1>
+    </div>
 
 <asp:ScriptManager ID="ScriptManager1" runat="server" />
 <asp:UpdatePanel ID="UpdatePanel" runat="server" UpdateMode="Conditional">
 <ContentTemplate>
 
 <asp:Panel ID="PanelSearch" runat="server">
-<asp:Label ID="LabelExplain" runat="server" Text=""></asp:Label><br /><br />
-<asp:TextBox ID="txtSearch" runat="server" Width=300></asp:TextBox> 
-<asp:Button ID="btnSearch"  runat="server" Text="Search" OnClick="search" /> 
-<asp:LinkButton ID="btnViewAll"   runat="server" Text="Clear" OnClick="clear" Visible="false" /> <br /><br />
-<asp:Label ID="LabelFeedback" runat="server" Text="" /><br />
+    <div class="well form-search">
+        <p>Search for the individual you would like to submit a petition for:</p>
+        <asp:TextBox ID="txtSearch" runat="server" CssClass="input-medium search-query"></asp:TextBox> 
+        <asp:Button ID="btnSearch" runat="server" Text="Search" OnClick="search" CssClass="btn" />
+        <asp:LinkButton ID="btnViewAll" runat="server" Text="Clear Search" OnClick="clear" Visible="false" CssClass="btn btn-warning" />
+    </div>
+
+<p><asp:Literal ID="LabelFeedback" runat="server" Text="" /></p>
 
 <asp:HiddenField ID="HiddenFieldPosition" runat="server" />
 
-<table class="simpleGrid" style="width: 60%">
+<table class="table table-bordered">
     <tr>
         <th>Full Name</th>
         <th>Department</th>
-        <th></th>
+        <th>Actions</th>
     </tr>
     <asp:ListView ID="ListViewUsers" Visible="false" OnItemCommand="ListViewUsers_ItemCommand" runat="server">
         <LayoutTemplate>
@@ -32,14 +41,14 @@
         </LayoutTemplate>
         <ItemTemplate>
             <tr>
-                <td >
+                <td>
                     <asp:Label ID="LabelName" text='<%#Eval("LastName") + ", " + Eval("FirstName") %>' runat="server" />
                 </td>
-                <td >
+                <td>
                     <asp:Label ID="Label1" text='<%#Eval("Department") %>' runat="server" />
                 </td>
-                <td >
-                   <asp:Button ID="ButtonNominate" 
+                <td>
+                   <asp:Button CssClass="btn btn-small" ID="ButtonNominate" 
                        commandname="nominate"
                        OnClientClick='<%# Eval("FirstName", "return confirm(\"Are you sure you want to nominate {0} for this poistion?\")") %>'
                        commandargument='<%#Eval("ID") %>' 
@@ -51,9 +60,8 @@
 </table>
 </asp:Panel>
 <asp:Panel ID="PanelComplete" Visible="false" runat="server">
-    <asp:Label ID="LabelComplete" runat="server" Text="" /><br />
-    <!--must be ../ as the page adds the /3 at the end.-->
-    <a href="../home.aspx">Click here to return to the homepage.</a>
+    <asp:Label ID="LabelComplete" runat="server" Text="" />
+    <a href="/officer_election.aspx" class="btn">Back</a>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>

@@ -10,6 +10,7 @@ using System.Web.UI.WebControls;
 public partial class finalsite_results : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
+    timeline phases = new timeline();
     voteCounter vc = new voteCounter();
     
     DataSet ds = new DataSet();
@@ -18,6 +19,9 @@ public partial class finalsite_results : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if(phases.currentPhase != "result")
+            Response.Redirect("officer_election.aspx");
+        
         bindPositions();
 
         if(User.IsInRole("nec") && !dbLogic.checkNecApprove())
