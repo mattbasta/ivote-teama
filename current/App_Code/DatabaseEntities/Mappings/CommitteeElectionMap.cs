@@ -36,6 +36,8 @@ namespace DatabaseEntities
                 .Not.Nullable();
             Map(x => x.VacanciesToFill)
                 .Not.Nullable();
+            Map(x => x.PhaseEndDelta)
+                .Not.Nullable();
         }
     }
 }

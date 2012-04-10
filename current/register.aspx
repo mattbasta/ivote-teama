@@ -29,13 +29,10 @@ $(document).ready(function() {
 
     <asp:Panel ID="SuccessPanel" runat="server" Visible="false" CssClass="alert alert-success">
         <strong>User created successfully.</strong>
-        <p>The user should recieve a validation email within the next 10 minutes.</p>
+        The user should recieve a validation email within the next 10 minutes.
     </asp:Panel>
 
     <p>Use the form below to create a new account.</p>
-
-    <asp:ValidationSummary ID="ValidationSummary" CssClass="failureNotification"
-                            ValidationGroup="RegisterUserValidationGroup" runat="server" />
 
     <!--Feedback label for admin if this user is already in the database -->
     <asp:ScriptManager runat="server" />

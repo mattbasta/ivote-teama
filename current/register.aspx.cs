@@ -39,11 +39,12 @@ public partial class Account_Register : System.Web.UI.Page
 
             if (DatabaseEntities.User.CheckIfEmailExists(session, Email.Text)) //checks if new user's email address already exists
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
+                SuccessPanel.Visible = false;
             else
             {
                 string user = Email.Text;
 
-                User nUser = this.CreateUser(Email.Text, FirstName.Text, LastName.Text, DeptDropDown.SelectedValue);
+                User nUser = CreateUser(Email.Text, FirstName.Text, LastName.Text, DeptDropDown.SelectedValue);
                 
                 // Set up the user permissions and such.
                 nUser.IsAdmin = IsAdmin.Checked;

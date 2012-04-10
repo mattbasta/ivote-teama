@@ -231,6 +231,7 @@ public partial class committee_election : System.Web.UI.Page
 
                 Button revokeButton = new Button();
                 revokeButton.Text = "Revoke";
+                revokeButton.CssClass = "btn";
                 revokeButton.CommandArgument = wts.User.ToString();
                 revokeButton.Click += new System.EventHandler(this.wtsRevoke_Click);
                 TableCell td3 = new TableCell();
@@ -259,6 +260,8 @@ public partial class committee_election : System.Web.UI.Page
     
     protected void Page_PreRender(object sender, EventArgs e)
     {
+        if(user.IsAdmin)
+            DeltaText.Text = election.PhaseEndDelta.ToString();
         if(user.IsAdmin && election.Phase != ElectionPhase.ClosedPhase) {
             JulioButtonPanel.Visible = true;
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
@@ -545,12 +548,14 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     protected void FacultyCastNomination_Click(Object sender, EventArgs e)
     {
+        return;
         // begin our transaction.
         ITransaction transaction = session.BeginTransaction();
 
         // Get the identity of the voting user
         User user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
 
+        
         // Add the WTSNomination if this user hasn't already cast one.
         if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID)
             == null)
@@ -613,6 +618,17 @@ public partial class committee_election : System.Web.UI.Page
             ; // There ought to be no way to reach this line, though we could put error handling here if it is a problem.
         
         NHibernateHelper.Finished(transaction);
+    }
+
+    protected void DeltaSubmit_Click(Object sender, EventArgs e)
+    {
+        ITransaction transaction = session.BeginTransaction();
+        election.PhaseEndDelta = int.Parse(DeltaText.Text);
+        session.SaveOrUpdate(election);
+        session.Flush();
+        NHibernateHelper.Finished(transaction);
+
+        Response.Redirect("/committee_election.aspx?id=" + election.ID.ToString());
     }
 
     /// <summary>

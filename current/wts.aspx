@@ -3,32 +3,47 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
+    <div class="page-header">
+        <h1>
+            Willingness to Serve
+            <small><asp:Label ID="LabelHeader" runat="server" Text="" /></small>
+        </h1>
+    </div>
 
-    <h2><asp:Label ID="LabelHeader" runat="server" Text="" /></h2>
-    <p><asp:Label ID="LabelExplain" runat="server" Text="" /></p>
+    <p>If you are willing to hold this officer position, please fill out the following form:</p>
 
+    <asp:Panel CssClass="alert alert-success" ID="Confirm" runat="server" Visible="false">
+        Your Willingness to Serve application has been completed!
+    </asp:Panel>
+    
     <asp:ValidationSummary ID="ValidationSummary" CssClass="failureNotification" 
                                       ValidationGroup="WTSValidationGroup" runat="server" />
 
-    <!--Feedback label for admin if this user is already in the database -->
-    <asp:Label ID="LabelFeedback" CssClass="red" runat="server" Text="" />
-    <fieldset id="Fieldset2" class="register" runat="server">
-        <legend>Willingness To Serve Information</legend>
-        <p>
-            <asp:Label ID="StatementLabel" runat="server" AssociatedControlID="Statement">Statement:</asp:Label>
-            <asp:TextBox ID="Statement" runat="server" TextMode="MultiLine" Width="320px" Height="100px"></asp:TextBox>                                  
-        </p>
-        <asp:Label ID="AcceptLabel" runat="server" AssociatedControlID="Accept"></asp:Label>
-        <asp:CheckBox ID="Accept" runat="server" /> <b>I confirm that I am willing to serve as an APSCUF Official. </b><br />
-        <asp:Label ID="AcceptError" runat="server" Visible="false" CssClass="red">*Please confirm your willingness to serve.</asp:Label><br />
-        <asp:RegularExpressionValidator ID="RegularExpressionValidator1" ValidationGroup="check" ControlToValidate="Statement" ValidationExpression="^[a-zA-Z0-9\s.\-'!?]+$" Display="Dynamic" CssClass="red" runat="server" ErrorMessage="Please only use alphanumeric characters and normal punctuation in your statement." />
+    <fieldset id="Fieldset2" class="form form-horizontal" runat="server">
+        <legend>Willingness To Serve Application</legend>
+        <div class="control-group">
+            <label class="control-label">Statement</label>
+            <div class="controls">
+                <asp:TextBox ID="Statement" runat="server" TextMode="MultiLine" CssClass="input-xlarge"></asp:TextBox>
+                <asp:RegularExpressionValidator ID="RegularExpressionValidator1" ValidationGroup="check" ControlToValidate="Statement" ValidationExpression="^[a-zA-Z0-9\s.\-'!?]+$" Display="Dynamic" CssClass="error help-block" runat="server" ErrorMessage="Please only use alphanumeric characters and normal punctuation in your statement." />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Acceptance</label>
+            <div class="controls">
+                <label class="checkbox">
+                    <asp:CheckBox ID="Accept" runat="server" />
+                    I confirm that I am willing to serve as an APSCUF Official.
+                </label>
+                <asp:Label ID="AcceptError" runat="server" Visible="false" CssClass="help-block error">*Please confirm your willingness to serve.</asp:Label>
+            </div>
+        </div>
 
-        <p class="submitButton">         
-            <asp:Button ID="Submit" runat="server" ValidationGroup="check" Text="Submit" OnClick="submit" Enabled="false"/>
-        </p>
+        <div class="form-actions">
+            <asp:Button ID="Submit" runat="server" ValidationGroup="check" Text="Submit" OnClick="submit" Enabled="false" CssClass="btn btn-primary" />
+        </div>
     </fieldset>
 
     <asp:HiddenField ID="HiddenFieldPosition" runat="server" />
-    <asp:Label ID="Confirm" runat="server" Text="Your willingness to serve has been completed!" Visible="false"></asp:Label>
 </asp:Content>
 
