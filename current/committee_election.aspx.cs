@@ -23,9 +23,7 @@ public partial class committee_election : System.Web.UI.Page
     private CommitteeElection election;
     private DatabaseEntities.User user;
     private int ElectionID;
-
-    private Dictionary<int, CheckBox> nomination_boxes = new Dictionary<int, CheckBox>();
-
+    
     private ISession session;
 
     protected void Page_Load(object sender, EventArgs e)
@@ -263,28 +261,36 @@ public partial class committee_election : System.Web.UI.Page
     protected void Page_PreRender(object sender, EventArgs e)
     {
         if(user.IsAdmin)
-            DeltaText.Text = election.PhaseEndDelta.ToString();
+            DeltaText.Text = (election.PhaseEndDelta + num_days_remaining()).ToString();
+        
         if(user.IsAdmin && election.Phase != ElectionPhase.ClosedPhase) {
             JulioButtonPanel.Visible = true;
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
         }
     }
-
+    private int num_days_remaining() {
+        return (int)election.NextPhaseDate(session).Subtract(election.PhaseStarted).TotalDays;
+    }
+    
     private void DaysLeftInPhase()
     {
         DaysRemaining.Text = "The election is closed.";
+        phasedeltaedit.Visible = false;
         if(election.Phase != ElectionPhase.ClosedPhase)
         {
-            int days_remaining = (int)election.NextPhaseDate(session).Subtract(election.PhaseStarted).TotalDays;
+            int days_remaining = num_days_remaining();
             if(days_remaining > 1000) { // Not sure what MAXDATE translate to as an integer...
                 if(election.Phase == ElectionPhase.CertificationPhase)
                     DaysRemaining.Text = "The phase should not be changed until the election has been certified by NEC members.";
                 else
                     DaysRemaining.Text = "The phase should not be changed until some actions have occurred.";
-            } else if(days_remaining > 0)
+            } else if(days_remaining > 0) {
                 DaysRemaining.Text = days_remaining.ToString() + " day(s) remaining for this phase.";
-            else
+                phasedeltaedit.Visible = true;
+            } else {
                 DaysRemaining.Text = "This phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
+                phasedeltaedit.Visible = true;
+            }
         }
     }
 
@@ -501,7 +507,8 @@ public partial class committee_election : System.Web.UI.Page
     {
         if(Page.IsPostBack)
             return;
-
+        
+        return;
         // Get users for each election
         List<User> users = DatabaseEntities.User.FindUsers(session, ElectionID);
         foreach(User user in users)
@@ -509,7 +516,7 @@ public partial class committee_election : System.Web.UI.Page
             HtmlGenericControl wrapper = new HtmlGenericControl("div");
             wrapper.Attributes["class"] = "nomination_user";
             CheckBox cb = new CheckBox();
-            nomination_boxes.Add(user.ID, cb);
+            //nomination_boxes.Add(user.ID, cb);
             wrapper.Controls.Add(cb);
 
             HtmlGenericControl name = new HtmlGenericControl("strong");
@@ -562,16 +569,15 @@ public partial class committee_election : System.Web.UI.Page
         if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID)
             == null)
         {
-            foreach(KeyValuePair<int, CheckBox> kvp in nomination_boxes) {
-                if(!kvp.Value.Checked)
-                    continue;
-                CommitteeWTSNomination nomination = new CommitteeWTSNomination();
-                nomination.Election = election.ID;
-                nomination.Voter = user.ID;
-                nomination.Candidate = kvp.Key;
-                session.SaveOrUpdate(nomination);
-
-            }
+            //foreach(KeyValuePair<int, CheckBox> kvp in nomination_boxes) {
+            //    if(!kvp.Value.Checked)
+            //        continue;
+            //    CommitteeWTSNomination nomination = new CommitteeWTSNomination();
+            //    nomination.Election = election.ID;
+            //    nomination.Voter = user.ID;
+            //    nomination.Candidate = kvp.Key;
+            //    session.SaveOrUpdate(nomination);
+            //}
             session.Flush();
             FacultyNomination.Visible = false;
             FacultyNominationComplete.Visible = true;
@@ -625,7 +631,7 @@ public partial class committee_election : System.Web.UI.Page
     protected void DeltaSubmit_Click(Object sender, EventArgs e)
     {
         ITransaction transaction = session.BeginTransaction();
-        election.PhaseEndDelta = int.Parse(DeltaText.Text);
+        election.PhaseEndDelta = int.Parse(DeltaText.Text) - num_days_remaining();
         session.SaveOrUpdate(election);
         session.Flush();
         NHibernateHelper.Finished(transaction);
