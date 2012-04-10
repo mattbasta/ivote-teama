@@ -48,6 +48,12 @@ public partial class officer_election : System.Web.UI.Page
         JulioButtonPhase.SelectedValue = phases.currentPhase;
     }
     
+    protected string GetName(int UserID) {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        User u = DatabaseEntities.User.FindUser(session, UserID);
+        return u.FirstName + " " + u.LastName;
+    }
+    
     public bool IsAdmin() {return is_admin;}
     
     private void DaysLeftInPhase()
@@ -104,10 +110,13 @@ public partial class officer_election : System.Web.UI.Page
                 OfficerSlate.Visible = true;
                 PhaseLiteral.Text = "Slate Phase";
                 
+                functions_slate.Visible = user.IsAdmin;
+                PanelSlateWrapper2.Visible = user.IsNEC;
+                
                 if (dbLogic.checkSlateApprove())
                 {
-                    //dbLogic.turnOffPhase("slate");
-                    Response.Redirect("home.aspx");
+                    phases.bumpPhase();
+                    Response.Redirect("officer_election.aspx");
                 }
                 
                 break;
@@ -135,11 +144,11 @@ public partial class officer_election : System.Web.UI.Page
                 PhaseLiteral.Text = "General Voting Phase";
                 
                 if (dbLogic.isUserNewVoter(user.ID))
-                    PanelSlateWrapper2.Visible = true;
+                    PanelSlateWrapper.Visible = true;
                 else
                 {
-                    PanelSlateWrapper2.Visible = false;
-                    LabelFeedback2.Text = "You have already voted for this election.";
+                    PanelSlateWrapper.Visible = false;
+                    LabelFeedbackVote2.Text = "You have already voted for this election.";
                 }
                 
                 break;
@@ -172,14 +181,10 @@ public partial class officer_election : System.Web.UI.Page
         
         if (is_admin)
         {
-            //nominatation
-            if (phases.currentPhase == "slate")
-            {
-                PanelSlateWrapper2.Visible = false;
-                LabelFeedback2.Text = "";
-            }
+            functions_accept2.Visible = true;
+            functions_approval.Visible = true;
             //results
-            else if (phases.currentPhase == "result")
+            if (phases.currentPhase == "result")
             {
                 //admin functionality
                 if (dbLogic.checkNecApprove())
@@ -189,10 +194,18 @@ public partial class officer_election : System.Web.UI.Page
                     adminEnd.Visible = true;
             }
         }
-        else if (User.IsInRole("nec"))
+        
+        if (User.IsInRole("nec"))
         {
-            if (phases.currentPhase == "vote")
-            {
+            if (phases.currentPhase == "slate") {
+                dbLogic.selectAllBallotPositions();
+                DataSet emailSet = dbLogic.getResults();
+                ListViewPositions2.DataSource = emailSet;
+                ListViewPositions2.DataBind();
+                
+                btnApprove.Visible = true;
+                
+            } else if (phases.currentPhase == "vote") {
 
                 if (dbLogic.isUserNewVoter(user.ID))
                 {
@@ -255,7 +268,7 @@ public partial class officer_election : System.Web.UI.Page
                              "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandName.ToString()) + "</p>";
         ButtonWTS.Text = "Nominate me for " + e.CommandName;
         ButtonNominate.Text = "Nominate a user for " + e.CommandName;
-        HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
+        HiddenFieldID.Value = e.CommandArgument.ToString();
         ButtonWTS.Enabled = !dbLogic.isUserNominated(user.ID,
                                                      e.CommandArgument.ToString()) || dbLogic.isUserWTS(user.ID,
                                                                                                         e.CommandArgument.ToString());
@@ -323,11 +336,11 @@ public partial class officer_election : System.Web.UI.Page
             DataRow dr = infoSet.Tables["query"].Rows[0];
 
             LabelStatement2.Text = "\"" + dr["statement"].ToString() + "\"";
-            HiddenFieldName2.Value = dr["fullname"].ToString();
+            HiddenFieldName2.Value = GetName(int.Parse(dr["idunion_members"].ToString()));
             HiddenFieldId2.Value = e.CommandArgument.ToString();
 
             if (LabelStatement2.Text == "\"\"")
-                LabelStatement2.Text = dr["fullname"].ToString() + " did not include a personal statement.";
+                LabelStatement2.Text = GetName(int.Parse(dr["idunion_members"].ToString())) + " did not include a personal statement.";
 
             PanelSelect2.Visible = true;
             LabelFeedback2.Text = "";
@@ -336,7 +349,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void btnApprove_OnClick(object sender, EventArgs e)
     {
-        dbLogic.approveSlate();
+        phases.bumpPhase();
         Response.Redirect("/officer_election.aspx");
     }
 
@@ -347,18 +360,19 @@ public partial class officer_election : System.Web.UI.Page
     //Petition component code
     protected void search(object sender, EventArgs e)
     {
-/*
-        dbLogic.SelectPeopleFromSearch(txtSearch.Text);
-        DataSet emailSet = dbLogic.getResults();
-        ListViewUsers.DataSource = emailSet;
+        string query = txtSearch.Text;
+    
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ListViewUsers.DataSource = session.CreateCriteria(typeof(DatabaseEntities.User))
+                .Add(Restrictions.Or(Restrictions.Like("FirstName", "%" + query + "%"),
+                                     Restrictions.Like("LastName", "%" + query + "%")))
+                .List<DatabaseEntities.User>();
         ListViewUsers.DataBind();
         ListViewUsers.Visible = true;
 
         //loadConfirmPopup();
 
-        if (txtSearch.Text != "")
-            btnViewAll.Visible = true;
-        */
+        btnViewAll.Visible = txtSearch.Text != "";
     }
 
     protected void ListViewUsers_ItemCommand(Object sender, ListViewCommandEventArgs e)
@@ -366,7 +380,7 @@ public partial class officer_election : System.Web.UI.Page
         if (String.Equals(e.CommandName, "nominate"))
         {
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-            DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, e.CommandArgument.ToString());
+            DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, int.Parse(e.CommandArgument.ToString()));
             LabelChoosPosition.Text = "Please select the position you would<br /> like " + user.FirstName + " " + user.LastName + " to be petitioned for:";
             ButtonSubmit.OnClientClick = "return confirm('Are you sure you want to start this petition for " + user.FirstName + " " + user.LastName + "?\\n(If accepted, you will not be able to withdraw your petition  later.)')";
             HiddenFieldName.Value = dbLogic.selectFullName(user.FirstName + " " + user.LastName);
@@ -612,7 +626,7 @@ public partial class officer_election : System.Web.UI.Page
     protected void resultList_RowCommand(Object sender, GridViewCommandEventArgs e)
     {
         if (String.Equals(e.CommandName, "position"))
-            Response.Redirect("resultDetail.aspx/" + dbLogic.selectIDFromPosition(e.CommandArgument.ToString()));
+            Response.Redirect("resultDetail.aspx/" + e.CommandArgument.ToString());
     }
 
     //nec must approve nomination before use
