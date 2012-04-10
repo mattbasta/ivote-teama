@@ -144,12 +144,19 @@ public partial class officer_election : System.Web.UI.Page
                 OfficerVoting.Visible = true;
                 PhaseLiteral.Text = "General Voting Phase";
                 
-                if (dbLogic.isUserNewVoter(user.ID))
+                UpdatePanel3.Visible = user.CanVote;
+                
+                if (dbLogic.isUserNewVoter(user.ID)) {
                     PanelSlateWrapper.Visible = true;
+                    dbLogic.selectAllBallotPositions();
+                    ListViewPositions.DataSource = dbLogic.getResults();
+                    ListViewPositions.DataBind();
+                }
                 else
                 {
-                    PanelSlateWrapper.Visible = false;
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
+                    PanelSlateWrapper.Visible = false;
+                    ButtonSubmitVotes.Visible = false;
                 }
                 
                 break;
@@ -184,6 +191,7 @@ public partial class officer_election : System.Web.UI.Page
         {
             functions_accept2.Visible = true;
             functions_approval.Visible = true;
+            functions_voting.Visible = true;
             //results
             if (phases.currentPhase == "result")
             {
@@ -230,6 +238,7 @@ public partial class officer_election : System.Web.UI.Page
                 else
                 {
                     PanelSlateWrapper.Visible = false;
+                    ButtonSubmitVotes.Visible = false;
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
                     LabelFeedback.Text = "You have already voted for this election.";
                 }
@@ -237,6 +246,7 @@ public partial class officer_election : System.Web.UI.Page
             //results
             else if (phases.currentPhase == "result")
             {
+                adminEnd.Visible = false;
                 //this is for NEC role
                 if (!dbLogic.checkNecApprove())
                 {
@@ -456,8 +466,7 @@ public partial class officer_election : System.Web.UI.Page
         if (String.Equals(e.CommandName, "position"))
         {
             dbLogic.selectAllForBallot(e.CommandArgument.ToString());
-            DataSet emailSet = dbLogic.getResults();
-            ListViewPeople.DataSource = emailSet;
+            ListViewPeople.DataSource = dbLogic.getResults();
             ListViewPeople.DataBind();
             PanelPeople.Visible = true;
             PanelSelect.Visible = false;
@@ -503,14 +512,15 @@ public partial class officer_election : System.Web.UI.Page
             DataSet infoSet = dbLogic.getResults();
             DataRow dr = infoSet.Tables["query"].Rows[0];
 
-            ButtonVote.Text = "Vote for " + dr["fullname"].ToString();
+            string name = GetName(int.Parse(dr["idunion_members"].ToString()));
+            ButtonVote.Text = "Vote for " + name;
             LabelStatement.Text = "\"" + dr["statement"].ToString() + "\"";
-            ButtonVote.OnClientClick = "return confirm('Are you sure you want to vote for " + dr["fullname"].ToString() + " for " + HiddenFieldCurrentPosition.Value + "?')";
-            HiddenFieldName.Value = dr["fullname"].ToString();
+            ButtonVote.OnClientClick = "return confirm('Are you sure you want to vote for " + name + " for " + HiddenFieldCurrentPosition.Value + "?')";
+            HiddenFieldName.Value = name;
             HiddenField2.Value = e.CommandArgument.ToString();
 
             if (LabelStatement.Text == "\"\"")
-                LabelStatement.Text = dr["fullname"].ToString() + " did not include a personal statement.";
+                LabelStatement.Text = name + " did not include a personal statement.";
 
             PanelSelect.Visible = true;
             LabelFeedbackVote2.Text = "";

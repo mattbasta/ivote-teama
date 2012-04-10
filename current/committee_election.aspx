@@ -5,18 +5,27 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <ul class="breadcrumb">
         <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
-        <li class="active">Committee Elections</li>
+        <li class="active">Committee Election</li>
     </ul>
     
     <div class="page-header">
-        <h1>Committee Elections</h1>
+        <h1><asp:Literal ID="CommitteeNameLiteral" runat="server" /> Election</h1>
     </div>
     
     <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well" Visible="false">
         <asp:LinkButton ID="CancelElection" Visible="true" Text="Cancel Election"
                 NavigateUrl="#" runat="server" CssClass="btn btn-danger pull-right" />
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
-        <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
+        <p>
+            <asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" />
+            <a href="javascript:$('#phasedelta').toggle();" runat="server" id="phasedeltaedit" Visible="false">(edit)</a>
+        </p>
+        <p id="phasedelta" style="display:none">
+            <asp:TextBox ID="DeltaText" runat="server" TextMode="SingleLine" MaxLength="2"  />
+            <asp:NumericUpDownExtender ID="Delta" runat="server" TargetControlID="DeltaText" Width="55" Maximum="14" Minimum="-14" />
+            days remain in this phase.
+            <asp:Button ID="DeltaSubmit" Text="Set Days Remaining" runat="server" CssClass="btn btn-small" OnClick="DeltaSubmit_Click" />
+        </p>
         <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
             <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
                     CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
@@ -31,14 +40,6 @@
             <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
         </asp:Panel>
-
-        <asp:Literal ID="DeltaLabel" Text="Adjust this phase's deadline by" runat="server" />
-        <asp:TextBox ID="DeltaText" runat="server" TextMode="SingleLine" MaxLength="2"  />
-        <asp:NumericUpDownExtender ID="Delta" runat="server" TargetControlID="DeltaText" Width="55" Maximum="14" Minimum="-14" />
-        <asp:Literal ID="DayLabel" Text="days past the original deadline." runat="server" />
-        <asp:Button ID="DeltaSubmit" Text="Delay/Rush" runat="server" 
-         CssClass="btn btn-primary btn-small" OnClick="DeltaSubmit_Click" />
-
     </asp:Panel>
     <asp:ToolkitScriptManager ID="AJAXManager" runat="Server" />
 

@@ -689,10 +689,7 @@ public class databaseLogic
     //counts how many people are nominated for a position
     public int countHowManyCandidatesForPosition(string position)
     {
-        // TODO: Update this
-        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
-                                   "FROM wts WTS, users UM " +
-                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + position + "');");
+        return genericQueryCounter("SELECT * FROM wts WHERE eligible=1 AND position='" + position + "';");
     }
 
     public bool IsThereCandidatesForPoisition(string position)

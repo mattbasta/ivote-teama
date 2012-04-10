@@ -3,40 +3,43 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
     <div class="page-header">
-        <h1><asp:Label ID="LabelFeedback" runat="server" Text="">Confirmation</asp:Label></h1>
+        <h1>Confirmation</h1>
     </div>
-
-    <asp:Panel ID="PanelError"  runat="server" Visible="false">
-    <p>
-    A problem has occurred while attempting to verify your account. Please
+    
+    <asp:Panel ID="PanelError" runat="server" Visible="false" CssClass="alert">
+    <strong>Error</strong> A problem has occurred while attempting to verify your account. Please
     contact the system administrator so they can re-send the email verification
     link to you.
-    </p>
     </asp:Panel>
 
+    <p><asp:Label ID="LabelFeedback" runat="server" Text=""></asp:Label></p>
     <asp:Panel ID="PanelHide"  runat="server">
-        <fieldset id="Fieldset1" class="register" runat="server">
-        <table>
-        <tr>
-        <td>Please enter your new password:</td> 
-        <td><asp:TextBox ID="TextBoxPassword" TextMode="Password" runat="server"></asp:TextBox>
-            <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" 
-                ControlToValidate="TextBoxPassword" CssClass="red" Display="Dynamic" 
-                ErrorMessage="Please enter your new password."></asp:RequiredFieldValidator>
-            <br /> </td>
-        </tr>
-       <tr>
-        <td>Please re-enter your new password:</td> 
-        <td><asp:TextBox ID="TextBoxPassword2" TextMode="Password" runat="server"></asp:TextBox>
-            <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" 
-                ControlToValidate="TextBoxPassword2" CssClass="red" Display="Dynamic" 
-                ErrorMessage="Please confirm your new password."></asp:RequiredFieldValidator>
-        <asp:CompareValidator ID="CompareValidator1" runat="server" ControlToValidate="TextBoxPassword2" CssClass="red" Display="Dynamic" ControlToCompare="TextBoxPassword" ErrorMessage="Your passwords must match." />
-        </td>
-        </tr>
-        </table>
+        <fieldset>
+            <legend>Activate Your Account</legend>
+            <div class="control-group">
+                <label class="control-label">New Password</label>
+                <div class="controls">
+                    <asp:TextBox ID="TextBoxPassword" TextMode="Password" runat="server"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" 
+                        ControlToValidate="TextBoxPassword" CssClass="red" Display="Dynamic" 
+                        ErrorMessage="Please enter your new password."></asp:RequiredFieldValidator>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Type it Again</label>
+                <div class="controls">
+                    <asp:TextBox ID="TextBoxPassword2" TextMode="Password" runat="server"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" 
+                        ControlToValidate="TextBoxPassword2" CssClass="red" Display="Dynamic" 
+                        ErrorMessage="Please confirm your new password."></asp:RequiredFieldValidator>
+                    <asp:CompareValidator ID="CompareValidator1" runat="server" ControlToValidate="TextBoxPassword2" CssClass="red" Display="Dynamic" ControlToCompare="TextBoxPassword" ErrorMessage="Your passwords must match." />
+                </div>
+            </div>
             <asp:HiddenField ID="HiddenFieldPassword" runat="server" />
-        <asp:Button ID="ButtonSave" runat="server" Text="Save new password" onclick="ButtonSave_Clicked" />
+            <div class="form-actions">
+                <asp:Button ID="ButtonSave" runat="server" Text="Activate Account" onclick="ButtonSave_Clicked" CssClass="btn btn-primary" />
+            </div>
+            
 
         </fieldset>
     </asp:Panel>
