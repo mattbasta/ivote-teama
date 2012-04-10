@@ -6,6 +6,15 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data;
 
+using DatabaseEntities;
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Cfg;
+
 public partial class wwwroot_experimental_approvenominations : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
@@ -20,6 +29,12 @@ public partial class wwwroot_experimental_approvenominations : System.Web.UI.Pag
             ListViewApproval.DataBind();
             loadApprovalInfo();
         }
+    }
+    
+    protected string GetName(int UserID) {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        User u = DatabaseEntities.User.FindUser(session, UserID);
+        return u.FirstName + " " + u.LastName;
     }
 
     protected void loadApprovalInfo()
@@ -79,10 +94,14 @@ public partial class wwwroot_experimental_approvenominations : System.Web.UI.Pag
             }
             
         }
-        if (count > 0)
+        if (count > 0) {
             LabelFeedback.Text = "Save successful. " + count.ToString() + " nomination(s) changed.";
-        else
+            LabelFeedbackAlert.CssClass = "alert alert-success";
+        } else {
             LabelFeedback.Text = "No changes made.";
+            LabelFeedbackAlert.CssClass = "alert";
+        }
+        LabelFeedbackAlert.Visible = true;
     }
 
     //hides popup

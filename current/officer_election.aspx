@@ -90,7 +90,7 @@
                         <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonSelect" runat="server" CommandName='<%#Eval("position") %>' Text="Select" CssClass="btn btn-small" />
+                                <asp:Button ID="ButtonSelect" runat="server" CommandName='<%#Eval("position") %>' CommandArgument='<%#Eval("idelection_position") %>' Text="Select" CssClass="btn btn-small" />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -102,19 +102,13 @@
         <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
         
         <asp:Panel id="functions_accept1" style="margin-top:10px;" visible="false" runat="server">
-        <div class="buttonrow">
             <a class="btn" href="/approvenominations.aspx">Approve Eligibility</a>
-        </div>
         </asp:Panel>
     </asp:Panel>
     
     <!--Slate Approval -->
     <asp:Panel ID="OfficerSlate" Visible="false" runat="server">
-        <div id="bodyCopy">
-            <h1>Slate Approval</h1>
-            NEC Members:  Please review and approve the slate below.  If there is a strong reason not to approve the slate, 
-            contact the administrator with an explaination and have them cancel the election.
-        </div>
+        <p>The officer election is currently in the <b>slate approval phase</b>. The Nominations and Elections Committee is curently reviewing the slate and providing a final approval.</p>
 
         <!--Admin only-->
         <asp:Panel id="functions_slate" style="margin-top:10px;" visible="false" runat="server">
@@ -128,75 +122,70 @@
             </div>
         </asp:Panel>
 
-        <div class="clear"></div>
-
         <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>
-                <div style="color: Blue; padding-bottom: 6px;"><asp:Label ID="LabelFeedback2" runat="server" Text="To view the nominated for a position, please select a position from the list below"></asp:Label></div>
+            <fieldset>
+                <legend>NEC Approval Form</legend>
+                <p><asp:Label ID="LabelFeedback2" runat="server" Text="To view the nominated for a position, please select a position from the list below"></asp:Label></p>
             
-                <asp:Panel ID="PanelSlateWrapper2" runat="server">
-                    <div id="slateWrapper2" style="width: 710px; height: 385px; background-color: #FF9999;">
+                <p>
+                    When you have reviewed the slate, you may approve the slate with this button. <asp:Button CssClass="btn btn-primary" ID="btnApprove" Visible="false" Text="Approve Slate" OnClick="btnApprove_OnClick" runat="server" />
+                </p>
+                <asp:Panel ID="PanelSlateWrapper2" runat="server" CssClass="well">
+                    <div class="row-fluid">
                         <!-- Holds the positions in the election -->
-                        <asp:Panel ID="PanelPositions2" CssClass="slateListPositions" runat="server">
+                        <asp:Panel ID="PanelPositions2" CssClass="span4" runat="server">
                             <asp:ListView ID="ListViewPositions2"  OnItemCommand="ListViewPositions2_ItemCommand" runat="server">
                                 <LayoutTemplate>
+                                    <ul class="nav nav-tabs nav-stacked">
                                     <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                                    </ul>
                                 </LayoutTemplate>
                                 <ItemTemplate>
-                                        <asp:LinkButton ID="LinkButtonPostions" CssClass="bold" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' /><br />
-                                    <span style="font-size: 12px; font-weight: bold; color: #808080">
-                                        <asp:Label ID="LabelVotedExtra2" runat="server" Text=""></asp:Label>
-                                        <asp:Label ID="LabelVoted2" runat="server" Text=""></asp:Label>
-                                        <asp:HiddenField ID="HiddenFieldVotedId2" runat="server" />
-                                        <asp:HiddenField ID="HiddenFieldVoteNumber" Value='<%#Eval("votes_allowed")%>' runat="server" />
-                                        <asp:HiddenField ID="HiddenFieldAllCandidates" Value="" runat="server" />
-                                    </span>
-                                    <hr />
+                                    <li><asp:LinkButton ID="LinkButtonPostions" CssClass="bold" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' /></li>
+                                    <asp:HiddenField ID="HiddenFieldVotedId2" runat="server" />
+                                    <asp:HiddenField ID="HiddenFieldVoteNumber" Value='<%#Eval("votes_allowed")%>' runat="server" />
+                                    <asp:HiddenField ID="HiddenFieldAllCandidates" Value="" runat="server" />
                                 </ItemTemplate>
                             </asp:ListView>
                         </asp:Panel>
                         <!-- Holds the people nominated for each position -->
-                        <asp:Panel ID="PanelPeople2" CssClass="slateListPeople" Visible="false" runat="server">
+                        <asp:Panel ID="PanelPeople2" CssClass="span4" Visible="false" runat="server">
                             <asp:ListView ID="ListViewPeople2" OnItemCommand="ListViewPeople2_ItemCommand" runat="server">
-                                 <LayoutTemplate>
+                                <LayoutTemplate>
+                                    <ul class="nav nav-tabs nav-stacked">
                                     <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                                    </ul>
                                 </LayoutTemplate>
                                 <ItemTemplate>
-                                    <asp:LinkButton ID="LinkButtonPostions" runat="server" CssClass="bold" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#Eval("fullname")%>' /><br /><hr />
+                                    <li><asp:LinkButton ID="LinkButtonPostions" runat="server" CssClass="bold" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' /></li>
                                 </ItemTemplate>
                             </asp:ListView>
                         </asp:Panel>
                         <!-- Holds submit button and the info that belows to that persion -->
-                        <asp:Panel ID="PanelSelect2" CssClass="slateDetailPeople" Visible="false" runat="server">
+                        <asp:Panel ID="PanelSelect2" CssClass="span4" Visible="false" runat="server">
                             <span style="text-decoration: underline; font-weight: bolder">
                                 Their Personal Statement:
                             </span>
                             <br />
-                            <div style="overflow: auto; width: 280px; height: 290px;">
-                                <asp:Label ID="LabelStatement2" runat="server" Text="" />
-                            </div>
+                            <asp:Label ID="LabelStatement2" runat="server" Text="" />
                             <asp:HiddenField ID="HiddenFieldName2" runat="server" />
                             <asp:HiddenField ID="HiddenFieldId2" runat="server" />
                         </asp:Panel>
                     </div>
-                    <br />
-                    <br />
                     <asp:HiddenField ID="HiddenFieldCurrentPosition2" runat="server" />
                 </asp:Panel>
+                </fieldset>
             </ContentTemplate>
         </asp:UpdatePanel>
-           <asp:Button ID="btnApprove" Enabled="false" Visible="false" Text="Approve Slate" OnClick="btnApprove_OnClick" runat="server" />
     </asp:Panel>
 
     <!--End Slate Approval-->
 
     <!--Petition-->
     <asp:Panel ID="OfficerPetition" Visible="false" runat="server">
-        <div id="bodyCopy">
-            <h1>Petition Period</h1>
-            The current election is in the petition phase.  You can petition yourself or other faculty 
-            members for a position.
-        </div>
+        <p>The election is in the <b>petition phase</b>. You can petition yourself or other faculty members for a position.</p>
+
         <asp:Panel id="functions_petition" style="margin-top:10px;" visible="false" runat="server">
             <div class="column">
                 <b>Election Management</b><br />
@@ -209,26 +198,27 @@
         <div class="clear"></div>
     
         <!--The petition functionality will be active during this phase.-->
-        <div id="special">
+        <fieldset id="special">
+            <legend>Petition Application</legend>
         
             <asp:UpdatePanel ID="UpdatePanel" runat="server" UpdateMode="Conditional">
-            <Triggers>
-            <asp:PostBackTrigger ControlID="ButtonSubmit" />
-            </Triggers>
+                <Triggers>
+                <asp:PostBackTrigger ControlID="ButtonSubmit" />
+                </Triggers>
             <ContentTemplate>
+                <div class="well form-search">
+                    <p>Search for the individual you would like to submit a petition for:</p>
+                    <asp:TextBox ID="txtSearch" runat="server" CssClass="input-medium search-query"></asp:TextBox> 
+                    <asp:Button ID="btnSearch" runat="server" Text="Search" OnClick="search" CssClass="btn" />
+                    <asp:LinkButton ID="btnViewAll" runat="server" Text="Clear Search" OnClick="clear" Visible="false" CssClass="btn btn-warning" />
+                </div>
 
-            <br />
-            Search for the individual you would like to submit a petition for:<br />
-            <asp:TextBox ID="txtSearch" runat="server" Width=300></asp:TextBox> 
-            <asp:Button ID="btnSearch"  runat="server" Text="Search" OnClick="search" /> 
-            <asp:LinkButton ID="btnViewAll"   runat="server" Text="Clear" OnClick="clear" Visible="false" /> <br /><br />
-            <span style="color: Blue"><asp:Label ID="LabelFeedback" runat="server" Text="" /></span><br />
-
-                <table class="simpleGrid" style="width: 60%">
+                <p><asp:Label ID="LabelFeedback" runat="server" Text="" /></p>
+                <table class="table table-bordered">
                     <tr>
                         <th>Full Name</th>
                         <th>Department</th>
-                        <th></th>
+                        <th>Actions</th>
                     </tr>
                     <asp:ListView ID="ListViewUsers" Visible="false" OnItemCommand="ListViewUsers_ItemCommand" runat="server">
                         <LayoutTemplate>
@@ -236,58 +226,65 @@
                         </LayoutTemplate>
                         <ItemTemplate>
                             <tr>
-                                <td >
-                                    <asp:Label ID="LabelName" text='<%#Eval("last_name") + ", " + Eval("first_name") %>' runat="server" />
+                                <td>
+                                    <asp:Label ID="LabelName" text='<%#Eval("LastNAme") + ", " + Eval("FirstName") %>' runat="server" />
                                 </td>
-                                <td >
-                                    <asp:Label ID="Label1" text='<%#Eval("department") %>' runat="server" />
+                                <td>
+                                    <asp:Label ID="Label1" text='<%#Eval("Department") %>' runat="server" />
                                 </td>
-                                <td >
-                                   <asp:Button ID="ButtonNominate" 
-                                       commandname="nominate"
-                                       commandargument='<%#Eval("idunion_members") %>' 
-                                       text="Submit Petition" runat="server" />                
+                                <td>
+                                    <asp:Button ID="ButtonNominate" 
+                                        CssClass="btn btn-mini"
+                                        commandname="nominate"
+                                        commandargument='<%#Eval("ID") %>' 
+                                        text="Submit Petition" runat="server" />                
                                 </td>
                             </tr>
                          </ItemTemplate>
                     </asp:ListView>
                 </table>
             </ContentTemplate>
-                    </asp:UpdatePanel>
+            </asp:UpdatePanel>
 
-                <asp:Panel ID="PanelChoosePosition" CssClass="modalPopup" runat="server">
-                    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
-                        <ContentTemplate>
-                            <asp:Label ID="LabelChoosPosition" runat="server" Text="" /><br /><br />
-                            <asp:HiddenField ID="HiddenFieldName" runat="server" />
-                            <asp:HiddenField ID="HiddenField1" runat="server" />
-                            <asp:DropDownList ID="DropDownListPostions" runat="server">
-                            </asp:DropDownList><br /> <br />
-                            <asp:Button ID="ButtonSubmit" runat="server" OnClick="ButtonSubmit_Clicked" Text="Submit Your Petition" />
-                            <asp:Button ID="ButtonCancel" runat="server" OnClick="ButtonCancel_Clicked" Text="Cancel" />
-                         </ContentTemplate>
-                    </asp:UpdatePanel>
-                </asp:Panel>
+            <asp:Panel ID="PanelChoosePosition" CssClass="modal" runat="server">
+                <div class="modal-header">
+                    <h3>Submit Petition</h3>
+                </div>
+                <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                    <ContentTemplate>
+                        <asp:HiddenField ID="HiddenFieldName" runat="server" />
+                        <asp:HiddenField ID="HiddenField1" runat="server" />
+                        <div class="modal-body">
+                            <div class="control-group">
+                                <p class="control-label"><asp:Label ID="LabelChoosPosition" runat="server" Text="" /></p>
+                                <div class="controls">
+                                    <asp:DropDownList ID="DropDownListPostions" runat="server"></asp:DropDownList>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <asp:Button CssClass="btn btn-primary" ID="ButtonSubmit" runat="server" OnClick="ButtonSubmit_Clicked" Text="Submit Your Petition" />
+                            <asp:Button CssClass="btn" ID="ButtonCancel" runat="server" OnClick="ButtonCancel_Clicked" Text="Cancel" />
+                        </div>
+                     </ContentTemplate>
+                </asp:UpdatePanel>
+            </asp:Panel>
 
-                <asp:Button ID="Button1" runat="server" Text="" style="display: none" />
+            <asp:Button ID="Button1" runat="server" Text="" style="display: none" />
 
-                <asp:ModalPopupExtender ID="PopupControlExtender1" runat="server"
-                    TargetControlID="Button1"
-                    PopupControlID="PanelChoosePosition"
-                    CancelControlID="ButtonCancel"
-                    BackgroundCssClass="modalBackground"
-                    PopupDragHandleControlID="PanelChoosePosition"
-                />
-        </div>
+            <asp:ModalPopupExtender ID="PopupControlExtender1" runat="server"
+                TargetControlID="Button1"
+                PopupControlID="PanelChoosePosition"
+                CancelControlID="ButtonCancel"
+                BackgroundCssClass="modalBackground"
+                PopupDragHandleControlID="PanelChoosePosition" />
+        </fieldset>
     </asp:Panel>
     <!--End Petition-->
 
     <!--Acceptance 2 phase-->
     <asp:Panel ID="OfficerPetitionAccept" Visible="false" runat="server">
-        <div id="bodyCopy">
-            <h1>Petition Acceptance Period</h1>
-            The current election is in a petition acceptance period.  This period acts as a buffer to give extra time to accept petition-based nominations.
-        </div>
+        <p>The election is in a <b>petition acceptance period</b>. This period acts as a buffer to give extra time to accept petition-based nominations.</p>
 
         <!--Admin only-->
         <asp:Panel id="functions_accept2" style="margin-top:10px;" visible="false" runat="server">
@@ -304,10 +301,7 @@
     <!--Approval-->
         <!--Only admin will see this phase-->
     <asp:Label ID="OfficerApproval" runat="server" Visible="false">
-        <div id="bodyCopy">
-            <h1>Eligibility Approval Period</h1>
-            This is a special phase that will end as soon as all eligibility forms have been approved or disapproved.
-        </div>
+        <p>This phase that will end as soon as all eligibility forms have been approved or disapproved.</p>
 
         <!--Admin only-->
         <asp:Panel id="functions_approval" style="margin-top:10px;" visible="false" runat="server">
@@ -398,26 +392,26 @@
 
     <!--Results-->
     <asp:Panel ID="OfficerResults" Visible="false" style="text-align: center;" runat="server">
-            <h1>Results of the Election</h1><br />
-            
-            <asp:GridView ID="resultList" CssClass="simpleGrid" OnRowCommand="resultList_RowCommand" style="margin-left: auto; margin-right: auto;" AutoGenerateColumns="false" runat="server">
-            <Columns>
-                <asp:BoundField HeaderText="Position" DataField="position" />
-                <asp:BoundField HeaderText="Winner" DataField="fullname" />
-                <asp:TemplateField HeaderText="" >
-                    <ItemTemplate>
-                        <asp:LinkButton ID="LinkButtonPositionDetail" commandname="position"  commandargument='<%#Eval("position") %>' text="View Position Result Data" runat="server" />
-                    </ItemTemplate>
-                </asp:TemplateField>
-            </Columns>
-            </asp:GridView>
+        <h1>Results of the Election</h1><br />
+        
+        <asp:GridView ID="resultList" CssClass="simpleGrid" OnRowCommand="resultList_RowCommand" style="margin-left: auto; margin-right: auto;" AutoGenerateColumns="false" runat="server">
+        <Columns>
+            <asp:BoundField HeaderText="Position" DataField="position" />
+            <asp:BoundField HeaderText="Winner" DataField="fullname" />
+            <asp:TemplateField HeaderText="" >
+                <ItemTemplate>
+                    <asp:LinkButton ID="LinkButtonPositionDetail" commandname="position"  commandargument='<%#Eval("idelection_position") %>' text="View Position Result Data" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+        </Columns>
+        </asp:GridView>
 
-            <center><br />
-            <asp:Label ID="necApprove" runat="server" Text="<b>Please approve the results above from this past election.</b>" Enabled="false" Visible="false" /><br />
-            <asp:Button ID="necButton" runat="server" Text="Approve" Visible="false" Enabled="false" OnClick="necButton_OnClick" />
-            <asp:Label ID="adminEnd" runat="server" Text="<b>The NEC must approve the election results before you can end the current election.</b>" Enabled="false" Visible="false" /><br />
-            <asp:Button ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" Enabled="false" OnClick="adminButton_OnClick" />
-            </center>
+        <center><br />
+        <asp:Label ID="necApprove" runat="server" Text="<b>Please approve the results above from this past election.</b>" Enabled="false" Visible="false" /><br />
+        <asp:Button ID="necButton" runat="server" Text="Approve" Visible="false" Enabled="false" OnClick="necButton_OnClick" />
+        <asp:Label ID="adminEnd" runat="server" Text="<b>The NEC must approve the election results before you can end the current election.</b>" Enabled="false" Visible="false" /><br />
+        <asp:Button ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" Enabled="false" OnClick="adminButton_OnClick" />
+        </center>
     
     </asp:Panel>
     <!--End Results-->
