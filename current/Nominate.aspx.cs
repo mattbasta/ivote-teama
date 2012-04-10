@@ -35,7 +35,6 @@ public partial class wwwroot_phase1aSite_nominate : System.Web.UI.Page
             if (positionTitle == "")
                 Response.Redirect("home.aspx");
             LabelHeader.Text = positionTitle + " Nomination";
-            LabelExplain.Text = "Please search for a faculty member to nominate for  " + positionTitle + " below:";
             HiddenFieldPosition.Value = positionTitle;
         }
     }
@@ -102,20 +101,6 @@ public partial class wwwroot_phase1aSite_nominate : System.Web.UI.Page
         }
     }
 
-    /*
-    protected void loadConfirmPopup()
-    {
-        foreach (ListViewDataItem myItem in ListViewUsers.Items)
-        {
-            //gets important info from each contact row
-            Button button = (Button)myItem.FindControl("ButtonNominate");
-            Label fullname = (Label)myItem.FindControl("LabelName");
-            HiddenField position = (HiddenField)myItem.FindControl("HiddenFieldPosition");
-
-            button.OnClientClick = "javascript:return " + "confirm('Are you sure you want to nominate " + fullname.Text + " for " + position.Value + "?')";
-        }
-    }
-    */
     protected void clear(object sender, EventArgs e)
     {
         ListViewUsers.Visible = false;
