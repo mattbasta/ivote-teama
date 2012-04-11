@@ -47,6 +47,21 @@
                                 <asp:HyperLink ID="HyperLink1" text='<%#Eval("Email")%>' NavigateUrl='<%#DataBinder.Eval(Container, "DataItem.Email","MAILTO:{0}")%>' runat="server">HyperLink</asp:HyperLink>
                             </ItemTemplate>
                         </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Union" SortExpression="IsUnion">
+                            <ItemTemplate>
+                                <asp:Image ID="IsUnion" Visible='<%#Eval("IsUnion")%>' ImageUrl="/images/check.png" runat="server" CssClass="make_block" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Tenured" SortExpression="IsTenured">
+                            <ItemTemplate>
+                                <asp:Image ID="IsTenured" Visible='<%#Eval("IsTenured")%>' ImageUrl="/images/check.png" runat="server" CssClass="make_block" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="NEC" SortExpression="IsNEC">
+                            <ItemTemplate>
+                                <asp:Image ID="IsNEC" Visible='<%#Eval("IsNEC")%>' ImageUrl="/images/check.png" runat="server" CssClass="make_block" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField HeaderText="Department" DataField="Department" NullDisplayText="None" SortExpression="Department"/>
                         <asp:TemplateField HeaderText="" >
                             <ItemTemplate>
