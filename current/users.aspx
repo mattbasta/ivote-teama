@@ -32,7 +32,8 @@
                     <asp:LinkButton ID="btnViewAll" runat="server" Text="Clear Search" OnClick="allUsers" Visible="false" CssClass="btn btn-warning" />
                 </div>
                 
-                <asp:HiddenField ID="HiddenFieldPosition" runat="server" />
+                <asp:HiddenField ID="Query" runat="server" />
+                <asp:HiddenField ID="Sort" runat="server" />
                 
                 <div style="margin-left: auto; width:95%; margin-right: auto">
                 <asp:GridView ID="GridViewUsers" runat="server" OnRowCommand="GridViewUsers_RowCommand" CssClass="table table-bordered" AutoGenerateColumns="False" AllowSorting="true" OnSorting="sorting">
