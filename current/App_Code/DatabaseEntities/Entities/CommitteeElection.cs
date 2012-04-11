@@ -420,7 +420,7 @@ namespace DatabaseEntities
         /// objects which pertain to a user who had their WTS revoked.
         /// </summary>
         /// <param name="session">A valid session.</param>
-        /// <param name="election">The election this operation pertains to.</param>
+        /// <param name="transaction">A transaction to perform the operation in.</param>
         /// <param name="user">The user who had their WTS revoked.</param>
         public virtual void RevokeWTS(ISession session, ITransaction transaction, int user)
         {
@@ -445,6 +445,37 @@ namespace DatabaseEntities
                 if (entry.Candidate == user)
                     NHibernateHelper.Delete(session, entry);
             }
+        }
+
+        /// <summary>
+        /// Removes the CommitteeWTS, CommitteeWTSNominations and BallotEntry
+        /// objects for all users, then destroys the election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="transaction">A transaction to perform the operation in.</param>
+        public virtual void DestroyElection(ISession session, ITransaction transaction)
+        {
+            // Find the committeeWTS.
+            List<CommitteeWTS> cWTSes = CommitteeWTS.FindCommitteeWTS(session, ID);
+            foreach(CommitteeWTS cWTS in cWTSes)
+                NHibernateHelper.Delete(session, cWTS);
+
+            // Find all the WTSNominations
+            List<CommitteeWTSNomination> cWTSNominations =
+                CommitteeWTSNomination.FindCommitteeWTSNominations(session, ID);
+            foreach (CommitteeWTSNomination nomination in cWTSNominations)
+                NHibernateHelper.Delete(session, nomination);
+
+            // Find all the BallotEntries
+            List<BallotEntry> ballotEntries = 
+                BallotEntry.FindBallotEntry(session, ID);
+            foreach (BallotEntry entry in ballotEntries)
+            {
+                NHibernateHelper.Delete(session, entry);
+            }
+            
+            // Delete the election.
+            NHibernateHelper.Delete(session, this);
         }
     }
 }

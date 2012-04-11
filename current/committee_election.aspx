@@ -12,21 +12,21 @@
         <h1><asp:Literal ID="CommitteeNameLiteral" runat="server" /> Election</h1>
     </div>
     
-    <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well" Visible="false">
+    <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well">
         <asp:LinkButton ID="CancelElection" Visible="true" Text="Cancel Election"
-                NavigateUrl="#" runat="server" CssClass="btn btn-danger pull-right" />
+                OnClick="CancelElection_Click" runat="server" CssClass="btn btn-danger pull-right" />
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p>
             <asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" />
-            <a href="javascript:$('#phasedelta').toggle();" runat="server" id="phasedeltaedit" Visible="false">(edit)</a>
+            <a href="javascript:$('#MainContent_phasedelta').toggle();" runat="server" id="phasedeltaedit" Visible="false">(edit)</a>
         </p>
-        <p id="phasedelta" style="display:none">
+        <p id="phasedelta" style="display:none" runat="server" Visible="false">
             <asp:TextBox ID="DeltaText" runat="server" TextMode="SingleLine" MaxLength="2"  />
             <asp:NumericUpDownExtender ID="Delta" runat="server" TargetControlID="DeltaText" Width="55" Maximum="14" Minimum="-14" />
             days remain in this phase.
             <asp:Button ID="DeltaSubmit" Text="Set Days Remaining" runat="server" CssClass="btn btn-small" OnClick="DeltaSubmit_Click" />
         </p>
-        <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
+        <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox" Visible="false">
             <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
                     CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
             or switch to
@@ -180,6 +180,19 @@
     <asp:Panel ID="FacultyWTS" runat="server" Visible="false" CssClass="form form-horizontal">
         <fieldset>
             <legend>Willingness to Serve</legend>
+            <p><asp:Literal ID="CommitteeDescription" runat="server" /></p>
+            <ol>
+                <li>No faculty member may serve on more than one contract committee (promotion, tenure, and sabbatical leave)</li>
+                <li>No faculty member shall serve on a university-wide committee when he/she or a member of his or her immediate family or a person residin in his or her household is an applicant to that committee.</li>
+                <li>Only one faculty member from a department may serve on any contract committee at one time.</li>
+                <li>The APSCUF/KU President, Meet and Discuss Spokesperson, and Grievance Chair may not serve on any contract committee.</li>
+                <li runat="server" id="must_be_tenured">A faculty member must be tenured prior to his or her nomination to serve on this committee.</li>
+            </ol>
+            <p>
+                If you wish to serve on the <asp:Literal ID="CommitteeNameLiteral2" runat="server" />, please state your
+                views on the committee's function and reasons for wanting to serve. This information will be distributed with
+                the ballot.
+            </p>
             <asp:Panel ID="wtsPanelNew" runat="server">
                 <div class="control-group">
                     <label class="control-label">Statement</label>

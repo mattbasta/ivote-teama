@@ -45,6 +45,9 @@ public partial class committee_election : System.Web.UI.Page
             Response.Redirect("home.aspx");
         
         CommitteeNameLiteral.Text = committee.Name;
+        CommitteeNameLiteral2.Text = committee.Name;
+        CommitteeDescription.Text = committee.Description;
+        must_be_tenured.Visible = committee.TenureRequired;
 
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
 
@@ -103,6 +106,9 @@ public partial class committee_election : System.Web.UI.Page
             }
 
         }
+        
+        JulioButtonHider.Visible = user.IsAdmin;
+        CancelElection.Visible = user.IsAdmin;
 
         if (user.IsNEC && election.Phase == ElectionPhase.CertificationPhase)
         {
@@ -118,8 +124,32 @@ public partial class committee_election : System.Web.UI.Page
                 NECCertificationComplete.Visible = true;
             }
         }
+        
+        DaysLeftInPhase();
+        switch(election.Phase) {
+            case ElectionPhase.WTSPhase:
+                PhaseLiteral.Text = "WTS Phase";
+                break;
+            case ElectionPhase.NominationPhase:
+                PhaseLiteral.Text = "Nomination Phase";
+                break;
+            case ElectionPhase.VotePhase:
+                PhaseLiteral.Text = "Voting Phase";
+                break;
+            case ElectionPhase.CertificationPhase:
+                PhaseLiteral.Text = "Certification Phase";
+                break;
+            case ElectionPhase.ConflictPhase:
+                PhaseLiteral.Text = "Conflict Resolution Phase";
+                break;
+            case ElectionPhase.ClosedPhase:
+                PhaseLiteral.Text = "Closed";
+                CancelElection.Visible = false;
+                JulioButtonHider.Visible = false;
+                break;
+        }
+        
         if(user.IsAdmin) {
-            DaysLeftInPhase();
 
             ActivateTab(election.Phase.ToString());
 
@@ -184,29 +214,6 @@ public partial class committee_election : System.Web.UI.Page
             if(election.Phase >= ElectionPhase.WTSPhase)
                 wts_tab.Visible = true;
 
-            switch(election.Phase) {
-                case ElectionPhase.WTSPhase:
-                    PhaseLiteral.Text = "WTS Phase";
-                    break;
-                case ElectionPhase.NominationPhase:
-                    PhaseLiteral.Text = "Nomination Phase";
-                    break;
-                case ElectionPhase.VotePhase:
-                    PhaseLiteral.Text = "Voting Phase";
-                    break;
-                case ElectionPhase.CertificationPhase:
-                    PhaseLiteral.Text = "Certification Phase";
-                    break;
-                case ElectionPhase.ConflictPhase:
-                    PhaseLiteral.Text = "Conflict Resolution Phase";
-                    break;
-                case ElectionPhase.ClosedPhase:
-                    PhaseLiteral.Text = "Closed";
-                    CancelElection.Visible = false;
-                    JulioButtonHider.Visible = false;
-                    break;
-            }
-
             //*******************************
             //******** Admin WTS Load *******
             //*******************************
@@ -264,7 +271,7 @@ public partial class committee_election : System.Web.UI.Page
             DeltaText.Text = (election.PhaseEndDelta + num_days_remaining()).ToString();
         
         if(user.IsAdmin && election.Phase != ElectionPhase.ClosedPhase) {
-            JulioButtonPanel.Visible = true;
+            phasedelta.Visible = true;
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
         }
     }
@@ -286,10 +293,10 @@ public partial class committee_election : System.Web.UI.Page
                     DaysRemaining.Text = "The phase should not be changed until some actions have occurred.";
             } else if(days_remaining > 0) {
                 DaysRemaining.Text = days_remaining.ToString() + " day(s) remaining for this phase.";
-                phasedeltaedit.Visible = true;
+                phasedeltaedit.Visible = user.IsAdmin;
             } else {
                 DaysRemaining.Text = "This phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
-                phasedeltaedit.Visible = true;
+                phasedeltaedit.Visible = user.IsAdmin;
             }
         }
     }
@@ -637,6 +644,15 @@ public partial class committee_election : System.Web.UI.Page
         NHibernateHelper.Finished(transaction);
 
         Response.Redirect("/committee_election.aspx?id=" + election.ID.ToString());
+    }
+
+    protected void CancelElection_Click(Object sender, EventArgs e)
+    {
+        ITransaction transaction = session.BeginTransaction();
+        election.DestroyElection(session, transaction);
+        NHibernateHelper.Finished(transaction);
+        
+        Response.Redirect("/home.aspx");
     }
 
     /// <summary>

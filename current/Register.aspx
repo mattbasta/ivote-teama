@@ -101,16 +101,16 @@ $(document).ready(function() {
                 <div class="controls">
                     <label class="checkbox"><asp:CheckBox ID="IsAdmin" runat="server" /> Administrator</label>
                     <label class="checkbox"><asp:CheckBox ID="IsNEC" runat="server" /> NEC</label>
-                    <label class="checkbox"><asp:CheckBox ID="IsFaculty" runat="server" /> Faculty</label>
+                    <label class="checkbox"><asp:CheckBox ID="IsFaculty" runat="server" Checked="true" /> Faculty</label>
                     <label class="checkbox"><asp:CheckBox ID="IsTenured" runat="server" /> Tenured Faculty</label>
-                    <label class="checkbox"><asp:CheckBox ID="IsUnion" runat="server" /> Union Member</label>
-                    <label class="checkbox"><asp:CheckBox ID="IsBU" runat="server" /> Bargaining Unit</label>
+                    <label class="checkbox"><asp:CheckBox ID="IsUnion" runat="server" Checked="true" /> Union Member</label>
+                    <label class="checkbox"><asp:CheckBox ID="IsBU" runat="server" Checked="true" /> Bargaining Unit</label>
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label">User Permissions</label>
                 <div class="controls">
-                    <label class="checkbox"><asp:CheckBox ID="CanVote" runat="server" /> Allowed to Vote</label>
+                    <label class="checkbox"><asp:CheckBox ID="CanVote" runat="server" Checked="true" /> Allowed to Vote</label>
                 </div>
             </div>
             <div class="form-actions">
