@@ -76,6 +76,7 @@ public partial class officer_election : System.Web.UI.Page
     protected void setView()
     {
         CancelElection.Visible = true;
+        InitiateNewElection.Visible = false;
         
         // Reset the panel visibility.
         OfficerNominate.Visible = false;
@@ -166,6 +167,7 @@ public partial class officer_election : System.Web.UI.Page
                 // You can't cancel an election that isn't happening.
                 CancelElection.Visible = false;
                 JulioButtonHider.Visible = false;
+                InitiateNewElection.Visible = true;
                 
                 bindPositions();
                 
@@ -178,6 +180,7 @@ public partial class officer_election : System.Web.UI.Page
                 // You can't cancel an election that isn't happening.
                 CancelElection.Visible = false;
                 JulioButtonHider.Visible = false;
+                InitiateNewElection.Visible = true;
                 break;
         }
         

@@ -30,6 +30,8 @@
     <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well">
         <asp:Hyperlink ID="CancelElection" Visible="true" Text="Cancel Election"
                 NavigateUrl="/Terminate.aspx" runat="server" CssClass="btn btn-danger pull-right" />
+        <asp:Hyperlink ID="InitiateNewElection" Visible="false" Text="Start New Election"
+                NavigateUrl="/Initiate.aspx" runat="server" CssClass="btn btn-success pull-right" />
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
         <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
