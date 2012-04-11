@@ -276,7 +276,7 @@ public partial class committee_election : System.Web.UI.Page
         }
     }
     private int num_days_remaining() {
-        return (int)election.NextPhaseDate(session).Subtract(election.PhaseStarted).TotalDays;
+        return election.DaysRemainingInPhase(session);
     }
     
     private void DaysLeftInPhase()
