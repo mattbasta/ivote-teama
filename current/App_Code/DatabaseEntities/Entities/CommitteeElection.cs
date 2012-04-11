@@ -4,9 +4,11 @@
 // TODO: Write static helper functions
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 
 using FluentNHibernate;
 using FluentNHibernate.Cfg;
@@ -15,6 +17,8 @@ using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace DatabaseEntities
 {
@@ -153,11 +157,14 @@ namespace DatabaseEntities
             ElectionPhase electionPhase)
         {
             this.Phase = electionPhase;
+            Committee com = Committee.FindCommittee(session, PertinentCommittee);
 
             if (electionPhase == ElectionPhase.WTSPhase)
             {
-                //TODO: Filter which users should be sent a WTS, instead of all.
                 List<User> userList = User.GetAllUsers(session);
+                userList.RemoveAll(x => (!(!com.TenureRequired || x.IsTenured) ||
+                                        !(!com.BargainingRequired || x.IsBargainingUnit)));
+
                 nEmailHandler emailHandler = new nEmailHandler();
                 emailHandler.sendWTS(this, userList);
             }
@@ -168,6 +175,22 @@ namespace DatabaseEntities
             }
             else if (electionPhase == ElectionPhase.VotePhase)
             {
+                // if theres no need to enter the nomination phase,
+                // automatically enter nominations for users who 
+                //submitted wts
+                if (!ShouldEnterNominationPhase(session))
+                {
+                    List<CommitteeWTS> wtses = CommitteeWTS.FindCommitteeWTS(session, ID);
+                    foreach (CommitteeWTS wts in wtses)
+                    {
+                        ISession nomSession = NHibernateHelper.CreateSessionFactory().OpenSession();
+                        Nomination nomination = new Nomination();
+                        nomination.User = wts.User;
+                        nomination.Election = ID;
+                        nomSession.SaveOrUpdate(nomination);
+                        nomSession.Flush();
+                    }
+                }
                 // distribute emails prompting faculty members to come
                 // vote
             }
@@ -251,29 +274,25 @@ namespace DatabaseEntities
         /// <returns>A dictionary storing each candidate and the
         /// number of votes they recieved. Dictionary keys are the user's email.  
         /// The corresponding value is the number of votes.</returns>
-        public static Dictionary<string, int> GetResults(ISession session,
-            int ID)
+        public virtual Dictionary<string, int> GetResults(ISession session)
         {
-            var votes = session.CreateCriteria(typeof(BallotEntry)).List<BallotEntry>();
+            var votes = session.CreateCriteria(typeof(BallotEntry))
+                .Add(Restrictions.Eq("Election", this.ID))
+                .List<BallotEntry>();
             Dictionary<string, int> ret = new Dictionary<string, int>();
+
+            List<User> nominees = GetNominees(session);
+
+            foreach (User i in nominees)
+                ret.Add(i.Email, 0);
 
             // Iterate through all the ballot entries
             for (int i = 0; i < votes.Count; i++)
             {
-                // If the ballot entry is pertinent to this election
-                if (votes[i].Election == ID)
-                {
-                    // Get the information for the candidate of this ballot entry
-                    User thisUser = User.FindUser(session, votes[i].Candidate);
-                    // If this candidate already has an entry in the return diciontary,
-                    // increment the number of votes for him
-                    if (ret.ContainsKey(thisUser.Email))
-                        ret[thisUser.Email]++;
-                    // Otherwise, add an entry for that candidate and set his number of votes
-                    // to one
-                    else
-                        ret.Add(thisUser.Email, 1);
-                }
+                // Get the information for the candidate of this ballot entry
+                User thisUser = User.FindUser(session, votes[i].Candidate);
+                // Increment the number of votes for the specified user.
+                ret[thisUser.Email]++;
             }
             // After interating through all the votes, return the dictionary which
             // contains the candidates and their vote counts
@@ -312,7 +331,7 @@ namespace DatabaseEntities
             Committee committee = Committee.FindCommittee(session, PertinentCommittee);
 
             // Get the users who won the election.
-            Dictionary<string, int> winners = GetResults(session, ID);
+            Dictionary<string, int> winners = GetResults(session);
             List<User> winningUsers = new List<User>();
             foreach (string email in winners.Keys)
             {
@@ -398,7 +417,7 @@ namespace DatabaseEntities
             if (count.Count != 0) // vacancies times 2 minus 1 to make it zero based...
             {
                 int num_vacs = committee.NumberOfVacancies(session) * 2 - 1;
-                if(num_vacs > count.Count)
+                if(num_vacs >= count.Count)
                     cutOff = -1;
                 else
                     cutOff = count[num_vacs];
@@ -445,5 +464,57 @@ namespace DatabaseEntities
                     NHibernateHelper.Delete(session, entry);
             }
         }
+
+        /// <summary>
+        /// Generates a pdf of election results for this election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="path">The path where the pdf will be saved.</param>
+        /// <returns>The document which was created.</returns>
+        public virtual Document GenerateResultsPDF(ISession session, string path)
+        {
+            Committee committee = Committee.FindCommittee(session, 
+                PertinentCommittee);
+            List<Certification> certifications = Certification.FindCertifications(session, ID);
+            Dictionary<string, int> users = GetResults(session);
+
+            var doc = new Document();
+            PdfWriter.GetInstance(doc, 
+                new FileStream(path, FileMode.Create));
+
+            PdfPTable table = new PdfPTable(2);
+            table.SpacingBefore = 30f;
+            table.SpacingAfter = 30f;
+
+            table.AddCell("Candidate");
+            table.AddCell("Number of Votes");
+
+            foreach (KeyValuePair<string, int> i in users)
+            {
+                User user = User.FindUser(session, i.Key);
+                table.AddCell(user.FirstName + " " + user.LastName);
+                table.AddCell(i.Value.ToString());
+            }
+
+            doc.Open();
+            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + " committee."));
+            doc.Add(table);
+
+            foreach(Certification i in certifications)
+            {
+                User certifyingUser = User.FindUser(session, i.User);
+                Chunk sigLine = new Chunk("                                                  \n");
+                sigLine.SetUnderline(0.5f, -1.5f);
+                Phrase signatureArea = new Phrase();
+                signatureArea.Add("I hereby certify the results of this election: ");
+                signatureArea.Add(sigLine);
+                signatureArea.Add(certifyingUser.FirstName + " " + certifyingUser.LastName + "\n\n");
+                doc.Add(signatureArea);
+            }
+            doc.Close();
+            return doc;
+        }
+
+        
     }
 }

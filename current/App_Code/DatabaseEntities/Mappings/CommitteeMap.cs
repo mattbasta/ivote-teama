@@ -30,6 +30,10 @@ namespace DatabaseEntities
                 .Not.Nullable();
             Map(x => x.PositionCount)
                 .Not.Nullable();
+            Map(x => x.BargainingRequired)
+                .Not.Nullable();
+            Map(x => x.TenureRequired)
+                .Not.Nullable();
         }
     }
 }

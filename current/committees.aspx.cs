@@ -35,7 +35,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
             
             TableRow tr = new TableRow();
             
-            TableCell name, positions, vacancies, status;
+            TableCell name, positions, vacancies, members, status;
             
             name = new TableCell();
             name.Controls.Add(new LiteralControl(committee.Name));
@@ -48,8 +48,19 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
             vacancies = new TableCell();
             vacancies.Controls.Add(new LiteralControl(vacancy_count + " Vacancies"));
             tr.Cells.Add(vacancies);
+
+            List<User> users = DatabaseEntities.User.FindUsers(session, committee.Name);
+            string toAdd = "";
+            for(int j = 0; j < users.Count; j++)
+            {
+                toAdd += users[j].FirstName + " " + users[j].LastName + ((j != users.Count - 1) ? (", "):(""));
+            }
+            members = new TableCell();
+            members.Controls.Add(new LiteralControl(toAdd));
+            tr.Cells.Add(members);
             
             status = new TableCell();
+
             if(vacancy_count == 0)
                 status.Controls.Add(new LiteralControl("Too few vacancies for election."));
             else
@@ -78,7 +89,11 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
                     status.Controls.Add(visit_election);
                 }
             }
-            
+
+            List<string> conflicts = Committee.FindConflicts(session, committee);
+            foreach (string j in conflicts)
+                status.Controls.Add(new LiteralControl(j));
+
             tr.Cells.Add(status);
             
             CommitteeTable.Rows.Add(tr);

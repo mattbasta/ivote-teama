@@ -292,6 +292,8 @@ namespace DatabaseEntities
         public static User Authenticate(ISession session, string email,
             string password)
         {
+            if (String.IsNullOrEmpty(password))
+                return null;
             // pull a list of all the users from the database.
             var faculty = session.CreateCriteria(typeof(User)).List<User>();
             for (int i = 0; i < faculty.Count; i++)
@@ -350,8 +352,13 @@ namespace DatabaseEntities
             Committee com = Committee.FindCommittee(session, committee);
             if (com != null)
             {
-                if (this.CurrentCommittee == NoCommittee ||
-                    this.CurrentCommittee == com.ID)
+                // Note that the logical if then (A -> B) binary operation
+                // is equivalent to (~A v B) 
+                if ((this.CurrentCommittee == NoCommittee ||
+                    this.CurrentCommittee == com.ID) &&
+                    (!com.TenureRequired || this.IsTenured) && // logical if then
+                    (!com.BargainingRequired || this.IsBargainingUnit) && // logical if then
+                    com.NumberOfVacancies(session) > 0)
                 {
                     this.CurrentCommittee = com.ID;
                     session.SaveOrUpdate(this);
