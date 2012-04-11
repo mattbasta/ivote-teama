@@ -141,6 +141,24 @@ public partial class home : System.Web.UI.Page
         }
         throw new Exception("Unexpected election phase.");
     }
+    
+    public string GetDaysReamining(DatabaseEntities.CommitteeElection election) {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        if(election.Phase != ElectionPhase.ClosedPhase)
+        {
+            int days_remaining = election.DaysRemainingInPhase(session);
+            if(days_remaining > 1000) { // Not sure what MAXDATE translate to as an integer...
+                if(election.Phase == ElectionPhase.CertificationPhase)
+                    return "The election is paused while NEC members review the ballots.";
+                else
+                    return "The election is paused.";
+            } else if(days_remaining > 0)
+                return days_remaining.ToString() + " day(s) remaining for this election's phase.";
+            else
+                return "This election's phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
+        }
+        return "The election is closed.";
+    }
 
     //sends user to homepage based on current phase and the users role
     protected void setView()
@@ -171,6 +189,7 @@ public partial class home : System.Web.UI.Page
                 OfficerResults.Visible = true;
                 break;
             default:
+                initiate_new_officer_election.Visible = is_admin;
                 OfficerStateless.Visible = true;
                 break;
         }
