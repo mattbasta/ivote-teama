@@ -1,0 +1,3 @@
+﻿Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+This is an automated message from the APSCUF-KU iVote system.  An election has begun.<br />
+It is now the willingness to serve phase of the voting process.  You are able to log in register your willingness to serve.  You may follow this URL to do so: <a href="http://##BASEURL##/committee_election.aspx?id=##ID##"> link</a><br />
