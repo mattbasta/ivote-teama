@@ -10,7 +10,6 @@ using System.Data;
 public class timeline
 {
     databaseLogic dbLogic = new databaseLogic();
-    VerifyEmail email = new VerifyEmail();
     public string currentPhase = "";
 
     public timeline()
@@ -37,34 +36,34 @@ public class timeline
         
         if(dbLogic.canSkipPhase() && !force)
             return changePhaseToCurrent(iter_phases[changed_to + 1]);
-        
+        nEmailHandler emailer = new nEmailHandler();
         switch(phase)
         {
             case "nominate":
-                email.phaseNomination();
+                emailer.sendGenericOfficerPhase("officerPhaseNominations", "APSCUF iVote Nomination Period Started");
                 break;
             case "accept1":
-                email.phaseAccept1();
+                emailer.sendGenericOfficerPhase("officerPhaseAccept1", "APSCUF iVote Nomination, Action Required");
                 break;
             case "slate":
-                email.phaseSlate();
+                emailer.sendGenericOfficerPhase("officerPhaseSlate", "APSCUF iVote Slate Created, Action Required");
                 break;
             case "petition":
-                email.phasePetition();
+                emailer.sendGenericOfficerPhase("officerPhasePetition", "APSCUF iVote Petition Period");
                 dbLogic.phase_ClearNullNominations();
                 break;
             case "accept2":
-                email.phaseAccept2();
+                emailer.sendGenericOfficerPhase("officerPhaseAccept2", "APSCUF iVote Action Required");
                 break;
             case "approval":
-                email.phaseApproval();
+                emailer.sendGenericOfficerPhase("officerPhaseApproval", "APSCUF iVote Approval Needed");
                 break;
             case "vote":
-                email.phaseVote();
+                emailer.sendGenericOfficerPhase("officerPhaseVote", "APSCUF iVote Voting Period Officially Begun");
                 dbLogic.phase_ClearNullNominations();
                 break;
             case "result":
-                email.phaseResults();
+                emailer.sendGenericOfficerPhase("officerPhaseResults", "APSCUF iVote Election Officially Concluded");
                 break;
         }
         

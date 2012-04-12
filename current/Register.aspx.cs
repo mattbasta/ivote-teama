@@ -15,7 +15,6 @@ using NHibernate;
 
 public partial class Account_Register : System.Web.UI.Page
 {
-    VerifyEmail sendEmail = new VerifyEmail();
     protected void Page_Load(object sender, EventArgs e)
     {
         if(!Page.IsPostBack) {

@@ -1,0 +1,2 @@
+Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+This is an automated message from the APSCUF-KU iVote system.  Nominations are over and you can now view the slate. The petition phase of the voting process has begun.  You can submit petitions for the given positions available. You may follow this URL to do so: <a href="http://##BASEURL##"> link</a>

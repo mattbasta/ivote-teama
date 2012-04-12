@@ -1,0 +1,2 @@
+Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+This is an automated message from the APSCUF-KU iVote system.  The nominations/petitions are finalized and as an Administrator, we need you to approve or deny all applicants Willingness to Serve forms. This phase will last until all of the applicants' eligibility have been taken care of, so please do not forget to make these changes. Please follow the link to approve/deny the nominated users: <a href="http://##BASEURL##"> link</a>

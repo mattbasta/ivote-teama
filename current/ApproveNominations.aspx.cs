@@ -18,7 +18,6 @@ using NHibernate.Cfg;
 public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
-    VerifyEmail email = new VerifyEmail();
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack)
@@ -68,11 +67,16 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
             RadioButton approve = (RadioButton)eachItem.FindControl("RadioButton1");
             RadioButton deny = (RadioButton)eachItem.FindControl("RadioButton2");
 
+            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            User u = DatabaseEntities.User.FindUser(session, id.Value);
+
+            nEmailHandler emailer = new nEmailHandler();
+
             if (approve.Checked == true)
             {
                 dbLogic.updateEligible(id.Value, "1");
                 //email to user saying they were accepted
-                email.approveUserEligibility(id.Value);
+                emailer.sendApproveEligibility(u);
 
                 if (eligible.Value != "1")
                 {
@@ -84,7 +88,7 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
             {
                 dbLogic.updateEligible(id.Value, "0");
                 //email to user saying they were rejected
-                email.denyUserEligibility(id.Value);
+                emailer.sendDenyEligibility(u);
 
                 if (eligible.Value != "0")
                 {

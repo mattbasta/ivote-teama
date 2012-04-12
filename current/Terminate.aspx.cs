@@ -5,6 +5,14 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
+using FluentNHibernate;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Cfg;
+
 public partial class wwwroot_finalsite_terminate : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
@@ -25,11 +33,20 @@ public partial class wwwroot_finalsite_terminate : System.Web.UI.Page
 
 
         //grab full list of emails
-        string[] emailList;
-        emailList = dbLogic.getEmails();
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        List<DatabaseEntities.User> userList = DatabaseEntities.User.GetAllUsers(session);
+
+        string[] allAddresses = new string[userList.Count];
+
+        int i = 0;
+        foreach (DatabaseEntities.User user in userList)
+        {
+            allAddresses[i] = user.Email;
+            i++;
+        }
 
         emailer emailSender = new emailer();
-        emailSender.sendEmailToList(emailList, newMessage, "APSCUF Officer Election Terminated");
+        emailSender.sendEmailToList(allAddresses, newMessage, "APSCUF Officer Election Terminated");
 
         //give feedback to the user
         PanelTerminate.Visible = false;

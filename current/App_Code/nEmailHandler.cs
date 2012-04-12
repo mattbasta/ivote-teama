@@ -49,7 +49,7 @@ public class nEmailHandler
         if (committee == null)
             return;
 
-        loadTemplate("emailCommitteeWTS");
+        loadTemplate("committeeWTS");
         string subject = "APSCUF iVote Willingness to Serve - " + committee.Name;
         string message = template;
 
@@ -83,6 +83,107 @@ public class nEmailHandler
 
     }
 
+    public void sendRemoveFromBallot(List<DatabaseEntities.User> userList, string fullName)
+    {
+        string[] allAddresses = new string[userList.Count];
+
+        int i = 0;
+        foreach (DatabaseEntities.User user in userList)
+        {
+            allAddresses[i] = user.Email;
+            i++;
+        }
+
+        loadTemplate("officerRemoveFromBallot");
+        string message = template;
+
+        message = message.Replace("##FULLNAME##", fullName);
+
+        message += footer;
+
+        sendEmail.sendEmailToList(allAddresses, message, fullName + " offically removed from election ballot");
+
+    }
+
+    public void sendReAddToBallot(List<DatabaseEntities.User> userList, string fullName)
+    {
+        string[] allAddresses = new string[userList.Count];
+
+        int i = 0;
+        foreach (DatabaseEntities.User user in userList)
+        {
+            allAddresses[i] = user.Email;
+            i++;
+        }
+
+        loadTemplate("officerReaddedToBallot");
+        string message = template;
+
+        message = message.Replace("##FULLNAME##", fullName);
+
+        message += footer;
+
+        sendEmail.sendEmailToList(allAddresses, message, fullName + " offically readded to election ballot");
+
+    }
+
+    public void sendGenericOfficerPhase(string templateFile, string subject)
+    {
+
+        loadTemplate(templateFile);
+        string message = template;
+
+        message = message.Replace("##BASEURL##", emailBaseUrl);
+
+        message += footer;
+
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        if (templateFile == "officerPhaseSlate")
+        {
+            sendEmail.sendEmailToList(dbLogic.getNECEmails(session), message, subject);
+        }
+        else if (templateFile == "officerPhaseApproval")
+        {
+            sendEmail.sendEmailToList(dbLogic.getAdminEmails(session), message, subject);
+        }
+        else if (templateFile == "officerPhaseAccept1")
+        {
+            sendEmail.sendEmailToList(dbLogic.getNullEmails(), message, subject);
+        }
+        else
+        {
+            sendEmail.sendEmailToList(getAllEmails(session), message, subject);
+        }
+
+    }
+
+    public void sendApproveEligibility(DatabaseEntities.User user)
+    {
+
+        loadTemplate("officerApproveEligibility");
+        string message = template;
+
+        message += footer;
+
+        string[] receiver = { user.Email };
+
+        sendEmail.sendEmailToList(receiver, message, "APSCUF iVote Nomination Approved");
+
+    }
+
+    public void sendDenyEligibility(DatabaseEntities.User user)
+    {
+
+        loadTemplate("officerApproveEligibility");
+        string message = template;
+
+        message += footer;
+
+        string[] receiver = { user.Email };
+
+        sendEmail.sendEmailToList(receiver, message, "APSCUF iVote Nomination Eligibility Notice");
+
+    }
 
     private void loadTemplate(string sourceFile)
     {
@@ -105,5 +206,21 @@ public class nEmailHandler
         }
 
         return new string(chars);
+    }
+
+    private string[] getAllEmails(ISession session)
+    {
+        List<DatabaseEntities.User> userList = DatabaseEntities.User.GetAllUsers(session);
+
+        string[] allAddresses = new string[userList.Count];
+
+        int i = 0;
+        foreach (DatabaseEntities.User user in userList)
+        {
+            allAddresses[i] = user.Email;
+            i++;
+        }
+
+        return allAddresses;
     }
 }
