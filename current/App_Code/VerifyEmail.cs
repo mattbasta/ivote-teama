@@ -32,29 +32,6 @@ public class VerifyEmail
         allEmails = new ArrayList();
 	}
    
-    //sends the user an email when registered
-    public void verify(int unionID, string[] emailAddress, String emailMessage)
-    {
-        String code_confirm = getRanString(); //the confirmation code needed by user to activate the account
-        String code_reject = getRanString(); //the code needed if person sent email is not person who sent verification code
-        
-
-        String emailLinks = "";
-        emailLinks += "To proceed with this process, please click <a href=\"http://" + emailBaseUrl + "/Confirm.aspx?x=" + code_confirm + "\">Here</a>.<br />";
-        emailLinks += "OR, copy and paste the following URL into your address bar.<br />";
-        emailLinks += "URL to verify your iVote account: http://" + emailBaseUrl + "/Confirm.aspx?x=" + code_confirm + "<br /><br />";
-
-        emailMessage += emailLinks;
-        emailMessage += emailQuestions;
-       
-        //send email to new user
-        sendEmail.sendEmailToList(emailAddress, emailMessage, "Welcome to the APSCUF iVote System");
-
-        //inserting new codes for user into the db
-        dbLogic.insertCodes(unionID, code_confirm, code_reject); //sends codes to inserter for db
-    }
-
-
     //sends the user an email when nominated
     public void nominated(string[] emailAddress, String emailMessage)
     {
