@@ -156,7 +156,7 @@ public partial class home : System.Web.UI.Page
             else
                 return "This election's phase is " + (days_remaining * -1 + 1).ToString() + " day(s) overdue.";
         }
-        return "The election is closed.";
+        return "No further changes can be made. Sealed on " + election.PhaseStarted.ToString("dddd, dd MMMM yyyy");
     }
 
     //sends user to homepage based on current phase and the users role
