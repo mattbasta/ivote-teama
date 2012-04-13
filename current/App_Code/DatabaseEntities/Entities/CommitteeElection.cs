@@ -414,6 +414,10 @@ namespace DatabaseEntities
             }
             return ret;
         }
+        
+        public virtual int DaysRemainingInPhase(ISession session) {
+            return (int)this.NextPhaseDate(session).Subtract(PhaseStarted).TotalDays;
+        }
 
         /// <summary>
         /// Removes the CommitteeWTS, CommitteeWTSNominations and BallotEntry

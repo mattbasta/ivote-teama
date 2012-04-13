@@ -44,51 +44,43 @@
     <div id="officer_elections">
         <h2>Officer Election</h2>
         
-        <asp:Panel ID="OfficerStateless" Visible="false" runat="server" CssClass="alert alert-info">
+        <asp:Panel ID="OfficerStateless" Visible="false" runat="server" CssClass="election">
             <strong>No Active Officer Election</strong>
             <p>There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
+            <a class="btn" href="/initiate.aspx" id="initiate_new_officer_election" runat="server" Visible="false">Initiate New Election</a>
         </asp:Panel>
         
-        <asp:Panel ID="OfficerNominate" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Nomination Phase</strong>
+        <asp:Panel ID="OfficerNominate" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Nomination Phase</a></strong>
             <p>The officer election is currently in the <b>nomination phase</b>. During this period, you may nominate yourself or other faculty members.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerNominationAccept" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Nomination Acceptance Phase</strong>
+        <asp:Panel ID="OfficerNominationAccept" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Nomination Acceptance Phase</a></strong>
             <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerSlate" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Slate Phase</strong>
+        <asp:Panel ID="OfficerSlate" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Slate Phase</a></strong>
             <p>The officer election is currently in the <b>nomination acceptance phase</b>. This period acts as a buffer to give extra time to accept nominations.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerPetition" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Petition Phase</strong>
+        <asp:Panel ID="OfficerPetition" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Petition Phase</a></strong>
             <p>The current election is in the petition phase.  You can petition yourself or other faculty members for a position.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerPetitionAccept" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Petition Acceptance Phase</strong>
+        <asp:Panel ID="OfficerPetitionAccept" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Petition Acceptance Phase</a></strong>
             <p>The current election is in a petition acceptance period. This period acts as a buffer to give extra time to accept petition-based nominations.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerApproval" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Approval Phase</strong>
+        <asp:Panel ID="OfficerApproval" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Approval Phase</a></strong>
             <p>This is a special phase that will end as soon as all eligibility forms have been approved or disapproved.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerVoting" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Voting Phase</strong>
+        <asp:Panel ID="OfficerVoting" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Voting Phase</a></strong>
             <p>The current election is in the voting phase.  You must vote for the candidate you feel will best serve in each position.</p>
-            <a class="btn" href="/officer_election.aspx">Visit Election Dashboard</a>
         </asp:Panel>
-        <asp:Panel ID="OfficerResults" Visible="false" runat="server" CssClass="alert alert-info">
-            <strong>Results Phase</strong>
+        <asp:Panel ID="OfficerResults" Visible="false" runat="server" CssClass="election">
+            <strong><a href="/officer_election.aspx">Election Results Available</a></strong>
             <p>The election results are now available.</p>
-            <a href="/officer_election.aspx" class="btn btn-primary">View Results</a>
         </asp:Panel>
     </div>
     <div id="committee_elections">
@@ -102,6 +94,7 @@
                             <%#GetName(DataBinder.Eval(Container.DataItem, "PertinentCommittee"))%>
                         </a></strong>
                         <p><%#GetCommitteePhaseMessage((DatabaseEntities.CommitteeElection)Container.DataItem)%></p>
+                        <p><%#GetDaysReamining((DatabaseEntities.CommitteeElection)Container.DataItem)%></p>
                         <% if(IsAdmin()) { %>
                         <div class="<%#GetCommitteeProgressStatus((DatabaseEntities.CommitteeElection)Container.DataItem)%>">
                             <div class="bar" style="width:<%#GetCommitteePhaseProgress((DatabaseEntities.CommitteeElection)Container.DataItem)%>%;"></div>
