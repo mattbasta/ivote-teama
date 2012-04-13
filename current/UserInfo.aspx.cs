@@ -95,9 +95,9 @@ public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
         user.FirstName = FirstName.Text;
         user.LastName = LastName.Text;
         user.Email = Email.Text;
-        if (!user.AddToCommittee(session,
-            Committee.FindCommittee(session,
-                Convert.ToInt32(CurrentCommittee.SelectedValue)).Name))
+        
+        if (CurrentCommittee.SelectedValue != "-1" &&
+            !user.AddToCommittee(session, Committee.FindCommittee(session, Convert.ToInt32(CurrentCommittee.SelectedValue)).Name))
         {
             FailurePanel.Visible = true;
             return;

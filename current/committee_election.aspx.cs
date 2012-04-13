@@ -86,7 +86,7 @@ public partial class committee_election : System.Web.UI.Page
                     break;
                 case ElectionPhase.NominationPhase:
                     if (CommitteeWTSNomination.FindCommitteeWTSNomination(session,
-                        election.ID, user.ID) == null)
+                        election.ID, user.ID).Count == 0)
                     {
                         FacultyNomination.Visible = true;
                         BuildUserNominationOptions();
@@ -188,8 +188,9 @@ public partial class committee_election : System.Web.UI.Page
                 if (numberCertifications >= 3) // TODO: Add a button to advance to the next phase.
                     AdminCertCount.Text += " certifications, which is enough to proceed to the next stage.";
                 else
-                    AdminCertCount.Text += " certifications.  More NEC members must certify the results before proceeding.";
+                    AdminCertCount.Text += " certification(s).  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
+                necprogressbar.Attributes.Add("style", "width: " + Math.Min(100, numberCertifications * 33.33).ToString() + "%");
 
                 if(numberCertifications < 3) {
                     HtmlGenericControl pretext = new HtmlGenericControl("span");
@@ -203,7 +204,6 @@ public partial class committee_election : System.Web.UI.Page
                     certifications_tab_link.Controls.Add(badge);
                 }
 
-                necprogressbar.Attributes["style"] = "width: " + Math.Min(100, numberCertifications / 3) + "%";
 
             }
             if (election.Phase >= ElectionPhase.VotePhase)
@@ -280,6 +280,12 @@ public partial class committee_election : System.Web.UI.Page
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
         }
     }
+    
+    protected string GetName(int UserID) {
+        User u = DatabaseEntities.User.FindUser(session, UserID);
+        return u.FirstName + " " + u.LastName;
+    }
+    
     private int num_days_remaining() {
         return election.DaysRemainingInPhase(session);
     }
@@ -341,7 +347,7 @@ public partial class committee_election : System.Web.UI.Page
             case "CertificationPhase":
                 certifications_tab.Visible = true;
                 certifications_tab.Attributes["class"] = "active";
-                AdminCertificationPanel.Visible = true;
+                AdminCertificationPanel.Visible = user.IsAdmin;
                 break;
             case "ConflictPhase":
                 conflicts_tab.Visible = true;
@@ -520,28 +526,8 @@ public partial class committee_election : System.Web.UI.Page
         if(Page.IsPostBack)
             return;
         
-        return;
-        // Get users for each election
-        List<User> users = DatabaseEntities.User.FindUsers(session, ElectionID);
-        foreach(User user in users)
-        {
-            HtmlGenericControl wrapper = new HtmlGenericControl("div");
-            wrapper.Attributes["class"] = "nomination_user";
-            CheckBox cb = new CheckBox();
-            //nomination_boxes.Add(user.ID, cb);
-            wrapper.Controls.Add(cb);
-
-            HtmlGenericControl name = new HtmlGenericControl("strong");
-            name.InnerHtml = user.FirstName + " " + user.LastName;
-            wrapper.Controls.Add(name);
-
-            // TODO: Implement this!
-            HtmlGenericControl statement = new HtmlGenericControl("p");
-            statement.InnerHtml = "User's statement will go here. Currently unimplemented.";
-            wrapper.Controls.Add(statement);
-
-            FacultyNominationList.Controls.Add(wrapper);
-        }
+        ListViewNom.DataSource = election.Nominees(session);
+        ListViewNom.DataBind();
     }
 
     /// <summary>
@@ -569,7 +555,6 @@ public partial class committee_election : System.Web.UI.Page
     /// </summary>
     protected void FacultyCastNomination_Click(Object sender, EventArgs e)
     {
-        return;
         // begin our transaction.
         ITransaction transaction = session.BeginTransaction();
 
@@ -578,18 +563,22 @@ public partial class committee_election : System.Web.UI.Page
 
 
         // Add the WTSNomination if this user hasn't already cast one.
-        if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID)
-            == null)
+        if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID).Count == 0)
         {
-            //foreach(KeyValuePair<int, CheckBox> kvp in nomination_boxes) {
-            //    if(!kvp.Value.Checked)
-            //        continue;
-            //    CommitteeWTSNomination nomination = new CommitteeWTSNomination();
-            //    nomination.Election = election.ID;
-            //    nomination.Voter = user.ID;
-            //    nomination.Candidate = kvp.Key;
-            //    session.SaveOrUpdate(nomination);
-            //}
+            foreach (ListViewDataItem eachItem in ListViewNom.Items) {
+                CheckBox entry = (CheckBox)eachItem.FindControl("PrimBallotEntry");
+                if(!entry.Checked)
+                    continue;
+                
+                HiddenField candidate = (HiddenField)eachItem.FindControl("WTS_Candidate");
+                
+                CommitteeWTSNomination nomination = new CommitteeWTSNomination();
+                nomination.Election = election.ID;
+                nomination.Voter = user.ID;
+                nomination.Candidate = int.Parse(candidate.Value);
+                session.SaveOrUpdate(nomination);
+                
+            }
             session.Flush();
             FacultyNomination.Visible = false;
             FacultyNominationComplete.Visible = true;
@@ -604,7 +593,7 @@ public partial class committee_election : System.Web.UI.Page
         ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
 
         election.GenerateResultsPDF(session, Server.MapPath("CertificationForms\\form.pdf"));
-        Response.Redirect(Server.MapPath("CertificationForms\\form.pdf"));
+        Response.Redirect("/CertificationForms/form.pdf");
     }
 
     /// <summary>

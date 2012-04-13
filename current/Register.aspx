@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Register - iVote" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="Account_Register" Codebehind="Register.aspx.cs" %>
+﻿<%@ Page Title="Register - iVote" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="Account_Register" CodeFile="Register.aspx.cs" %>
 
 <asp:Content ID="HeaderContent" runat="server" ContentPlaceHolderID="HeadContent">
 <script type="text/javascript">

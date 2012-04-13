@@ -68,17 +68,15 @@ namespace DatabaseEntities
         /// <param name="election">The pertinent election.</param>
         /// <param name="user">The user in question.</param>
         /// <returns>null if no entry was found, or a reference to the WTSNomination</returns>
-        public static CommitteeWTSNomination FindCommitteeWTSNomination(
+        public static IList<CommitteeWTSNomination> FindCommitteeWTSNomination(
             ISession session, int election, int user)
         {
             // formulate a query for committee WTS nominations for the given election
             // and specified user
-            var entry = session.CreateCriteria(typeof(CommitteeWTSNomination))
+            return session.CreateCriteria(typeof(CommitteeWTSNomination))
                 .Add(Restrictions.Eq("Election", election))
                 .Add(Restrictions.Eq("Voter", user))
-                .UniqueResult<CommitteeWTSNomination>();
-
-            return entry;
+                .List<CommitteeWTSNomination>();
         }
     }
 }

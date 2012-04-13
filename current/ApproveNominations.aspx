@@ -17,13 +17,18 @@
     </div>
     
     <p>Approve or deny the eligibility of each Willingness-to-Serve form below.</p>
-
+    
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
             <asp:Panel ID="LabelFeedbackAlert" runat="server" CssClass="alert" Visible="false">
-                <asp:Label ID="LabelFeedback" runat="server" Text="Approve or deny the eligibility of each Willingness-to-Serve form below." />
+                <asp:Label ID="LabelFeedback" runat="server" Text="" />
             </asp:Panel>
-            <br />
+            
+            <asp:Panel ID="SavedConfirmation" runat="server" CssClass="alert alert-success" Visible="false">
+                <strong>Saved</strong>
+                Approvals and rejections have been saved successfully.
+            </asp:Panel>
+            
             <table class="table table-bordered">
                 <tr>
                     <th>Name</th>
@@ -47,8 +52,8 @@
                                 <asp:Label ID="LabelPosition" runat="server" Text='<%#Eval("position") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="LabelStatement" runat="server" Text=' <%# "\"" + Eval("statement").ToString().Substring(0,Math.Min(60,Eval("statement").ToString().Length))+"..." + "\"" %>' />
-                                <asp:LinkButton ID="LinkButtonStatement" CommandName="statement" CommandArgument='<%#Eval("statement") %>' runat="server">Continue</asp:LinkButton>
+                                <asp:Label ID="LabelStatement" runat="server" Text='<%#GetSummary(Eval("statement").ToString()) %>' />
+                                <asp:LinkButton ID="LinkButtonStatement" CommandName="statement" CommandArgument='<%#Eval("statement") %>' Visible='<%#Eval("statement").ToString().Length > 0 %>' runat="server">Continue</asp:LinkButton>
                             </td>
                             <td>
                                 <asp:RadioButton ID="RadioButton1" GroupName="nomination" runat="server" />

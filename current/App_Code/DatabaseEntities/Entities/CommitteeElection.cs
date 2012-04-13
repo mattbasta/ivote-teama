@@ -553,5 +553,22 @@ namespace DatabaseEntities
             return doc;
         }
 
+        /// <summary>
+        /// Returns a list of all CommitteeWTS objects pertinent to a given election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="election">The election id.</param>
+        /// <returns>A list of all the CommitteeWTS objects pertinent to the specified election.</returns>
+        public virtual List<CommitteeWTS> Nominees(ISession session)
+        {
+            // pull a list of all the Committee WTS' for the given election from the database.
+            var entries = session.CreateCriteria(typeof(CommitteeWTS))
+                .Add(Restrictions.Eq("Election", ID))
+                .List<CommitteeWTS>();
+
+            // return that list
+            return entries.ToList<CommitteeWTS>();
+        }
+
     }
 }
