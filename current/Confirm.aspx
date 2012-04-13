@@ -44,11 +44,11 @@
         </fieldset>
     </asp:Panel>
 
-    <asp:Label ID="lblConfirm" Visible="false" runat="server">
-    <br />
-        Your new account password has been successfully saved. You can now log into the system.<br /><br />
-        <a href="login.aspx">Click here to go to the log in page.<a />
-    </asp:Label>
+    <asp:Panel ID="lblConfirm" Visible="false" runat="server" CssClass="alert alert-success">
+        <strong>Password Set</strong>
+        Your new account password has been successfully saved. You can now log into the system.
+        <a href="login.aspx" class="btn btn-success">Log In Now<a />
+    </asp:Panel>
 
 
 
