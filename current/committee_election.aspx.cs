@@ -66,17 +66,22 @@ public partial class committee_election : System.Web.UI.Page
                     bool wtsAlreadySubmitted = false;
                     foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
                     {
-                        if (wts.Election == election.ID && wts.User == user.ID)
+                        if (wts.Election == election.ID && wts.User == user.ID &&
+                            (!committee.TenureRequired || user.IsTenured) &&
+                            (!committee.BargainingUnitRequired || user.IsBargainingUnit))
                             wtsAlreadySubmitted = true;
                     }
 
-                    if (wtsAlreadySubmitted)
+                    if (wtsAlreadySubmitted &&
+                       (!committee.TenureRequired || user.IsTenured) &&
+                       (!committee.BargainingUnitRequired || user.IsBargainingUnit))
                     {
                         wtsPanelExisting.Visible = true;
                         wtsPanelNew.Visible = false;
                     }
-
-                    FacultyWTS.Visible = true;
+                    if ((!committee.TenureRequired || user.IsTenured) &&
+                        (!committee.BargainingUnitRequired || user.IsBargainingUnit))
+                        FacultyWTS.Visible = true;
 
                     break;
                 case ElectionPhase.NominationPhase:
@@ -592,6 +597,14 @@ public partial class committee_election : System.Web.UI.Page
         else
             ; // We should never have to deal with this, though we can add error checking if need-be.
         NHibernateHelper.Finished(transaction);
+    }
+
+    protected void GeneratePDFButton_Click(Object sender, EventArgs e)
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+
+        election.GenerateResultsPDF(session, Server.MapPath("CertificationForms\\form.pdf"));
+        Response.Redirect(Server.MapPath("CertificationForms\\form.pdf"));
     }
 
     /// <summary>

@@ -47,7 +47,6 @@ namespace DatabaseEntities
         /// Whether members must be tenured
         /// </summary>
         public virtual bool TenureRequired { get; set; }
-
         /// <summary>
         /// Returns a commitee object from the database based on its name.
         /// </summary>
@@ -136,6 +135,45 @@ namespace DatabaseEntities
             user.CurrentCommittee = User.NoCommittee;
             session.SaveOrUpdate(user);
             session.Flush();
+        }
+
+        /// <summary>
+        /// Detects conflicts within a given committee.  For use with the committees dashboard only.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="id">The ID of the committee in question.</param>
+        /// <returns>A list of strings containing information (in english) about any conflicts</returns>
+        public static List<string> FindConflicts(ISession session, Committee committee)
+        {
+            List<string> ret = new List<string>();
+            List<User> members = User.FindUsers(session, committee.Name);
+            // Find if multiple members of the same department are on the committee
+            List<DepartmentType> departments = new List<DepartmentType>();
+            foreach (User i in members)
+            {
+                if (departments.Contains(i.Department))
+                    ret.Add("Warning! Multiple faculty members in the " + i.Department.ToString() + " department are on this committee!");
+                else departments.Add(i.Department);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Indicates whether or not there is a member in a given department within a givin committee.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="committee">The committee in question.</param>
+        /// <param name="department">The department to find in the committee.</param>
+        /// <returns></returns>
+        public static bool DepartmentRepresented(ISession session, Committee committee, DepartmentType department)
+        {
+            List<User> members = User.FindUsers(session, committee.Name);
+            foreach (User i in members)
+            {
+                if (i.Department == department)
+                    return true;
+            }
+            return false;
         }
     }
 }

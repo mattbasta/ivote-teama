@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" CodeFile="committee_election.aspx.cs" %>
+﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" Codebehind="committee_election.aspx.cs" %>
 <%@ Register TagPrefix="asp" Namespace="AjaxControlToolkit" Assembly="AjaxControlToolkit"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
@@ -169,6 +169,7 @@
     <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false" CssClass="alert">
         <strong>Election Closed</strong>
         This election is currently closed. You can review the vote counts on the <b>Votes</b> tab.
+        <asp:Button ID="GeneratePDFButton" text="View Printable Results Form" CssClass="btn btn-primary" runat="server" OnClick="GeneratePDFButton_Click" /> 
     </asp:Panel>
     
     

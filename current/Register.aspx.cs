@@ -34,6 +34,8 @@ public partial class Account_Register : System.Web.UI.Page
         if (Page.IsValid)
         {
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+            Committee committee = Committee.FindCommittee(session, Convert.ToInt32(CurrentCommittee.ToString()));
+            
             ITransaction transaction = session.BeginTransaction();
 
             if (DatabaseEntities.User.CheckIfEmailExists(session, Email.Text)) {
@@ -41,12 +43,17 @@ public partial class Account_Register : System.Web.UI.Page
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
                 SuccessPanel.Visible = false;
             }
+            else if (Committee.DepartmentRepresented(session, committee, (DepartmentType)Enum.Parse(typeof(DepartmentType), DeptDropDown.SelectedValue)))
+            {
+                LabelFeedback.Text = "Cannot add user: adding this user to the specified committee would cause a conflict within that committee.";
+                SuccessPanel.Visible = false;
+            }
             else
             {
                 string user = Email.Text;
 
                 User nUser = CreateUser(Email.Text, FirstName.Text, LastName.Text, DeptDropDown.SelectedValue);
-                
+
                 // Set up the user permissions and such.
                 nUser.IsAdmin = IsAdmin.Checked;
                 nUser.IsNEC = IsNEC.Checked;
@@ -54,9 +61,9 @@ public partial class Account_Register : System.Web.UI.Page
                 nUser.IsTenured = IsTenured.Checked;
                 nUser.IsUnion = IsUnion.Checked;
                 nUser.IsBargainingUnit = IsBU.Checked;
-                
+
                 nUser.CanVote = CanVote.Checked;
-                
+
                 DatabaseEntities.NHibernateHelper.UpdateDatabase(session, nUser);
                
 

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Management" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="committees.aspx.cs" Inherits="wwwroot_phase1aSite_committees" %>
+﻿<%@ Page Title="Committee Management" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="wwwroot_phase1aSite_committees" Codebehind="committees.aspx.cs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
@@ -24,6 +24,7 @@
             <asp:TableHeaderCell>Committee Name</asp:TableHeaderCell>
             <asp:TableHeaderCell>Positions</asp:TableHeaderCell>
             <asp:TableHeaderCell>Vacancy Count</asp:TableHeaderCell>
+            <asp:TableHeaderCell>Members</asp:TableHeaderCell>
             <asp:TableHeaderCell>Actions/Status</asp:TableHeaderCell>
         </asp:TableHeaderRow>
     </asp:Table>

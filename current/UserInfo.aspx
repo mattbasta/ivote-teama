@@ -1,4 +1,4 @@
-﻿<%@ Page Title="User Inspector" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="UserInfo.aspx.cs" Inherits="wwwroot_phase1aSite_UserInfo" %>
+﻿<%@ Page Title="User Inspector" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="wwwroot_phase1aSite_UserInfo" Codebehind="UserInfo.aspx.cs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
@@ -18,6 +18,11 @@
     <asp:Panel ID="SuccessPanel" runat="server" Visible="false" CssClass="alert alert-success">
         <strong>User updated successfully.</strong>
         The user has been successfully updated.
+    </asp:Panel>
+
+    <asp:Panel ID="FailurePanel" runat="server" Visible="false" CssClass="alert alert-error">
+        <strong>User was not updated.</strong>
+        The user is either ineligible for this committee, or the committee is full.
     </asp:Panel>
     
     <fieldset class="form form-horizontal">
