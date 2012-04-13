@@ -191,8 +191,11 @@ public partial class officer_election : System.Web.UI.Page
         
         if (is_admin)
         {
-            functions_accept2.Visible = true;
+            functions_nominate.Visible = true;
+            functions_accept1.Visible = true;
             functions_approval.Visible = true;
+            functions_petition.Visible = true;
+            functions_accept2.Visible = true;
             functions_voting.Visible = true;
             //results
             if (phases.currentPhase == "result")
@@ -279,16 +282,6 @@ public partial class officer_election : System.Web.UI.Page
         else if(e.CommandName == "nom_other")
             Response.Redirect("/Nominate.aspx?position=" + e.CommandArgument.ToString());
         
-    }
-
-    protected void next(Object sender, EventArgs e)
-    {
-        Response.Redirect("/WTS.aspx?position=" + HiddenFieldID.Value);
-    }
-
-    protected void nominate(Object sender, EventArgs e)
-    {
-        Response.Redirect("/Nominate.aspx?position=" + HiddenFieldID.Value);
     }
 
     //check if the user has a nomination pending
