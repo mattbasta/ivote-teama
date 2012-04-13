@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Management" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="wwwroot_phase1aSite_committees" Codebehind="committees.aspx.cs" %>
+﻿<%@ Page Title="Committee Management" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="wwwroot_phase1aSite_committees" CodeFile="committees.aspx.cs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">

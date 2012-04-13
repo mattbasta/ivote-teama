@@ -35,6 +35,14 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
         User u = DatabaseEntities.User.FindUser(session, UserID);
         return u.FirstName + " " + u.LastName;
     }
+    
+    protected string GetSummary(string statement) {
+        if(statement.Length == 0)
+            return "(no statement)";
+        if(statement.Length > 140)
+            return statement.Substring(0, 137) + "...";
+        return statement;
+    }
 
     protected void loadApprovalInfo()
     {
@@ -51,6 +59,8 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
                 deny.Checked = true;
         }
     }
+    
+    
 
     //saves user changes
     protected void Click_ButtonSave(object sender, EventArgs e)
@@ -68,11 +78,11 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
             RadioButton deny = (RadioButton)eachItem.FindControl("RadioButton2");
 
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-            User u = DatabaseEntities.User.FindUser(session, id.Value);
+            User u = DatabaseEntities.User.FindUser(session, int.Parse(id.Value));
 
             nEmailHandler emailer = new nEmailHandler();
 
-            if (approve.Checked == true)
+            if (approve.Checked == true && u != null)
             {
                 dbLogic.updateEligible(id.Value, "1");
                 //email to user saying they were accepted
@@ -84,11 +94,12 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
                     eligible.Value = "1";
                 }
             }
-            else if (deny.Checked == true)
+            else if (deny.Checked == true || u == null)
             {
                 dbLogic.updateEligible(id.Value, "0");
                 //email to user saying they were rejected
-                emailer.sendDenyEligibility(u);
+                if(u != null)
+                    emailer.sendDenyEligibility(u);
 
                 if (eligible.Value != "0")
                 {
@@ -99,13 +110,14 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
             
         }
         if (count > 0) {
-            LabelFeedback.Text = "Save successful. " + count.ToString() + " nomination(s) changed.";
-            LabelFeedbackAlert.CssClass = "alert alert-success";
+            SavedConfirmation.Visible = true;
+            LabelFeedbackAlert.Visible = false;
         } else {
+            SavedConfirmation.Visible = false;
+            LabelFeedbackAlert.Visible = true;
             LabelFeedback.Text = "No changes made.";
             LabelFeedbackAlert.CssClass = "alert";
         }
-        LabelFeedbackAlert.Visible = true;
     }
 
     //hides popup

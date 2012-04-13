@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" Codebehind="committee_election.aspx.cs" %>
+﻿<%@ Page Title="Committee Elections" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="True" Inherits="committee_election" CodeFile="committee_election.aspx.cs" %>
 <%@ Register TagPrefix="asp" Namespace="AjaxControlToolkit" Assembly="AjaxControlToolkit"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
@@ -122,8 +122,10 @@
     <asp:Panel ID="NECCertificationPanel" runat="server" Visible="false" CssClass="form form-horizontal">
         <fieldset>
             <legend>Review Vote Tally</legend>
-            <asp:Label ID="NECCertificationComplete" runat="server" Visible="false" CssClass="alert alert-success"
-                Text="Thank you for certifying the election results!"/>
+            <asp:Panel ID="NECCertificationComplete" runat="server" Visible="false" CssClass="alert alert-success">
+                <strong>Certified</strong>
+                Thank you for certifying the election results!
+            </asp:Panel>
             <asp:Table ID="NECVotingTable" CssClass="table table-bordered" runat="server">
                 <asp:TableHeaderRow>
                     <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
@@ -157,7 +159,7 @@
             <legend>Review NEC Certification Activity</legend>
             <p><asp:Label ID="AdminCertCount" Visible="true" runat="server" /></p>
             <div class="progress progress-success">
-                <div class="bar" ID="necprogressbar" style="width:0;" runat="server"></div>
+                <div class="bar" ID="necprogressbar" runat="server"></div>
             </div>
         </fieldset>
     </asp:Panel>
@@ -169,7 +171,7 @@
     <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false" CssClass="alert">
         <strong>Election Closed</strong>
         This election is currently closed. You can review the vote counts on the <b>Votes</b> tab.
-        <asp:Button ID="GeneratePDFButton" text="View Printable Results Form" CssClass="btn btn-primary" runat="server" OnClick="GeneratePDFButton_Click" /> 
+        <asp:Button ID="GeneratePDFButton" text="View Printable Results Form" CssClass="btn btn-small" runat="server" OnClick="GeneratePDFButton_Click" /> 
     </asp:Panel>
     
     
@@ -237,7 +239,22 @@
             <p>Please cast your vote in the primary election for one of the following candidates.</p>
             <div class="control-group">
                 <label class="control-label">Candidates</label>
-                <div class="controls" ID="FacultyNominationList" runat="server"></div>
+                <div class="controls">
+                    <asp:ListView ID="ListViewNom" runat="server">
+                        <LayoutTemplate>
+                            <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                        </LayoutTemplate>
+                        <ItemTemplate>
+                            <div class="nomination_user">
+                                <asp:HiddenField id="WTS_ID" Value='<%#Eval("ID") %>' runat="server" />
+                                <asp:HiddenField id="WTS_Candidate" Value='<%#Eval("User") %>' runat="server" />
+                                <asp:CheckBox id="PrimBallotEntry" runat="server" />
+                                <strong><asp:Literal Text='<%#GetName(int.Parse(Eval("User").ToString())) %>' runat="server" /></strong>
+                                <p><asp:Literal Text='<%#Eval("Statement") %>' runat="server" /></p>
+                            </div>
+                        </ItemTemplate>
+                    </asp:ListView>
+                </div>
             </div>
             <div class="form-actions">
                 <asp:Button ID="FacultyCastNomination" Text="Cast Vote" runat="server"
