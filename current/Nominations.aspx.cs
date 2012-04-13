@@ -15,7 +15,6 @@ using NHibernate.Cfg;
 public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
 {
     databaseLogic dbLogic = new databaseLogic();
-    VerifyEmail sendEmail = new VerifyEmail();
     string username;
 
     protected void Page_Load(object sender, EventArgs e)

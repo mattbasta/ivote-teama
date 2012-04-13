@@ -21,7 +21,6 @@ public partial class officer_election : System.Web.UI.Page
     //OBJECT DECLARATION
     databaseLogic dbLogic = new databaseLogic();
     timeline phases = new timeline();
-    VerifyEmail email = new VerifyEmail();
     voteCounter vc = new voteCounter();
     ArrayList positions = new ArrayList();
     
@@ -397,7 +396,7 @@ public partial class officer_election : System.Web.UI.Page
             DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, int.Parse(e.CommandArgument.ToString()));
             LabelChoosPosition.Text = "Please select the position you would<br /> like " + user.FirstName + " " + user.LastName + " to be petitioned for:";
             ButtonSubmit.OnClientClick = "return confirm('Are you sure you want to start this petition for " + user.FirstName + " " + user.LastName + "?\\n(If accepted, you will not be able to withdraw your petition  later.)')";
-            HiddenFieldName.Value = dbLogic.selectFullName(user.FirstName + " " + user.LastName);
+            HiddenFieldName.Value = user.FirstName + " " + user.LastName;
             HiddenField1.Value = e.CommandArgument.ToString();
             PopupControlExtender1.Show();
         }

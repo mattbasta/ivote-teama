@@ -221,25 +221,15 @@ public class databaseLogic
     }
 
     //retrieve only the ADMIN role emails
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public string[] getAdminEmails()
+    public string[] getAdminEmails(ISession session)
     {
-        openConnection();
-        try
-        {
-            string query = "SELECT UM.email FROM union_members UM, roles_users RU, user U WHERE RU.role='admin' AND  RU.username=U.username  AND U.idunion_members=UM.idunion_members";
-            adapter = new MySqlDataAdapter(query, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-
-        return null;
+        IList<DatabaseEntities.User> nec_users = session.CreateCriteria(typeof(DatabaseEntities.User))
+                                                .Add(Restrictions.Eq("IsAdmin", true))
+                                                .List<DatabaseEntities.User>();
+        string[] emails = new string[nec_users.Count];
+        for (int i = 0; i < nec_users.Count; i++)
+            emails[i] = nec_users[i].Email;
+        return emails;
     }
 
     //retrieve only the NEC role emails
@@ -256,13 +246,12 @@ public class databaseLogic
 
 
     //retrieve only the emails for a NULL accept/reject
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public string[] getNullEmails()
     {
         openConnection();
         try
         {
-            string query = "SELECT UM.email FROM union_members UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.idunion_members=NA.idunion_to";
+            string query = "SELECT UM.Email FROM users UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.ID=NA.idunion_to";
             adapter = new MySqlDataAdapter(query, connection);
             ds = new DataSet();
             adapter.Fill(ds, "email");
@@ -376,6 +365,27 @@ public class databaseLogic
     public int countPetitionsForPerson(string[] petition)
     {
         return genericQueryCounter("SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "';");
+    }
+
+    //Select the idposition from positions using the position title
+    public string selectIDFromPosition(string position)
+    {
+        openConnection();
+        try
+        {
+            string query = "SELECT idelection_position FROM election_position WHERE position = '" + position + "';";
+            adapter = new MySqlDataAdapter(query, connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
+            closeConnection();
+            return pictureURL;
+        }
+        catch
+        {
+            closeConnection();
+        }
+        return "";
     }
 
 

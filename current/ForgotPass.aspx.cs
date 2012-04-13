@@ -13,7 +13,6 @@ using NHibernate;
 
 public partial class phase1aSite_ForgotPass : System.Web.UI.Page
 {
-    VerifyEmail sendEmail = new VerifyEmail();
     
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -28,12 +27,8 @@ public partial class phase1aSite_ForgotPass : System.Web.UI.Page
 
             int userID;
             bool temp_error = false;
-            string[] emailAddress = new string[1];
-            emailAddress[0] = email.Text;
-            String emailMessage = "";
-            emailMessage += "Hello, you are receiving this email because you have forgotten your password. <br />";
-            emailMessage += "Please follow the link below to reset your password. <br /><br />";
-            
+
+
             // check if email exists in union_members table
             if (!DatabaseEntities.User.CheckIfEmailExists(session, email.Text))
             {
@@ -44,10 +39,11 @@ public partial class phase1aSite_ForgotPass : System.Web.UI.Page
             else
             {
                 // get userID and from email
-                userID = DatabaseEntities.User.FindUser(session, email.Text).ID;
+                DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, email.Text);
 
                 // send email to that person if the email exists
-                sendEmail.verify(userID, emailAddress, emailMessage);
+                nEmailHandler emailer = new nEmailHandler();
+                emailer.sendConfirmationEmail(user, "APSCUF iVote System Password Reset", "userForgotPassword");
             }
             
             //make form label invisible

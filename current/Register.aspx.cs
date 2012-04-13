@@ -15,7 +15,6 @@ using NHibernate;
 
 public partial class Account_Register : System.Web.UI.Page
 {
-    VerifyEmail sendEmail = new VerifyEmail();
     protected void Page_Load(object sender, EventArgs e)
     {
         if(!Page.IsPostBack) {
@@ -61,21 +60,10 @@ public partial class Account_Register : System.Web.UI.Page
                 DatabaseEntities.NHibernateHelper.UpdateDatabase(session, nUser);
                
 
-                //email message sent to new user
-                String emailMessage = "";
-                emailMessage += "Hello " + FirstName.Text + " " + LastName.Text + ",<br /><br />";
-                emailMessage += "The APSCUF-KU election administration has added you as a new user!<br /><br />";
-                emailMessage += "<u>You MUST verify your new account before it can be fully activated!</u> <br /><br />";
-                emailMessage += "Please record your new username for the iVote System below. <br />";
-                emailMessage += "(You will use this username to log onto the system.)<br /><br />";
-                emailMessage += "Username: <b>" + user + "</b> <br /><br />";
-
-                // passes arguments to this class where it will send the email
-                string[] emailAddress = { user };
-
-                //Grab user again to update ID
                 User testUser = DatabaseEntities.User.FindUser(session, nUser.Email);
-                sendEmail.verify(testUser.ID, emailAddress, emailMessage);
+
+                nEmailHandler emailer = new nEmailHandler();
+                emailer.sendConfirmationEmail(testUser, "Welcome to the APSCUF iVote System", "userRegister");
 
                 NHibernateHelper.Finished(transaction);
 
