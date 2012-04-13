@@ -1,4 +1,4 @@
-﻿<%@ Page Title="User Inspector" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="wwwroot_phase1aSite_UserInfo" Codebehind="UserInfo.aspx.cs" %>
+﻿<%@ Page Title="User Inspector" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" Inherits="wwwroot_phase1aSite_UserInfo" CodeFile="UserInfo.aspx.cs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" Runat="Server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" Runat="Server">
