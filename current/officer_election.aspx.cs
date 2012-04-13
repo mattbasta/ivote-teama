@@ -112,12 +112,12 @@ public partial class officer_election : System.Web.UI.Page
                 PhaseLiteral.Text = "Slate Phase";
                 
                 functions_slate.Visible = user.IsAdmin;
-                PanelSlateWrapper2.Visible = user.IsNEC;
+                nec_approval_form.Visible = user.IsNEC;
                 
                 if (dbLogic.checkSlateApprove())
                 {
                     phases.bumpPhase();
-                    Response.Redirect("officer_election.aspx");
+                    Response.Redirect("/officer_election.aspx");
                 }
                 
                 break;

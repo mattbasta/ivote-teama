@@ -133,7 +133,7 @@
 
         <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>
-            <fieldset>
+            <fieldset id="nec_approval_form" runat="server" Visible="true">
                 <legend>NEC Approval Form</legend>
                 <p><asp:Label ID="LabelFeedback2" runat="server" Text="To view the nominated for a position, please select a position from the list below"></asp:Label></p>
             
