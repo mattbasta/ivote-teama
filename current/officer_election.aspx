@@ -90,9 +90,16 @@
                 <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
                      <Columns>
                         <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
+                        <asp:BoundField HeaderText="Description" DataField="description" NullDisplayText="Unknown" />
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonSelect" runat="server" CommandName='<%#Eval("position") %>' CommandArgument='<%#Eval("idelection_position") %>' Text="Select" CssClass="btn btn-small" />
+                                <asp:Button ID="ButtonNomMe" runat="server" CommandName='nom_me'
+                                    Enabled='<%#!(dbLogic.isUserNominated(user.ID, Eval("position").ToString()) || dbLogic.isUserWTS(user.ID, Eval("position").ToString())) %>'
+                                    CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Me"
+                                    CssClass="btn btn-primary btn-small" />
+                                <asp:Button ID="ButtonNomOther" runat="server" CommandName='nom_other'
+                                    CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Someone Else"
+                                    CssClass="btn btn-small" />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

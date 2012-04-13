@@ -19,12 +19,12 @@ using NHibernate.Cfg;
 public partial class officer_election : System.Web.UI.Page
 {
     //OBJECT DECLARATION
-    databaseLogic dbLogic = new databaseLogic();
+    public databaseLogic dbLogic = new databaseLogic();
     timeline phases = new timeline();
     voteCounter vc = new voteCounter();
     ArrayList positions = new ArrayList();
     
-    DatabaseEntities.User user;
+    public DatabaseEntities.User user;
     
     bool is_admin;
 
@@ -274,17 +274,21 @@ public partial class officer_election : System.Web.UI.Page
     //gridview actions
     protected void GridViewPositions_RowCommand(Object sender, GridViewCommandEventArgs e)
     {
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.User user = GetUser(session);
-        PanelSelected.Visible = true; //makes the panel visible to the user
-        LabelSelected.Text = "<h3>Info for " + e.CommandName + ":</h3>" +
-                             "<p>" + dbLogic.selectDescriptionFromPositionName(e.CommandName.ToString()) + "</p>";
-        ButtonWTS.Text = "Nominate me for " + e.CommandName;
-        ButtonNominate.Text = "Nominate a user for " + e.CommandName;
-        HiddenFieldID.Value = e.CommandArgument.ToString();
-        ButtonWTS.Enabled = !(dbLogic.isUserNominated(user.ID,
-                                                     e.CommandName.ToString()) || dbLogic.isUserWTS(user.ID,
-                                                                                                        e.CommandName.ToString()));
+        if(e.CommandName == "nom_me")
+            Response.Redirect("/WTS.aspx?position=" + e.CommandArgument.ToString());
+        else if(e.CommandName == "nom_other")
+            Response.Redirect("/Nominate.aspx?position=" + e.CommandArgument.ToString());
+        
+    }
+
+    protected void next(Object sender, EventArgs e)
+    {
+        Response.Redirect("/WTS.aspx?position=" + HiddenFieldID.Value);
+    }
+
+    protected void nominate(Object sender, EventArgs e)
+    {
+        Response.Redirect("/Nominate.aspx?position=" + HiddenFieldID.Value);
     }
 
     //check if the user has a nomination pending
@@ -307,16 +311,6 @@ public partial class officer_election : System.Web.UI.Page
             PanelNominationPending.Visible = true;
             elig_pending.Visible = true;
         }
-    }
-
-    protected void next(Object sender, EventArgs e)
-    {
-        Response.Redirect("/WTS.aspx?position=" + HiddenFieldID.Value);
-    }
-
-    protected void nominate(Object sender, EventArgs e)
-    {
-        Response.Redirect("/Nominate.aspx?position=" + HiddenFieldID.Value);
     }
 
     /********************************************
