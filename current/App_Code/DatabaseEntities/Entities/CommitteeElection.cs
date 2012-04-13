@@ -286,14 +286,16 @@ namespace DatabaseEntities
             foreach (User i in nominees)
                 ret.Add(i.Email, 0);
 
+            Dictionary<int, string> emails = new Dictionary<int, string>();
+
+            foreach (User i in nominees)
+                emails.Add(i.ID, i.Email);
+
             // Iterate through all the ballot entries
             for (int i = 0; i < votes.Count; i++)
-            {
-                // Get the information for the candidate of this ballot entry
-                User thisUser = User.FindUser(session, votes[i].Candidate);
                 // Increment the number of votes for the specified user.
-                ret[thisUser.Email]++;
-            }
+                ret[emails[votes[i].Candidate]]++;
+
             // After interating through all the votes, return the dictionary which
             // contains the candidates and their vote counts
             return ret;
