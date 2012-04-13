@@ -1,4 +1,9 @@
-﻿footer
+﻿.navbar .brand {
+    padding-left: 55px;
+    background: url(/images/apscuf.png) no-repeat 20px center;
+}
+
+footer
 {
 	border-top: 1px solid #eee;
 	margin-top: 2em;
