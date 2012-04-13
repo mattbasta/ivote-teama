@@ -122,8 +122,10 @@
     <asp:Panel ID="NECCertificationPanel" runat="server" Visible="false" CssClass="form form-horizontal">
         <fieldset>
             <legend>Review Vote Tally</legend>
-            <asp:Label ID="NECCertificationComplete" runat="server" Visible="false" CssClass="alert alert-success"
-                Text="Thank you for certifying the election results!"/>
+            <asp:Panel ID="NECCertificationComplete" runat="server" Visible="false" CssClass="alert alert-success">
+                <strong>Certified</strong>
+                Thank you for certifying the election results!
+            </asp:Panel>
             <asp:Table ID="NECVotingTable" CssClass="table table-bordered" runat="server">
                 <asp:TableHeaderRow>
                     <asp:TableHeaderCell>User Name</asp:TableHeaderCell>
@@ -157,7 +159,7 @@
             <legend>Review NEC Certification Activity</legend>
             <p><asp:Label ID="AdminCertCount" Visible="true" runat="server" /></p>
             <div class="progress progress-success">
-                <div class="bar" ID="necprogressbar" style="width:0;" runat="server"></div>
+                <div class="bar" ID="necprogressbar" runat="server"></div>
             </div>
         </fieldset>
     </asp:Panel>
@@ -169,7 +171,7 @@
     <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false" CssClass="alert">
         <strong>Election Closed</strong>
         This election is currently closed. You can review the vote counts on the <b>Votes</b> tab.
-        <asp:Button ID="GeneratePDFButton" text="View Printable Results Form" CssClass="btn btn-primary" runat="server" OnClick="GeneratePDFButton_Click" /> 
+        <asp:Button ID="GeneratePDFButton" text="View Printable Results Form" CssClass="btn btn-small" runat="server" OnClick="GeneratePDFButton_Click" /> 
     </asp:Panel>
     
     

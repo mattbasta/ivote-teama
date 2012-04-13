@@ -188,8 +188,9 @@ public partial class committee_election : System.Web.UI.Page
                 if (numberCertifications >= 3) // TODO: Add a button to advance to the next phase.
                     AdminCertCount.Text += " certifications, which is enough to proceed to the next stage.";
                 else
-                    AdminCertCount.Text += " certifications.  More NEC members must certify the results before proceeding.";
+                    AdminCertCount.Text += " certification(s).  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
+                necprogressbar.Attributes.Add("style", "width: " + Math.Min(100, numberCertifications * 33.33).ToString() + "%");
 
                 if(numberCertifications < 3) {
                     HtmlGenericControl pretext = new HtmlGenericControl("span");
@@ -203,7 +204,6 @@ public partial class committee_election : System.Web.UI.Page
                     certifications_tab_link.Controls.Add(badge);
                 }
 
-                necprogressbar.Attributes["style"] = "width: " + Math.Min(100, numberCertifications / 3) + "%";
 
             }
             if (election.Phase >= ElectionPhase.VotePhase)
@@ -347,7 +347,7 @@ public partial class committee_election : System.Web.UI.Page
             case "CertificationPhase":
                 certifications_tab.Visible = true;
                 certifications_tab.Attributes["class"] = "active";
-                AdminCertificationPanel.Visible = true;
+                AdminCertificationPanel.Visible = user.IsAdmin;
                 break;
             case "ConflictPhase":
                 conflicts_tab.Visible = true;
@@ -593,7 +593,7 @@ public partial class committee_election : System.Web.UI.Page
         ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
 
         election.GenerateResultsPDF(session, Server.MapPath("CertificationForms\\form.pdf"));
-        Response.Redirect(Server.MapPath("CertificationForms\\form.pdf"));
+        Response.Redirect("/CertificationForms/form.pdf");
     }
 
     /// <summary>
