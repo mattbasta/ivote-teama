@@ -47,6 +47,9 @@ public partial class wwwroot_phase1aSite_committee_election_confirminit : System
         DatabaseEntities.CommitteeElection election =
                 DatabaseEntities.CommitteeElection.CreateElection(session, committee);
         session.SaveOrUpdate(election);
+
+        //SetPhase to WTS to send emails
+        election.SetPhase(session ,ElectionPhase.WTSPhase);
         
         DatabaseEntities.NHibernateHelper.Finished(transaction);
         

@@ -1,0 +1,2 @@
+﻿Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+This email is to inform you that ##FULLNAME## has been offically re-added to the ballot for this election by the current system administrator.

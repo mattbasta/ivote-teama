@@ -1,0 +1,13 @@
+﻿Hello ##FIRSTNAME## ##LASTNAME##,<br /><br />
+
+The APSCUF-KU election administration has added you as a new user!<br /><br />
+
+You MUST verify your new account before it can be fully activated! <br /><br />
+
+Please record your new username for the iVote System below. <br />
+(You will use this username to log onto the system.)<br /><br />
+
+Username: ##EMAIL## <br /><br />
+
+To proceed with this process, please click click the link below:<br />
+http://##BASEURL##/confirm.aspx?x=##CODE##

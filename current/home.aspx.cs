@@ -21,7 +21,6 @@ public partial class home : System.Web.UI.Page
     //OBJECT DECLARATION
     databaseLogic dbLogic = new databaseLogic();
     timeline phases = new timeline();
-    VerifyEmail email = new VerifyEmail();
     voteCounter vc = new voteCounter();
     ArrayList positions = new ArrayList();
     

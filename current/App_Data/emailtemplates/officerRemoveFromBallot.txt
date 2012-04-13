@@ -1,0 +1,3 @@
+﻿Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+This email is to inform you that " ##FULLNAME## " has been offically removed from the current election ballot. <br /><br />
+This action performed by the current system administrator and was likely the cause of this person expressing that they no longer wishes to be considered for their nominationed position.<br /><br />

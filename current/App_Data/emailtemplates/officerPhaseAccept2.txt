@@ -1,0 +1,2 @@
+Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+TThis is an automated message from the APSCUF-KU iVote system.  We are sending you this because you have been petitioned to run for the current election, but have yet to accept or reject this petition. Please log into the site <a href="http://##BASEURL##"> here</a> to accept/reject the petition. <b>If you do not choose to accept or reject this, you will be automatically dropped from the election!</b>
