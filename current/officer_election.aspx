@@ -76,23 +76,21 @@
         <asp:UpdatePanel ID="NominateUpdatePanel" runat="server">
             <ContentTemplate>
                 <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
-                <!--Display form/data for selected position -->
-                <asp:Panel ID="PanelSelected" CssClass="well" Visible="false" runat="server">
-                    <asp:Label ID="LabelSelected" runat="server" Text="" />
-                    <p class="buttons"> 
-                        <asp:Button CssClass="btn" ID="ButtonNominate" runat="server" OnClick="nominate" Text="" />
-                        <asp:Button CssClass="btn" ID="ButtonWTS" runat="server" Text="" OnClick="next" /> 
-                    </p>
-                    <asp:HiddenField ID="HiddenFieldID" runat="server" />
-                </asp:Panel>
                 
                 <!-- List of positions -->
                 <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
                      <Columns>
                         <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
+                        <asp:BoundField HeaderText="Description" DataField="description" NullDisplayText="Unknown" />
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonSelect" runat="server" CommandName='<%#Eval("position") %>' CommandArgument='<%#Eval("idelection_position") %>' Text="Select" CssClass="btn btn-small" />
+                                <asp:Button ID="ButtonNomMe" runat="server" CommandName='nom_me'
+                                    Enabled='<%#!(dbLogic.isUserNominated(user.ID, Eval("position").ToString()) || dbLogic.isUserWTS(user.ID, Eval("position").ToString())) %>'
+                                    CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Me"
+                                    CssClass="btn btn-primary btn-small" />
+                                <asp:Button ID="ButtonNomOther" runat="server" CommandName='nom_other'
+                                    CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Someone Else"
+                                    CssClass="btn btn-small" />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -114,19 +112,16 @@
 
         <!--Admin only-->
         <asp:Panel id="functions_slate" style="margin-top:10px;" visible="false" runat="server">
-            <b>This is a special phase where the NEC must approve the slate.</b><br /><br />
-            <div class="clear"></div>
-            <div class="column">
-                <b>Election Management</b><br />
-                <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
-                <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
-                <br />
+            <p>This is a special phase where the NEC must approve the slate. The phase will automatically be switched when the certification has taken place.</p>
+            <div class="btn-group">
+                <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
             </div>
         </asp:Panel>
 
         <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>
-            <fieldset>
+            <fieldset id="nec_approval_form" runat="server" Visible="true">
                 <legend>NEC Approval Form</legend>
                 <p><asp:Label ID="LabelFeedback2" runat="server" Text="To view the nominated for a position, please select a position from the list below"></asp:Label></p>
             
@@ -189,12 +184,10 @@
         <p>The election is in the <b>petition phase</b>. You can petition yourself or other faculty members for a position.</p>
 
         <asp:Panel id="functions_petition" style="margin-top:10px;" visible="false" runat="server">
-            <div class="column">
-                <b>Election Management</b><br />
-                <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
-                <a href="Slate.aspx">View current Slate</a><br />
-                <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
-                <br />
+            <div class="btn-group">
+                <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/Slate.aspx">View current Slate</a>
+                <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
             </div>
         </asp:Panel>
         <div class="clear"></div>
@@ -290,10 +283,9 @@
 
         <!--Admin only-->
         <asp:Panel id="functions_accept2" style="margin-top:10px;" visible="false" runat="server">
-            <div class="column">
-                <b>Election Management</b><br />
-                <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
-                <br />
+            <div class="btn-group">
+                <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/Slate.aspx">View current Slate</a>
             </div>
         </asp:Panel>
     </asp:Panel>
@@ -306,9 +298,12 @@
         <p>This phase that will end as soon as all eligibility forms have been approved or disapproved.</p>
 
         <!--Admin only-->
-        <asp:Panel id="functions_approval" style="margin-top:10px;" visible="false" runat="server">
-            <a href="ApproveNominations.aspx">Approve Eligibility</a><br />
-            <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
+        <asp:Panel id="functions_approval" visible="false" runat="server">
+            <div class="btn-group">
+                <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/Slate.aspx">View current Slate</a>
+                <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
+            </div>
         </asp:Panel>
     </asp:Label>
     <!--End Approval-->
@@ -318,9 +313,8 @@
         <p>The election is in the <b>voting phase</b>. You must vote for the candidate you feel will best serve in each position.</p>
 
         <asp:Panel id="functions_voting" style="margin-top:10px;" visible="false" runat="server">
-            <a href="RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
+            <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
-        <div class="clear"></div>
     
         <!--The voting functionality will be available for this phase-->
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">

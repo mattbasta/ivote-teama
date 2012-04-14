@@ -71,14 +71,17 @@
         </ContentTemplate>
     </asp:UpdatePanel>
 
-    <asp:Panel ID="PanelStatement" CssClass="modalPopup" Width="300" runat="server">
+    <asp:Panel ID="PanelStatement" CssClass="modal" runat="server">
+        <div class="modal-header">
+            <h3>View Full Statement</h3>
+        </div>
        <asp:UpdatePanel ID="UpdatePanel2" runat="server">
             <ContentTemplate>
-                <br />
-                <asp:Label ID="LabelFullStatment" runat="server" Text=""></asp:Label>
-                <br /><br />
-                <div style="margin-left: auto; margin-right:auto; width: 50px">
-                    <asp:Button ID="ButtonDone" OnClick="ButtonDone_Click" runat="server" Text="Done" />
+                <div class="modal-body">
+                    <p><asp:Literal ID="LabelFullStatment" runat="server" Text="" /></p>
+                </div>
+                <div class="modal-footer">
+                    <asp:Button ID="ButtonDone" OnClick="ButtonDone_Click" runat="server" Text="Done" CssClass="btn btn-primary" />
                 </div>
             </ContentTemplate>
         </asp:UpdatePanel>

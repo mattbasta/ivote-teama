@@ -49,6 +49,7 @@ public partial class wwwroot_finalsite_RemoveFromBallot : System.Web.UI.Page
                     fullname.CssClass = "lineThrough";
                     position.CssClass = "lineThrough";
                     remove.Text = "Place Back on Ballot";
+                    remove.CssClass = "btn btn-success btn-mini";
                     remove.CommandName = "add";
                 }
                 else
@@ -56,6 +57,7 @@ public partial class wwwroot_finalsite_RemoveFromBallot : System.Web.UI.Page
                     fullname.CssClass = "";
                     position.CssClass = "";
                     remove.Text = "Remove From Ballot";
+                    remove.CssClass = "btn btn-danger btn-mini";
                     remove.CommandName = "remove";
                 }
             }
