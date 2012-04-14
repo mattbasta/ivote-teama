@@ -60,9 +60,12 @@ public class databaseLogic
     //replace invalid characters with empty strings
     public string CleanInput(string strIn)
     {
-        // TODO: Test this method.
         return MySqlHelper.EscapeString(strIn);
-        //return Regex.Replace(strIn, @"[^\w\.@-]", @" ");
+    }
+
+    public string CleanInput(int strIn)
+    {
+        return MySqlHelper.EscapeString(strIn.ToString());
     }
 
     //open the connection to the database
@@ -216,18 +219,18 @@ public class databaseLogic
     //insert verification codes
     public void insertCodes(int ID, String code1, String code2)
     {
-        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + ID + ", '" + code1 + "', '" + code2 + "', NOW());");
+        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + CleanInput(ID) + ", '" + CleanInput(code1) + "', '" + CleanInput(code2) + "', NOW());");
     }
 
     public void insertCodes(string[] code)
     {
-        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + code[0] + ", '" + code[1] + "', '" + code[2] + "', NOW());");
+        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + CleanInput(code[0]) + ", '" + CleanInput(code[1]) + "', '" + CleanInput(code[2]) + "', NOW());");
     }
 
     //deletes a code based on the code
     public void deleteCode(String code1)
     {
-        genericQueryInserter("DELETE FROM email_verification WHERE code_verified = '" + code1 + "';");
+        genericQueryInserter("DELETE FROM email_verification WHERE code_verified = '" + CleanInput(code1) + "';");
     }
 
     //select a verified code
@@ -238,7 +241,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT iduser FROM email_verification WHERE code_verified='" + code + "' ORDER BY iduser DESC;", connection);
+            adapter = new MySqlDataAdapter("SELECT iduser FROM email_verification WHERE code_verified='" + CleanInput(code) + "' ORDER BY iduser DESC;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
@@ -261,20 +264,20 @@ public class databaseLogic
     //insert
     public void insertPetition(string[] petition)
     {
-        genericQueryInserter("INSERT INTO petition (idunion_members, positions, idum_signedby) VALUES (" + petition[0] + ", '" + petition[1] + "', " + petition[2] + ");");
+        genericQueryInserter("INSERT INTO petition (idunion_members, positions, idum_signedby) VALUES (" + CleanInput(petition[0]) + ", '" + CleanInput(petition[1]) + "', " + CleanInput(petition[2]) + ");");
     }
 
     //check if user (who is about to insert a petition) has already inserted a petition for that person + position combo
     public bool isUserEnteringPetitionTwice(string[] petition)
     {
-        string query = "SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "' AND idum_signedby = " + petition[2] + ";";
+        string query = "SELECT * FROM petition WHERE idunion_members = " + CleanInput(petition[0]) + " AND positions = '" + CleanInput(petition[1]) + "' AND idum_signedby = " + CleanInput(petition[2]) + ";";
         return genericQueryCounter(query) != 0; //if there are no rows in the datadata set created, result is false
     }
 
     //count how many petition there are for one person + position
     public int countPetitionsForPerson(string[] petition)
     {
-        return genericQueryCounter("SELECT * FROM petition WHERE idunion_members = " + petition[0] + " AND positions = '" + petition[1] + "';");
+        return genericQueryCounter("SELECT * FROM petition WHERE idunion_members = " + CleanInput(petition[0]) + " AND positions = '" + CleanInput(petition[1]) + "';");
     }
 
     //Select the idposition from positions using the position title
@@ -283,7 +286,7 @@ public class databaseLogic
         openConnection();
         try
         {
-            string query = "SELECT idelection_position FROM election_position WHERE position = '" + position + "';";
+            string query = "SELECT idelection_position FROM election_position WHERE position = '" + CleanInput(position) + "';";
             adapter = new MySqlDataAdapter(query, connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
@@ -319,7 +322,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT position FROM election_position WHERE idelection_position = '" + id + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT position FROM election_position WHERE idelection_position = '" + CleanInput(id) + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "blah");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
@@ -337,30 +340,30 @@ public class databaseLogic
     //used to initialize a new tally row
     public void insertNewTally(string[] votingInfo)
     {
-        genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + votingInfo[0] + ", '" + votingInfo[1] + "', 0)");
+        genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + CleanInput(votingInfo[0]) + ", '" + CleanInput(votingInfo[1]) + "', 0)");
     }
 
     //updates the count for a specified tally row
     public void updateTally(string[] votingInfo)
     {
-        genericQueryUpdater("UPDATE tally SET count = count + 1 WHERE id_union = " + votingInfo[0] + " AND position = '" + votingInfo[1] + "';");
+        genericQueryUpdater("UPDATE tally SET count = count + 1 WHERE id_union = " + CleanInput(votingInfo[0]) + " AND position = '" + CleanInput(votingInfo[1]) + "';");
     }
 
     public void selectTallyInfoForPosition(string position)
     {
         // TODO: Update this to the new DB stuff.
-        genericQuerySelector("SELECT T.*, CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM tally T, users UM WHERE T.position = '" + position + "' AND UM.ID = T.id_union;");
+        genericQuerySelector("SELECT T.*, CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM tally T, users UM WHERE T.position = '" + CleanInput(position) + "' AND UM.ID = T.id_union;");
     }
 
     //^^^^^^^^^^flag_voted methods^^^^^^^^^^
     public void insertFlagVoted(int id, string code)
     {
-        genericQueryInserter("INSERT INTO flag_voted (idunion_members, code_confirm) VALUES (" + id.ToString() + ", '" + code + "')");
+        genericQueryInserter("INSERT INTO flag_voted (idunion_members, code_confirm) VALUES (" + CleanInput(id.ToString()) + ", '" + CleanInput(code) + "')");
     }
 
     public bool isUserNewVoter(int id)
     {
-        return genericQueryCounter("SELECT idunion_members FROM flag_voted WHERE idunion_members=" + id.ToString() + ";") == 0;
+        return genericQueryCounter("SELECT idunion_members FROM flag_voted WHERE idunion_members=" + CleanInput(id.ToString()) + ";") == 0;
     }
 
     //^^^^^^^^^^wts methods^^^^^^^^^^
@@ -374,19 +377,19 @@ public class databaseLogic
     //update the the eligiblity
     public void updateEligible(string id, string approval)
     {
-        genericQuerySelector("UPDATE wts SET eligible = " + approval + " WHERE wts_id = '" + id + "';");
+        genericQuerySelector("UPDATE wts SET eligible = " + CleanInput(approval) + " WHERE wts_id = '" + CleanInput(id) + "';");
     }
 
 
     //insert into the wts table
     public void insertIntoWTS(string id, string statement, string position)
     {
-        genericQueryInserter("INSERT INTO wts (idunion_members, position, date_applied, statement) VALUES ('" + id + "', '" + position + "', NOW() ,'" + statement + "');");
+        genericQueryInserter("INSERT INTO wts (idunion_members, position, date_applied, statement) VALUES ('" + CleanInput(id) + "', '" + CleanInput(position) + "', NOW() ,'" + CleanInput(statement) + "');");
     }
 
     public void selectDetailFromWTS(string id)
     {
-        genericQuerySelector("SELECT * FROM wts WHERE idunion_members = " + id + ";");
+        genericQuerySelector("SELECT * FROM wts WHERE idunion_members = " + CleanInput(id) + ";");
     }
 
 
@@ -395,7 +398,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + id.ToString() + " AND position='" + position + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + CleanInput(id.ToString()) + " AND position='" + CleanInput(position) + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -415,7 +418,7 @@ public class databaseLogic
 
     public void updateTimeline(string date, string time, string phase)
     {
-        genericQueryInserter("UPDATE timeline SET datetime_end = STR_TO_DATE('" + date + " " + time + "','%m/%d/%Y %H:%i') WHERE name_phase = '" + phase + "';");
+        genericQueryInserter("UPDATE timeline SET datetime_end = STR_TO_DATE('" + CleanInput(date) + " " + CleanInput(time) + "','%m/%d/%Y %H:%i') WHERE name_phase = '" + CleanInput(phase) + "';");
     }
 
     public void updateVotePhase()
@@ -426,7 +429,7 @@ public class databaseLogic
     public void turnOnPhase(string phase)
     {
         genericQueryUpdater("UPDATE timeline SET iscurrent = 0 WHERE 1;");
-        genericQueryUpdater("UPDATE timeline SET iscurrent = 1, datetime_end = NOW() WHERE name_phase = '" + phase + "';");
+        genericQueryUpdater("UPDATE timeline SET iscurrent = 1, datetime_end = NOW() WHERE name_phase = '" + CleanInput(phase) + "';");
     }
 
     public string currentPhase()
@@ -468,12 +471,12 @@ public class databaseLogic
     //inserts nomination into db
     public void insertNominationAccept(string[] accept)
     {
-        genericQueryInserter("INSERT INTO nomination_accept (idunion_to, idunion_from, position) VALUES ('" + accept[0] + "','" + accept[1] + "','" + accept[2] + "');");
+        genericQueryInserter("INSERT INTO nomination_accept (idunion_to, idunion_from, position) VALUES ('" + CleanInput(accept[0]) + "','" + CleanInput(accept[1]) + "','" + CleanInput(accept[2]) + "');");
     }
 
     public void insertNominationAcceptFromPetition(string[] accept)
     {
-        genericQueryInserter("INSERT INTO nomination_accept (idunion_to, idunion_from, position, from_petition) VALUES ('" + accept[0] + "','" + accept[1] + "','" + accept[2] + "', " + accept[3] + ");");
+        genericQueryInserter("INSERT INTO nomination_accept (idunion_to, idunion_from, position, from_petition) VALUES ('" + CleanInput(accept[0]) + "','" + CleanInput(accept[1]) + "','" + CleanInput(accept[2]) + "', " + CleanInput(accept[3]) + ");");
     }
 
     //******NOTE***** The user will have multiple positions that this can be true for, might want to modify ******NOTE******
@@ -482,7 +485,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND accepted IS NULL;", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + CleanInput(id.ToString()) + " AND accepted IS NULL;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -501,7 +504,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND from_petition = 1 AND accepted IS NULL;", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + CleanInput(id.ToString()) + " AND from_petition = 1 AND accepted IS NULL;", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -521,7 +524,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND position='" + position + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + CleanInput(id.ToString()) + " AND position='" + CleanInput(position) + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             closeConnection();
@@ -541,7 +544,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT description FROM election_position WHERE position='" + posName + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT description FROM election_position WHERE position='" + CleanInput(posName) + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
@@ -558,20 +561,20 @@ public class databaseLogic
     //user has accepted nomination
     public void userAcceptedNom(string id, string position)
     {
-        genericQueryUpdater("UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + id + "' AND position='" + position + "';");
+        genericQueryUpdater("UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
     }
 
     //user has rejected nomination
     public void userRejectedNom(string id, string position)
     {
-        genericQueryUpdater("UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + id + "' AND position='" + position + "';");
+        genericQueryUpdater("UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
     }
 
 
     //get all nominations that pertain to a user
     public void selectAllUserNoms(string id)
     {
-        genericQuerySelector("SELECT * FROM nomination_accept WHERE idunion_to = " + id + " AND accepted IS NULL;");
+        genericQuerySelector("SELECT * FROM nomination_accept WHERE idunion_to = " + CleanInput(id) + " AND accepted IS NULL;");
     }
 
     //^^^^^^^^^^^^^^election methods^^^^^^^^^^^^^^^^^^^
@@ -609,7 +612,7 @@ public class databaseLogic
     //counts how many people are nominated for a position
     public int countHowManyCandidatesForPosition(string position)
     {
-        return genericQueryCounter("SELECT * FROM wts WHERE eligible=1 AND position='" + position + "';");
+        return genericQueryCounter("SELECT * FROM wts WHERE eligible=1 AND position='" + CleanInput(position) + "';");
     }
 
     public bool IsThereCandidatesForPoisition(string position)
@@ -617,7 +620,7 @@ public class databaseLogic
         // TODO: Update this
         return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
                                    "FROM wts WTS, users UM " +
-                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + position + "');") > 0;
+                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + CleanInput(position) + "');") > 0;
     }
 
     //gets all the current election positions
@@ -634,7 +637,7 @@ public class databaseLogic
     {
         genericQueryDeleter("TRUNCATE TABLE election_position;");
         for (int i = 0; i < positions.Count; i++)
-            genericQueryInserter("INSERT INTO election_position (position, tally_type, description, slots_plurality, votes_allowed) VALUES ('" + positions[i].ToString() + "', '" + vote[i].ToString() + "', '" + description[i].ToString() + "', " + num[i].ToString() + ", " + votes[i].ToString() + ");");
+            genericQueryInserter("INSERT INTO election_position (position, tally_type, description, slots_plurality, votes_allowed) VALUES ('" + CleanInput(positions[i].ToString()) + "', '" + CleanInput(vote[i].ToString()) + "', '" + CleanInput(description[i].ToString()) + "', " + CleanInput(num[i].ToString()) + ", " + CleanInput(votes[i].ToString()) + ");");
     }
 
 
@@ -649,7 +652,7 @@ public class databaseLogic
 
     public void insertWinners(string position, int id)
     {
-        genericQueryInserter("INSERT INTO results (position, id_union) VALUES ('" + position + "', " + id + ");");
+        genericQueryInserter("INSERT INTO results (position, id_union) VALUES ('" + CleanInput(position) + "', " + CleanInput(id) + ");");
     }
 
     public bool checkNecApprove()
@@ -722,7 +725,7 @@ public class databaseLogic
         string[] iter_phases = {"nullphase", "nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
 
         foreach(string phase in iter_phases)
-            genericQueryInserter("INSERT INTO timeline (idelection, name_phase, datetime_end, iscurrent) VALUES (1, '" + phase + "', NOW(), " + (phase == "nominate" ? '1' : '0') + ");");
+            genericQueryInserter("INSERT INTO timeline (idelection, name_phase, datetime_end, iscurrent) VALUES (1, '" + CleanInput(phase) + "', NOW(), " + (phase == "nominate" ? '1' : '0') + ");");
     }
 
     /********************************
