@@ -13,7 +13,7 @@ using NHibernate.Cfg;
 using System.Diagnostics;
 
 /// <summary>
-/// Handles email notifications added during Spring 2012 for committee elections
+/// Handles email notifications added during Spring 2012 for officer and committee elections
 /// </summary>
 public class nEmailHandler
 {
@@ -25,41 +25,16 @@ public class nEmailHandler
 
 	public nEmailHandler()
 	{
-
         sendEmail = new emailer();
         emailBaseUrl = System.Configuration.ConfigurationManager.AppSettings["baseUrl"];
-
 	}
 
-    public void sendCommitteeWTS(DatabaseEntities.CommitteeElection committeeElection, List<DatabaseEntities.User> userList)
-    {
-        string[] allAddresses = new string[userList.Count];
-
-        int i = 0;
-        foreach (DatabaseEntities.User user in userList)
-        {
-            allAddresses[i] = user.Email;
-            i++;
-        }
-
-        //Retrieve committee information
-        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-        DatabaseEntities.Committee committee = DatabaseEntities.Committee.FindCommittee(session, committeeElection.PertinentCommittee);
-
-        if (committee == null)
-            return;
-
-        loadTemplate("committeePhaseWTS");
-        string subject = "APSCUF iVote Willingness to Serve - " + committee.Name;
-        string message = template;
-
-        message = message.Replace("##BASEURL##", emailBaseUrl);
-        message = message.Replace("##ID##", committeeElection.ID.ToString());
-
-        message += footer;
-        sendEmail.sendEmailToList(allAddresses, message, subject);
-    }
-
+    /// <summary>
+    /// Method to handle all email sending for phase changes in committee elections.
+    /// </summary>
+    /// <param name="committeeElection">Pertinent committee election</param>
+    /// <param name="userList">List of users to receieve email</param>
+    /// <param name="templateName">Template file to reference</param>
     public void sendGenericCommitteePhase(DatabaseEntities.CommitteeElection committeeElection, List<DatabaseEntities.User> userList, string templateName)
     {
         string[] allAddresses = new string[userList.Count];
@@ -89,6 +64,12 @@ public class nEmailHandler
         sendEmail.sendEmailToList(allAddresses, message, subject);
     }
 
+    /// <summary>
+    /// Send user creation or reset confirmation email
+    /// </summary>
+    /// <param name="user">New users being confirmed</param>
+    /// <param name="messageSubject">Email subject (new or password reset)</param>
+    /// <param name="templateFile">Template file to reference</param>
     public void sendConfirmationEmail(DatabaseEntities.User user, string messageSubject, string templateFile)
     {
         loadTemplate(templateFile);
@@ -112,6 +93,11 @@ public class nEmailHandler
 
     }
 
+    /// <summary>
+    /// Sends email when user is removed from ballot.
+    /// </summary>
+    /// <param name="userList">User list to send email to</param>
+    /// <param name="fullName">Full name of user removed</param>
     public void sendRemoveFromBallot(List<DatabaseEntities.User> userList, string fullName)
     {
         string[] allAddresses = new string[userList.Count];
@@ -134,6 +120,11 @@ public class nEmailHandler
 
     }
 
+    /// <summary>
+    /// Sends email when user is re-added to ballot.
+    /// </summary>
+    /// <param name="userList">User list to send email to</param>
+    /// <param name="fullName">Full name of user added</param>
     public void sendReAddToBallot(List<DatabaseEntities.User> userList, string fullName)
     {
         string[] allAddresses = new string[userList.Count];
@@ -156,6 +147,11 @@ public class nEmailHandler
 
     }
 
+    /// <summary>
+    /// Sends phase change emails for all officer elections
+    /// </summary>
+    /// <param name="templateFile">Template file to reference</param>
+    /// <param name="subject">Emaul subject</param>
     public void sendGenericOfficerPhase(string templateFile, string subject)
     {
 
@@ -186,6 +182,10 @@ public class nEmailHandler
 
     }
 
+    /// <summary>
+    /// Sends email to notify user they have been nominated
+    /// </summary>
+    /// <param name="user">User to be notified</param>
     public void sendApproveEligibility(DatabaseEntities.User user)
     {
 
@@ -200,6 +200,10 @@ public class nEmailHandler
 
     }
 
+    /// <summary>
+    /// Sends email to notify user their eligibility has been revoked
+    /// </summary>
+    /// <param name="user">User to be notified</param>
     public void sendDenyEligibility(DatabaseEntities.User user)
     {
 
@@ -214,6 +218,10 @@ public class nEmailHandler
 
     }
 
+    /// <summary>
+    /// Loads template file for email
+    /// </summary>
+    /// <param name="sourceFile">File name to load (no .txt)</param>
     private void loadTemplate(string sourceFile)
     {
         string fileName = HttpContext.Current.Server.MapPath("~/App_Data/emailtemplates/" + sourceFile + ".txt");
@@ -223,6 +231,11 @@ public class nEmailHandler
         footer = File.ReadAllText(fileName);
     }
 
+    /// <summary>
+    /// Generates a random string to store for password confirmation
+    /// </summary>
+    /// <param name="length">Length of string to generate</param>
+    /// <returns>Random string</returns>
     private static string CreateRandomString(int length)
     {
         string allowedChars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789";
@@ -237,6 +250,11 @@ public class nEmailHandler
         return new string(chars);
     }
 
+    /// <summary>
+    /// Gets an array of all email address in the database
+    /// </summary>
+    /// <param name="session">NHibernate session</param>
+    /// <returns>Array of email addresses</returns>
     private string[] getAllEmails(ISession session)
     {
         List<DatabaseEntities.User> userList = DatabaseEntities.User.GetAllUsers(session);

@@ -61,8 +61,8 @@ public class databaseLogic
     public string CleanInput(string strIn)
     {
         // TODO: Test this method.
-        //return MySqlHelper.EscapeString(strIn);
-        return Regex.Replace(strIn, @"[^\w\.@-]", @" ");
+        return MySqlHelper.EscapeString(strIn);
+        //return Regex.Replace(strIn, @"[^\w\.@-]", @" ");
     }
 
     //open the connection to the database
@@ -150,76 +150,6 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^user methods^^^^^^^^^^
-
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public string selectFullName(string id)
-    {
-        try
-        {
-            openConnection();
-            adapter = new MySqlDataAdapter("Select CONCAT (first_name, ' ', last_name) AS fullname FROM Where idunion_members = '" + id + "';", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "query");
-            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
-        }
-        catch
-        { return ""; }
-        finally
-        {
-            closeConnection();
-        }
-    }
-
-    //select a user in the user table based on the union_members key
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public void selectUserInfoFromUnionId(String id)
-    {
-        string query = "SELECT * FROM union_members WHERE idunion_members = '" + id + "';";
-        genericQuerySelector(query);
-    }
-
-    //select a users email in the union_members table based on the unionID 
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public string selectEmailFromID(int id)
-    {
-        openConnection();
-        try
-        {
-            adapter = new MySqlDataAdapter("SELECT email FROM union_members WHERE idunion_members='" + id + "' ;", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return pictureURL;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return "";
-    }
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public string[] getEmails()
-    {
-        openConnection();
-        try
-        {
-            adapter = new MySqlDataAdapter("select email from union_members;", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-
-        return null;
-    }
-
     //retrieve only the ADMIN role emails
     public string[] getAdminEmails(ISession session)
     {
@@ -268,7 +198,6 @@ public class databaseLogic
 
 
     //select a users unionID in the user table based on the username 
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
     public int selectIDFromEmail(ISession session, String email)
     {
         DatabaseEntities.User user =
@@ -278,25 +207,6 @@ public class databaseLogic
         if(user == null)
             return -1;
         return user.ID;
-    }
-
-    [System.Obsolete("Use NHibernate-backed DB instead.")]
-    public DataSet getFirstAndLast(String query)
-    {
-        openConnection();
-        try
-        {
-            adapter = new MySqlDataAdapter(query, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "query");
-            closeConnection();
-            return ds;
-        }
-        catch { return null; }
-        finally
-        {
-            closeConnection();
-        }
     }
 
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
@@ -906,6 +816,3 @@ public class databaseLogic
     }
     
 }
-
-
-
