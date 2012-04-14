@@ -166,12 +166,14 @@ namespace DatabaseEntities
                                         !(!com.BargainingUnitRequired || x.IsBargainingUnit)));
 
                 nEmailHandler emailHandler = new nEmailHandler();
-                emailHandler.sendWTS(this, userList);
+                emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseWTS");
             }
             else if (electionPhase == ElectionPhase.NominationPhase)
             {
-                // distribute emails prompting faculty members to come
-                // vote in the primary election
+                List<User> userList = User.GetAllUsers(session);
+
+                nEmailHandler emailHandler = new nEmailHandler();
+                emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseNomination");
             }
             else if (electionPhase == ElectionPhase.VotePhase)
             {
@@ -192,16 +194,30 @@ namespace DatabaseEntities
                     }
                 }
                 // distribute emails prompting faculty members to come
+                List<User> userList = User.GetAllUsers(session);
+                userList.RemoveAll(x => (!(x.CanVote || x.IsAdmin)));
+
+                nEmailHandler emailHandler = new nEmailHandler();
+                emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseVote");
                 // vote
             }
             else if (electionPhase == ElectionPhase.CertificationPhase)
             {
-                // send out emails teling NEC people to certify results
+                List<User> userList = User.GetAllUsers(session);
+                userList.RemoveAll(x => (!(x.IsNEC || x.IsAdmin)));
+
+                nEmailHandler emailHandler = new nEmailHandler();
+                emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseCertification");
             }
             else if (electionPhase == ElectionPhase.ConflictPhase)
             {
                 ConflictLogic(session);
                 // maybe send out emails telling admins / NEC that there are conflicts?
+                List<User> userList = User.GetAllUsers(session);
+                userList.RemoveAll(x => (!(x.IsNEC || x.IsAdmin)));
+
+                nEmailHandler emailHandler = new nEmailHandler();
+                emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseConflict");
             }
             else if (electionPhase == ElectionPhase.ClosedPhase)
             {

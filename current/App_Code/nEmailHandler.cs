@@ -31,7 +31,7 @@ public class nEmailHandler
 
 	}
 
-    public void sendWTS(DatabaseEntities.CommitteeElection committeeElection, List<DatabaseEntities.User> userList)
+    public void sendCommitteeWTS(DatabaseEntities.CommitteeElection committeeElection, List<DatabaseEntities.User> userList)
     {
         string[] allAddresses = new string[userList.Count];
 
@@ -49,8 +49,37 @@ public class nEmailHandler
         if (committee == null)
             return;
 
-        loadTemplate("committeeWTS");
+        loadTemplate("committeePhaseWTS");
         string subject = "APSCUF iVote Willingness to Serve - " + committee.Name;
+        string message = template;
+
+        message = message.Replace("##BASEURL##", emailBaseUrl);
+        message = message.Replace("##ID##", committeeElection.ID.ToString());
+
+        message += footer;
+        sendEmail.sendEmailToList(allAddresses, message, subject);
+    }
+
+    public void sendGenericCommitteePhase(DatabaseEntities.CommitteeElection committeeElection, List<DatabaseEntities.User> userList, string templateName)
+    {
+        string[] allAddresses = new string[userList.Count];
+
+        int i = 0;
+        foreach (DatabaseEntities.User user in userList)
+        {
+            allAddresses[i] = user.Email;
+            i++;
+        }
+
+        //Retrieve committee information
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.Committee committee = DatabaseEntities.Committee.FindCommittee(session, committeeElection.PertinentCommittee);
+
+        if (committee == null)
+            return;
+
+        loadTemplate(templateName);
+        string subject = "APSCUF Committee Election - " + committee.Name;
         string message = template;
 
         message = message.Replace("##BASEURL##", emailBaseUrl);
