@@ -1,0 +1,2 @@
+﻿Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+It is now the conflict resolution phase of the voting process.  You now must log in and tend to any conflicts in the election results. You may follow this URL to do so: <a href="http://##BASEURL##/committee_election.aspx?id=##ID##"> link</a><br />

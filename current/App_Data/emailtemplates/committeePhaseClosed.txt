@@ -1,0 +1,2 @@
+﻿Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+The election is now over.  You are able to log and view the results.  You may follow this URL to do so: <a href="http://##BASEURL##/committee_election.aspx?id=##ID##"> link</a><br />

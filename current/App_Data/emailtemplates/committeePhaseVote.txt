@@ -1,0 +1,2 @@
+﻿Hello and greetings from the APSCUF-KU iVote System! <br /><br />
+It is now voting phase of the election.  You are able to log in and vote on the committee members.  You may follow this URL to do so: <a href="http://##BASEURL##/committee_election.aspx?id=##ID##"> link</a><br />
