@@ -411,7 +411,7 @@
         <asp:Label ID="necApprove" runat="server" Text="<b>Please approve the results above from this past election.</b>" Enabled="false" Visible="false" /><br />
         <asp:Button ID="necButton" runat="server" Text="Approve" Visible="false" OnClick="necButton_OnClick" />
         <asp:Label ID="adminEnd" runat="server" Text="<b>The NEC must approve the election results before you can end the current election.</b>" Enabled="false" Visible="false" /><br />
-        <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" Enabled="false" OnClick="adminButton_OnClick" />
+        <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" OnClick="adminButton_OnClick" />
         </center>
     
     </asp:Panel>
