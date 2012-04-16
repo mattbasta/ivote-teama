@@ -35,7 +35,7 @@
                 <asp:ListItem Value="NominationPhase">Primary Election</asp:ListItem>
                 <asp:ListItem Value="VotePhase">Voting</asp:ListItem>
                 <asp:ListItem Value="CertificationPhase">Certification</asp:ListItem>
-                <asp:ListItem Value="ConflictPhase">Conclift Resolution</asp:ListItem>
+                <asp:ListItem Value="ConflictPhase">Conflict Resolution</asp:ListItem>
             </asp:DropDownList>
             <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
