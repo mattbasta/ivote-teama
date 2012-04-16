@@ -63,11 +63,6 @@ public class databaseLogic
         return MySqlHelper.EscapeString(strIn);
     }
 
-    public string CleanInput(int strIn)
-    {
-        return MySqlHelper.EscapeString(strIn.ToString());
-    }
-
     //open the connection to the database
     private void openConnection()
     {
@@ -213,8 +208,6 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
-
-    //update based on primary key
 
     //insert verification codes
     public void insertCodes(int ID, String code1, String code2)
@@ -398,7 +391,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + CleanInput(id.ToString()) + " AND position='" + CleanInput(position) + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM wts WHERE idunion_members=" + id.ToString() + " AND position='" + CleanInput(position) + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
@@ -524,7 +517,7 @@ public class databaseLogic
         try
         {
             openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + CleanInput(id.ToString()) + " AND position='" + CleanInput(position) + "';", connection);
+            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + id.ToString() + " AND position='" + CleanInput(position) + "';", connection);
             ds = new DataSet();
             adapter.Fill(ds, "email_verification");
             closeConnection();
@@ -615,14 +608,6 @@ public class databaseLogic
         return genericQueryCounter("SELECT * FROM wts WHERE eligible=1 AND position='" + CleanInput(position) + "';");
     }
 
-    public bool IsThereCandidatesForPoisition(string position)
-    {
-        // TODO: Update this
-        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
-                                   "FROM wts WTS, users UM " +
-                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + CleanInput(position) + "');") > 0;
-    }
-
     //gets all the current election positions
     public void selectAllBallotPositions()
     {
@@ -631,7 +616,12 @@ public class databaseLogic
 
 
     //^^^^^^^^^^^^^^adding positions to an election methods^^^^^^^^^^^^^^^^
-
+    public bool IsThereCandidatesForPoisition(string position)
+    {
+        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
+                                   "FROM wts WTS, users UM " +
+                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + CleanInput(position) + "');") > 0;
+    }
     //adds the positions to positions table
     public void addPos(ArrayList positions, ArrayList vote, ArrayList description, ArrayList num, ArrayList votes)
     {
@@ -652,7 +642,7 @@ public class databaseLogic
 
     public void insertWinners(string position, int id)
     {
-        genericQueryInserter("INSERT INTO results (position, id_union) VALUES ('" + CleanInput(position) + "', " + CleanInput(id) + ");");
+        genericQueryInserter("INSERT INTO results (position, id_union) VALUES ('" + CleanInput(position) + "', " + id.ToString() + ");");
     }
 
     public bool checkNecApprove()

@@ -75,7 +75,7 @@
         <!-- TODO: For users with can_vote=False, do not show this section. -->
         <asp:UpdatePanel ID="NominateUpdatePanel" runat="server">
             <ContentTemplate>
-                <p>Click <b>Select</b> next to a position below to see more information or nominate yourself for that position.</p>
+                <p>The following positions are up for election:</p>
                 
                 <!-- List of positions -->
                 <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
