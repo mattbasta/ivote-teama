@@ -212,7 +212,7 @@ public class databaseLogic
     //insert verification codes
     public void insertCodes(int ID, String code1, String code2)
     {
-        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + CleanInput(ID) + ", '" + CleanInput(code1) + "', '" + CleanInput(code2) + "', NOW());");
+        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + ID.ToString() + ", '" + CleanInput(code1) + "', '" + CleanInput(code2) + "', NOW());");
     }
 
     public void insertCodes(string[] code)
