@@ -35,7 +35,7 @@
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p><asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" /></p>
         <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox">
-            <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
+            <asp:LinkButton runat="server" ID="JulioButton" Text="Switch to Next Phase"
                     CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
             or switch to
             <asp:DropDownList runat="server" ID="JulioButtonPhase">
@@ -47,7 +47,7 @@
                 <asp:ListItem Value="approval">Approval</asp:ListItem>
                 <asp:ListItem Value="vote">Voting</asp:ListItem>
             </asp:DropDownList>
-            <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
+            <asp:LinkButton runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
         </asp:Panel>
         <asp:Panel ID="FunctionsStateless" Visible="false" runat="server" CssClass="juliobuttonbox">
@@ -84,11 +84,11 @@
                         <asp:BoundField HeaderText="Description" DataField="description" NullDisplayText="Unknown" />
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="ButtonNomMe" runat="server" CommandName='nom_me'
+                                <asp:LinkButton ID="ButtonNomMe" runat="server" CommandName='nom_me'
                                     Enabled='<%#!(dbLogic.isUserNominated(user.ID, Eval("position").ToString()) || dbLogic.isUserWTS(user.ID, Eval("position").ToString())) %>'
                                     CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Me"
                                     CssClass="btn btn-primary btn-small" />
-                                <asp:Button ID="ButtonNomOther" runat="server" CommandName='nom_other'
+                                <asp:LinkButton ID="ButtonNomOther" runat="server" CommandName='nom_other'
                                     CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Someone Else"
                                     CssClass="btn btn-small" />
                             </ItemTemplate>
@@ -126,7 +126,7 @@
                 <p><asp:Label ID="LabelFeedback2" runat="server" Text="To view the nominated for a position, please select a position from the list below"></asp:Label></p>
             
                 <p>
-                    When you have reviewed the slate, you may approve the slate with this button. <asp:Button CssClass="btn btn-primary" ID="btnApprove" Visible="false" Text="Approve Slate" OnClick="btnApprove_OnClick" runat="server" />
+                    When you have reviewed the slate, you may approve the slate with this button. <asp:LinkButton CssClass="btn btn-primary" ID="btnApprove" Visible="false" Text="Approve Slate" OnClick="btnApprove_OnClick" runat="server" />
                 </p>
                 <asp:Panel ID="PanelSlateWrapper2" runat="server" CssClass="well">
                     <div class="row-fluid">
@@ -228,7 +228,7 @@
                                     <asp:Label ID="Label1" text='<%#Eval("Department") %>' runat="server" />
                                 </td>
                                 <td>
-                                    <asp:Button ID="ButtonNominate" 
+                                    <asp:LinkButton ID="ButtonNominate" 
                                         CssClass="btn btn-mini"
                                         commandname="nominate"
                                         commandargument='<%#Eval("ID") %>' 
@@ -259,14 +259,13 @@
                         </div>
                         <div class="modal-footer">
                             <asp:Button CssClass="btn btn-primary" ID="ButtonSubmit" runat="server" OnClick="ButtonSubmit_Clicked" Text="Submit Your Petition" />
-                            <asp:Button CssClass="btn" ID="ButtonCancel" runat="server" OnClick="ButtonCancel_Clicked" Text="Cancel" />
+                            <asp:LinkButton CssClass="btn" ID="ButtonCancel" runat="server" OnClick="ButtonCancel_Clicked" Text="Cancel" />
                         </div>
                      </ContentTemplate>
                 </asp:UpdatePanel>
             </asp:Panel>
 
             <asp:Button ID="Button1" runat="server" Text="" style="display: none" />
-
             <asp:ModalPopupExtender ID="PopupControlExtender1" runat="server"
                 TargetControlID="Button1"
                 PopupControlID="PanelChoosePosition"
@@ -338,7 +337,7 @@
                 <div class="row-fluid">
                     <!-- Holds the positions in the election -->
                     <asp:Panel ID="PanelPositions" CssClass="span4" runat="server">
-                        <asp:ListView ID="ListViewPositions"  OnItemCommand="ListViewPositions_ItemCommand" runat="server">
+                        <asp:ListView ID="ListViewPositions" OnItemCommand="ListViewPositions_ItemCommand" runat="server">
                             <LayoutTemplate>
                                 <ul class="nav nav-list">
                                     <li class="nav-header">Positions</li>
@@ -412,7 +411,7 @@
         <asp:Label ID="necApprove" runat="server" Text="<b>Please approve the results above from this past election.</b>" Enabled="false" Visible="false" /><br />
         <asp:Button ID="necButton" runat="server" Text="Approve" Visible="false" OnClick="necButton_OnClick" />
         <asp:Label ID="adminEnd" runat="server" Text="<b>The NEC must approve the election results before you can end the current election.</b>" Enabled="false" Visible="false" /><br />
-        <asp:Button ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" Enabled="false" OnClick="adminButton_OnClick" />
+        <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" Enabled="false" OnClick="adminButton_OnClick" />
         </center>
     
     </asp:Panel>
