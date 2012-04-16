@@ -12,7 +12,7 @@
         <h1>Initialize Committee Election</h1>
     </div>
     
-    <p>By pressing "Initialize" below, you'll officially kick off a new committee election. This will allow </p>
+    <p>By pressing "Initialize" below, you'll officially kick off a new committee election.</p>
     
     <p>Initializing the election will perform the following actions:</p>
     

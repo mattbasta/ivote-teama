@@ -221,7 +221,14 @@ namespace DatabaseEntities
             }
             else if (electionPhase == ElectionPhase.ClosedPhase)
             {
-                // not much needs to be done here.
+                // Put the users into the correct committee.
+                Dictionary<string, int> winners = GetResults(session);
+                List<User> winningUsers = new List<User>();
+                foreach (string email in winners.Keys) {
+                    User u = User.FindUser(session, email);
+                    u.CurrentCommittee = PertinentCommittee;
+                    session.SaveOrUpdate(u);
+                }
             }
             // Store the current date in the PhaseStarted field
             this.PhaseStarted = DateTime.Now;
@@ -551,7 +558,7 @@ namespace DatabaseEntities
             }
 
             doc.Open();
-            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + " committee."));
+            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + "."));
             doc.Add(table);
 
             foreach(Certification i in certifications)

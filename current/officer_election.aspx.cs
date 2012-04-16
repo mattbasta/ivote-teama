@@ -43,8 +43,9 @@ public partial class officer_election : System.Web.UI.Page
     protected void Page_PreRender(object sender, EventArgs e)
     {
         setView();
-        JulioButtonPanel.Visible = is_admin || user.IsNEC;
-        JulioButtonPhase.SelectedValue = phases.currentPhase;
+        try {
+            JulioButtonPhase.SelectedValue = phases.currentPhase;
+        } catch(ArgumentOutOfRangeException aoore) {} // This shouldn't matter.
     }
     
     protected string GetName(int UserID) {
@@ -88,7 +89,7 @@ public partial class officer_election : System.Web.UI.Page
         OfficerResults.Visible = false;
         OfficerStateless.Visible = false;
         
-        JulioButtonHider.Visible = true;
+        JulioButtonHider.Visible = is_admin;
         JulioButton.Visible = true;
         
         switch(phases.currentPhase) {
@@ -247,7 +248,7 @@ public partial class officer_election : System.Web.UI.Page
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
                     LabelFeedback.Text = "You have already voted for this election.";
                 }
-            }            
+            }
             //results
             else if (phases.currentPhase == "result")
             {
