@@ -224,7 +224,7 @@
             </asp:Panel>
             <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false" CssClass="alert alert-info">
                 <strong>Willingness to Serve Submitted</strong>
-                You have already submitted a willing to server form for this election.
+                You have already submitted a willing to serve form for this election.
             </asp:Panel>
             <asp:Panel ID="wtsPanelDone" runat="server" Visible="false" CssClass="alert alert-success">
                 <strong>Willingness to Serve Submitted</strong>
