@@ -15,7 +15,7 @@
 </asp:Panel>
 <asp:Panel ID="FailurePanel" runat="server" Visible="False">
     <div class="alert alert-failure">
-        <strong>Password change unsccessful.</strong><br />
+        <strong>Password change unsuccessful.</strong><br />
         Your password was not changed.
     </div>
 </asp:Panel>
