@@ -247,7 +247,7 @@ public partial class officer_election : System.Web.UI.Page
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
                     LabelFeedback.Text = "You have already voted for this election.";
                 }
-            }            
+            }
             //results
             else if (phases.currentPhase == "result")
             {
