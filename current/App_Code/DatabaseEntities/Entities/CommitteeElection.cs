@@ -558,7 +558,7 @@ namespace DatabaseEntities
             }
 
             doc.Open();
-            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + " committee."));
+            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + "."));
             doc.Add(table);
 
             foreach(Certification i in certifications)
