@@ -27,13 +27,13 @@ namespace DatabaseEntities
     public enum DepartmentType
     {
         None, Staff, Other, ACC, AER, AMS, ANT, ARA, ART, ARC, ARU,
-        ARH, ASE, AST, AVC, BTE, BIO, BUS, CHM, CHI, CMI, CDE, CSC,
-        CPY, CFT, CRJ, DAN, DVE, DVR, ECO, EDU, EDW, ELU, EGR, ENU,
-        ENV, FIN, FAR, FAS, FLA, FRE, FRS, GEG, GEL, GER, HEA, HIS,
+        ARH, ASE, AST, AVC, BTE, BIO, BUS, CHM, CHI, CDE, CDH, CSC,
+        CPY, CFT, CRJ, DAN, DVE, DVR, ECO, EDU, EDW, ELU, EGR, ENG, ENU,
+        ENV, FIN, FAR, FAS, FLA, FRE, FRS, GEE, GEG, GEL, GER, HEA, HIS,
         HPD, HUM, ITC, INT, IST, LIB, MGM, MAR, MAT, MKT, MAU, MED,
         MIC, MIL, MLS, MCS, MUS, MUU, MUP, NSE, NUR, PLG, PHI, PED,
         PHY, POL, PRO, PSY, RAR, RSS, RUS, SCI, SCU, SEU, SSC, SSE,
-        SSU, SWK, SOC, SPA, SPU, SPE, THE, TVR, UST, WRI, WST
+        SSU, SWK, SWL, SOC, SPA, SPU, SPE, THE, TVR, UST, WRI, WST
     };
 
     /// <summary>
