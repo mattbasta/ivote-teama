@@ -185,8 +185,8 @@
             <legend>Willingness to Serve</legend>
             <p><asp:Literal ID="CommitteeDescription" runat="server" /></p>
             <ol>
-                <li>No faculty member may serve on more than one contract committee (promotion, tenure, and sabbatical leave)</li>
-                <li>No faculty member shall serve on a university-wide committee when he/she or a member of his or her immediate family or a person residin in his or her household is an applicant to that committee.</li>
+                <li>No faculty member may serve on more than one contract committee (Promotion, Tenure, and Sabbatical Leave)</li>
+                <li>No faculty member shall be able to serve on a university-wide committee when he/she or a member of his or her immediate family or a person residing in his or her household is an applicant to that committee.</li>
                 <li>Only one faculty member from a department may serve on any contract committee at one time.</li>
                 <li>The APSCUF/KU President, Meet and Discuss Spokesperson, and Grievance Chair may not serve on any contract committee.</li>
                 <li runat="server" id="must_be_tenured">A faculty member must be tenured prior to his or her nomination to serve on this committee.</li>
