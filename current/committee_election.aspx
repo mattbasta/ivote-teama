@@ -35,7 +35,7 @@
                 <asp:ListItem Value="NominationPhase">Primary Election</asp:ListItem>
                 <asp:ListItem Value="VotePhase">Voting</asp:ListItem>
                 <asp:ListItem Value="CertificationPhase">Certification</asp:ListItem>
-                <asp:ListItem Value="ConflictPhase">Conclift Resolution</asp:ListItem>
+                <asp:ListItem Value="ConflictPhase">Conflict Resolution</asp:ListItem>
             </asp:DropDownList>
             <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
@@ -185,8 +185,8 @@
             <legend>Willingness to Serve</legend>
             <p><asp:Literal ID="CommitteeDescription" runat="server" /></p>
             <ol>
-                <li>No faculty member may serve on more than one contract committee (promotion, tenure, and sabbatical leave)</li>
-                <li>No faculty member shall serve on a university-wide committee when he/she or a member of his or her immediate family or a person residin in his or her household is an applicant to that committee.</li>
+                <li>No faculty member may serve on more than one contract committee (Promotion, Tenure, and Sabbatical Leave)</li>
+                <li>No faculty member shall be able to serve on a university-wide committee when he/she or a member of his or her immediate family or a person residing in his or her household is an applicant to that committee.</li>
                 <li>Only one faculty member from a department may serve on any contract committee at one time.</li>
                 <li>The APSCUF/KU President, Meet and Discuss Spokesperson, and Grievance Chair may not serve on any contract committee.</li>
                 <li runat="server" id="must_be_tenured">A faculty member must be tenured prior to his or her nomination to serve on this committee.</li>
@@ -224,7 +224,7 @@
             </asp:Panel>
             <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false" CssClass="alert alert-info">
                 <strong>Willingness to Serve Submitted</strong>
-                You have already submitted a willing to server form for this election.
+                You have already submitted a willing to serve form for this election.
             </asp:Panel>
             <asp:Panel ID="wtsPanelDone" runat="server" Visible="false" CssClass="alert alert-success">
                 <strong>Willingness to Serve Submitted</strong>

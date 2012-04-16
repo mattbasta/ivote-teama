@@ -603,6 +603,10 @@ public partial class committee_election : System.Web.UI.Page
     /// <param name="e"></param>
     protected void FacultyCastVote_Click(Object sender, EventArgs e)
     {
+        // No defined error because this should never happen IRL.
+        if(FacultyVoteList.Items.Count == 0)
+            return;
+        
         // open the session
         ITransaction transaction = session.BeginTransaction();
 

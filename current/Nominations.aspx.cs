@@ -21,10 +21,7 @@ public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
     {
         username = HttpContext.Current.User.Identity.Name.ToString();
         if (!Page.IsPostBack)
-        {            
-            bindData();            
-        }
-        
+            bindData();
     }
 
     protected void GridViewNominations_ItemCommand(object sender, GridViewCommandEventArgs e)
@@ -48,7 +45,7 @@ public partial class wwwroot_finalsite_Nominations : System.Web.UI.Page
             else
             {
                 HiddenFieldID.Value = dbLogic.selectIDFromPosition(e.CommandArgument.ToString());
-                Response.Redirect("~/WTS.aspx/" + HiddenFieldID.Value);
+                Response.Redirect("/wts.aspx?position=" + HiddenFieldID.Value);
             }
         }
         else if (String.Equals(e.CommandName.ToString(), "reject"))
