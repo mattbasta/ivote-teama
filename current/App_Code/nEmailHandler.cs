@@ -10,7 +10,6 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using NHibernate.Cfg;
-using System.Diagnostics;
 
 /// <summary>
 /// Handles email notifications added during Spring 2012 for committee elections

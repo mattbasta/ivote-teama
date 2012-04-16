@@ -2,8 +2,6 @@
 <appSettings>
     <!-- Access with System.Configuration.ConfigurationManager.AppSettings["key"]; -->
 
-    <add key="dummy_db" value="" />
-
     <!-- URL Configuration -->
     <add key="baseUrl" value=""/>
 
@@ -15,7 +13,6 @@
 
     <!-- Mail/STMP Configuration -->
     <add key="fromAddress" value=""/>
-    <add key="smtpEnable" value="true" />
     <add key="smtpHost" value=""/>
     <add key="smtpPort" value=""/>
     <add key="smtpUser" value=""/>
