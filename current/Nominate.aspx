@@ -50,7 +50,7 @@
                 <td>
                    <asp:Button CssClass="btn btn-small" ID="ButtonNominate" 
                        commandname="nominate"
-                       OnClientClick='<%# Eval("FirstName", "return confirm(\"Are you sure you want to nominate {0} for this poistion?\")") %>'
+                       OnClientClick='<%# Eval("FirstName", "return confirm(\"Are you sure you want to nominate {0} for this position?\")") %>'
                        commandargument='<%#Eval("ID") %>' 
                        text="Nominate" runat="server" />                
                 </td>
