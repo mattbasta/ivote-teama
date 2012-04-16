@@ -44,7 +44,9 @@ public partial class officer_election : System.Web.UI.Page
     {
         setView();
         JulioButtonPanel.Visible = is_admin || user.IsNEC;
-        JulioButtonPhase.SelectedValue = phases.currentPhase;
+        try {
+            JulioButtonPhase.SelectedValue = phases.currentPhase;
+        } catch(ArgumentOutOfRangeException e) {} // This shouldn't matter.
     }
     
     protected string GetName(int UserID) {
