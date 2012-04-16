@@ -30,7 +30,7 @@
                 <dd>Tester</dd>
 
                 <dt>Jeremy Nagy</dt>
-                <dd>Tester/Designer</dd>
+                <dd>Tester and Designer</dd>
             </dl>
         </div>
 
@@ -44,10 +44,10 @@
                 <dd>Project Manager</dd>
 
                 <dt>Ryan Groff</dt>
-                <dd>System Analysts and Designer</dd>
+                <dd>System Analyst and Designer</dd>
 
                 <dt>Roberto Rodriguez</dt>
-                <dd>System Analyst, Designer, and Tester</dd>
+                <dd>System Analyst, System Designer, and Tester</dd>
 
                 <dt>Lee Fehrs</dt>
                 <dd>Application Tester</dd>
@@ -56,7 +56,7 @@
                 <dd>System Designer and Developer</dd>
                     
                 <dt>Brian Fairservice</dt>
-                <dd>Systems Analyst and Developer</dd>
+                <dd>System Analyst and Developer</dd>
             </dl>
         </div>
     </div>
