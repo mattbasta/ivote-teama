@@ -43,10 +43,9 @@ public partial class officer_election : System.Web.UI.Page
     protected void Page_PreRender(object sender, EventArgs e)
     {
         setView();
-        JulioButtonPanel.Visible = is_admin || user.IsNEC;
         try {
             JulioButtonPhase.SelectedValue = phases.currentPhase;
-        } catch(ArgumentOutOfRangeException e) {} // This shouldn't matter.
+        } catch(ArgumentOutOfRangeException aoore) {} // This shouldn't matter.
     }
     
     protected string GetName(int UserID) {
@@ -90,7 +89,7 @@ public partial class officer_election : System.Web.UI.Page
         OfficerResults.Visible = false;
         OfficerStateless.Visible = false;
         
-        JulioButtonHider.Visible = true;
+        JulioButtonHider.Visible = is_admin;
         JulioButton.Visible = true;
         
         switch(phases.currentPhase) {
