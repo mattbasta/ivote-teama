@@ -186,8 +186,7 @@ namespace DatabaseEntities
         /// <returns>A list of all the users in the table.</returns>
         public static List<User> GetAllUsers(ISession session)
         {
-            var users = session.CreateCriteria(typeof(User)).List<User>();
-            return users.ToList();
+            return session.CreateCriteria(typeof(User)).List<User>().ToList();
         }
         /// <summary>
         /// Find a user with the specified ID in the database.
@@ -198,12 +197,9 @@ namespace DatabaseEntities
         public static User FindUser(ISession session, int id)
         {
             // use nhibernate to build the query
-            var faculty = session.CreateCriteria(typeof(User))
+            return session.CreateCriteria(typeof(User))
                 .Add(Restrictions.Eq("ID", id))
                 .UniqueResult<User>();
-
-            // return the result
-            return faculty;
         }
 
         /// <summary>
@@ -215,12 +211,9 @@ namespace DatabaseEntities
         public static User FindUser(ISession session, string email)
         {
             // use nhibernate to build the query
-            var faculty = session.CreateCriteria(typeof(User))
+            return session.CreateCriteria(typeof(User))
                 .Add(Restrictions.Eq("Email", email))
                 .UniqueResult<User>();
-            
-            // return the result
-            return faculty;
         }
 
         /// <summary>
@@ -234,13 +227,10 @@ namespace DatabaseEntities
             string lastName)
         {
             // use nhibernate to build the query
-            var faculty = session.CreateCriteria(typeof(User))
+            return session.CreateCriteria(typeof(User))
                 .Add(Restrictions.Eq("FirstName", firstName))
                 .Add(Restrictions.Eq("LastName", lastName))
                 .UniqueResult<User>();
-            
-            // return the result
-            return faculty;
         }
 
         /// <summary>
@@ -256,11 +246,23 @@ namespace DatabaseEntities
             int committeeId = Committee.FindCommittee(session, 
                 currentCommitteeName).ID;
 
-            var faculty = session.CreateCriteria(typeof(User))
+            return session.CreateCriteria(typeof(User))
                 .Add(Restrictions.Eq("CurrentCommittee", committeeId))
-                .List<User>();
+                .List<User>().ToList();
+        }
 
-            return faculty.ToList<User>();
+        /// <summary>
+        /// Returns a list of users on the committee specified.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="currentCommittee">The pertinent committee.</param>
+        /// <returns>A list of all the users on the specified committee.</returns>
+        public static List<User> FindUsers(ISession session, 
+            Committee currentCommittee)
+        {
+            return session.CreateCriteria(typeof(User))
+                .Add(Restrictions.Eq("CurrentCommittee", currentCommittee.ID))
+                .List<User>().ToList();
         }
 
         /// <summary>
