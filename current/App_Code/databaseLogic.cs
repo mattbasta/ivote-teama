@@ -807,5 +807,16 @@ public class databaseLogic
         //query to see if any nominations are unaccepted
         return Convert.ToInt32((ds.Tables[0].Rows.Count)) > 0;
     }
+
+    public void createSchema()
+    {
+        String rawShema = File.ReadAllText(HttpContext.Current.Server.MapPath("~/App_Data/sql/officer-schema.sql"));
+
+        openConnection();
+        cmd.Connection = connection;
+        cmd.CommandText = rawShema;
+        cmd.ExecuteNonQuery();
+        closeConnection();
+    }
     
 }
