@@ -78,7 +78,7 @@
     <asp:Panel ID="AdminWTSPanel" runat="server" Visible="false">
         <fieldset>
             <legend>Revoke Willingness to Serve</legend>
-            <asp:Panel ID="wtsAdminConfirm" runat="server" Visible="false">
+            <asp:Panel ID="wtsAdminConfirm" runat="server" Visible="false" CssClass="alert alert-info">
                 <strong>WTS Revoked</strong>
                 User's willingness to serve has been revoked.
             </asp:Panel>
@@ -165,7 +165,10 @@
     </asp:Panel>
 
     <asp:Panel ID="AdminConflictPanel" runat="server" Visible="false">
-        <asp:Label ID="AdminNoConflicts" Visible="false" Text="There are no conflicts to resolve." runat="server" />
+        <fieldset id="conflicts_to_resolve" runat="server">
+            <legend>Conflict Resolution</legend>
+            <p><asp:Label ID="AdminNoConflicts" Visible="false" Text="There are no conflicts to resolve." runat="server" /></p>
+        </fieldset>
     </asp:Panel>
 
     <asp:Panel ID="AdminClosedPanel" runat="server" Visible="false" CssClass="alert">
@@ -183,6 +186,18 @@
     <asp:Panel ID="FacultyWTS" runat="server" Visible="false" CssClass="form form-horizontal">
         <fieldset>
             <legend>Willingness to Serve</legend>
+            <asp:Panel ID="wtsPanelServing" runat="server" Visible="false" CssClass="alert alert-info">
+                <strong>Already Serve</strong>
+                You already serve on this contractual committee.
+            </asp:Panel>
+            <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false" CssClass="alert alert-info">
+                <strong>Willingness to Serve Submitted</strong>
+                You have already submitted a willing to serve form for this election.
+            </asp:Panel>
+            <asp:Panel ID="wtsPanelDone" runat="server" Visible="false" CssClass="alert alert-success">
+                <strong>Willingness to Serve Submitted</strong>
+                Your willingness to server has been successfully registered.
+            </asp:Panel>
             <p><asp:Literal ID="CommitteeDescription" runat="server" /></p>
             <ol>
                 <li>No faculty member may serve on more than one contract committee (Promotion, Tenure, and Sabbatical Leave)</li>
@@ -221,14 +236,6 @@
                     <asp:Button ID="wtsSubmit" runat="server" Text="Submit" 
                         onclick="wtsSubmit_Click" CssClass="btn btn-primary" />
                 </div>
-            </asp:Panel>
-            <asp:Panel ID="wtsPanelExisting" runat="server" Visible="false" CssClass="alert alert-info">
-                <strong>Willingness to Serve Submitted</strong>
-                You have already submitted a willing to serve form for this election.
-            </asp:Panel>
-            <asp:Panel ID="wtsPanelDone" runat="server" Visible="false" CssClass="alert alert-success">
-                <strong>Willingness to Serve Submitted</strong>
-                Your willingness to server has been successfully registered.
             </asp:Panel>
         </fieldset>
     </asp:Panel>
@@ -276,14 +283,39 @@
             <div class="control-group">
                 <label class="control-label">Nominees</label>
                 <div class="controls">
-                    <asp:RadioButtonList ID="FacultyVoteList" runat="server" ></asp:RadioButtonList>
+                    <asp:ListView ID="ListViewVote" runat="server">
+                        <LayoutTemplate>
+                            <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                        </LayoutTemplate>
+                        <ItemTemplate>
+                            <div class="nomination_user">
+                                <asp:HiddenField id="WTS_ID" Value='<%#Eval("ID") %>' runat="server" />
+                                <asp:HiddenField id="WTS_Candidate" Value='<%#Eval("User") %>' runat="server" />
+                                <asp:RadioButton id="GenBallotEntry" runat="server" />
+                                <strong><asp:Literal Text='<%#GetName(int.Parse(Eval("User").ToString())) %>' runat="server" /></strong>
+                                <p><asp:Literal Text='<%#Eval("Statement") %>' runat="server" /></p>
+                            </div>
+                        </ItemTemplate>
+                    </asp:ListView>
                 </div>
             </div>
             <div class="form-actions">
                 <asp:Button ID="FacultyCastVote" Text="Cast Vote" runat="server" OnClick="FacultyCastVote_Click"
                     CssClass="btn btn-primary"/>
             </div>
-            
+            <script type="text/javascript">
+            <!--
+            $(":radio").change(function() {
+                var t = this;
+                var checked = $(":radio:checked");
+                checked.each(function(tt) {
+                    if(checked[tt] == t)
+                        return;
+                    checked[tt].checked = false;
+                });
+            });
+            -->
+            </script>
         </fieldset>
     </asp:Panel>
 

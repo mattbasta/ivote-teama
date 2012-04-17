@@ -39,10 +39,10 @@ public partial class committee_election : System.Web.UI.Page
         // grab the objects based off the committee ID
         election = CommitteeElection.FindElection(session, ElectionID);
         if (election == null)
-            Response.Redirect("home.aspx");
+            Response.Redirect("home.aspx#election_not_found");
         committee = Committee.FindCommittee(session, election.PertinentCommittee);
         if (committee == null)
-            Response.Redirect("home.aspx");
+            Response.Redirect("home.aspx#committee_not_found");
         
         CommitteeNameLiteral.Text = committee.Name;
         CommitteeNameLiteral2.Text = committee.Name;
@@ -72,7 +72,10 @@ public partial class committee_election : System.Web.UI.Page
                             wtsAlreadySubmitted = true;
                     }
 
-                    if (wtsAlreadySubmitted &&
+                    if(user.CurrentCommittee == committee.ID) {
+                        wtsPanelServing.Visible = true;
+                        wtsPanelNew.Visible = false;
+                    } else if (wtsAlreadySubmitted &&
                        (!committee.TenureRequired || user.IsTenured) &&
                        (!committee.BargainingUnitRequired || user.IsBargainingUnit))
                     {
@@ -131,6 +134,7 @@ public partial class committee_election : System.Web.UI.Page
         }
         
         DaysLeftInPhase();
+        JulioButton.Text = "Switch to Next Phase";
         switch(election.Phase) {
             case ElectionPhase.WTSPhase:
                 PhaseLiteral.Text = "WTS Phase";
@@ -143,9 +147,12 @@ public partial class committee_election : System.Web.UI.Page
                 break;
             case ElectionPhase.CertificationPhase:
                 PhaseLiteral.Text = "Certification Phase";
+                if(ElectionConflict.FindElectionConflicts(session, election.ID).Count == 0)
+                    JulioButton.Text = "Close Election";
                 break;
             case ElectionPhase.ConflictPhase:
                 PhaseLiteral.Text = "Conflict Resolution Phase";
+                JulioButton.Text = "Close Election";
                 break;
             case ElectionPhase.ClosedPhase:
                 PhaseLiteral.Text = "Closed";
@@ -540,14 +547,9 @@ public partial class committee_election : System.Web.UI.Page
 
         // Get nominees for this election.
         List<User> nominees = election.GetNominees(session);
-
-        foreach (User user in nominees)
-        {
-            ListItem toAdd = new ListItem(user.FirstName + " " + user.LastName);
-            toAdd.Value = user.ID.ToString();
-            FacultyVoteList.Items.Add(toAdd);
-
-        }
+        
+        ListViewVote.DataSource = election.Nominees(session);
+        ListViewVote.DataBind();
     }
 
     /// <summary>
@@ -604,7 +606,7 @@ public partial class committee_election : System.Web.UI.Page
     protected void FacultyCastVote_Click(Object sender, EventArgs e)
     {
         // No defined error because this should never happen IRL.
-        if(FacultyVoteList.Items.Count == 0)
+        if(ListViewVote.Items.Count == 0)
             return;
         
         // open the session
@@ -621,7 +623,14 @@ public partial class committee_election : System.Web.UI.Page
             // form the ballot entry
             BallotEntry entry = new BallotEntry();
             entry.Election = election.ID;
-            entry.Candidate = int.Parse(FacultyVoteList.SelectedValue);
+            
+            foreach(ListViewItem lvi in ListViewVote.Items) {
+                RadioButton r = (RadioButton)lvi.FindControl("GenBallotEntry");
+                if(r.Checked) {
+                    entry.Candidate = int.Parse(((HiddenField)lvi.FindControl("WTS_Candidate")).Value);
+                    break;
+                }
+            }
 
             // form the ballot flag
             BallotFlag flag = new BallotFlag();
@@ -735,35 +744,42 @@ public partial class committee_election : System.Web.UI.Page
     {
         // create the panel
         Panel panel = new Panel();
+        panel.CssClass = "alert";
         panel.ID = "ConflictPanel" + conflictID.ToString("0000");
 
 
         // Create a label which explicates the conflict
-        Label message = new Label();
-        message.Text = user.FirstName + " " + user.LastName + " was elected to the "
+        HtmlGenericControl message = new HtmlGenericControl("p");
+        message.InnerText = user.FirstName + " " + user.LastName + " was elected to the "
             + committee.Name;
-        message.Text +=
+        message.InnerText +=
             (user.CurrentCommittee != DatabaseEntities.User.NoCommittee) ?
-            (" but he currently serves on the " + user.CurrentCommittee) :
-            (" but he is currently a(n) " + user.OfficerPosition.ToString());
-        message.Text += ".  This member may only hold one position at a time.";
+            (" but he or she currently serves on the " + Committee.FindCommittee(session, user.CurrentCommittee).Name) :
+            (" but he or she is currently serving as the " + user.OfficerPosition.ToString());
+        message.InnerText += ". This member may only hold one position at a time.";
         panel.Controls.Add(message);
 
+        HtmlGenericControl hp = new HtmlGenericControl("p");
+        
         // add a button which will allow the admin to disqualify the
         // first person in the conflict
         Button first = new Button();
+        first.CssClass = "btn btn-warning";
         first.ID = user.Email + conflictID.ToString("0000");
         first.Text = "Disqualify " + user.FirstName + " " + user.LastName;
         first.Click += new EventHandler(this.Disq_Click);
-        panel.Controls.Add(first);
+        hp.Controls.Add(first);
 
         // add a button which will allow the admin to disqualify the
         // second person in the conflict
         Button second = new Button();
+        second.CssClass = "btn";
         second.ID = "Ignore" + conflictID.ToString("0000");
         second.Text = "Ignore conflict";
         second.Click += new EventHandler(this.Ignore_Click);
-        panel.Controls.Add(second);
+        hp.Controls.Add(second);
+        
+        panel.Controls.Add(hp);
 
         AdminConflictPanel.Controls.Add(panel);
     }
@@ -818,8 +834,7 @@ public partial class committee_election : System.Web.UI.Page
 
         // remove the panel that represented this now resolved conflict and delete
         // the election conflict
-        string idToFind = sendButton.ID.Substring(sendButton.ID.Length - 4,
-            4);
+        string idToFind = sendButton.ID.Substring(sendButton.ID.Length - 4, 4);
 
         // remove the election conflict
         int id = int.Parse(idToFind);
@@ -857,21 +872,15 @@ public partial class committee_election : System.Web.UI.Page
         wtsPanelNew.Visible = false;
         wtsPanelDone.Visible = true;
 
-
     }
 
     protected void wtsAcceptValidator_ServerValidate(object source, ServerValidateEventArgs args)
     {
-        if (wtsConfirm.Checked)
-            args.IsValid = true;
-        else
-            args.IsValid = false;
+        args.IsValid = wtsConfirm.Checked;
     }
 
     protected void wtsRevoke_Click(object sender, EventArgs e)
     {
-        wtsAdminConfirm.Visible = true;
-
         int id = int.Parse(((Button)sender).CommandArgument);
 
         ITransaction transaction = session.BeginTransaction();
@@ -880,5 +889,7 @@ public partial class committee_election : System.Web.UI.Page
         election.RevokeWTS(session, transaction, id);
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
+        wtsAdminConfirm.Visible = true;
+        
     }
 }
