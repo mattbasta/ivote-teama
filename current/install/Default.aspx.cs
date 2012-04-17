@@ -176,10 +176,42 @@ public partial class install_Default : System.Web.UI.Page
 
     protected void createScheme_Click(object sender, EventArgs e)
     {
+        //Legacy
         databaseLogic dbLogic = new databaseLogic();
         dbLogic.createSchema();
 
+        //NHibernate
         DatabaseEntities.NHibernateHelper.CreateSessionFactoryAndGenerateSchema();
+
+        //Default committees
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        ITransaction transaction = session.BeginTransaction();
+
+        Committee newCommittee = new Committee();
+        newCommittee.Name = "Sabbatical Leave Committee";
+        newCommittee.Description = "The Sabbatical Leave Committee receives applications for sabbatical and forwards recommendations to the University President.";
+        newCommittee.PositionCount = 7;
+        newCommittee.BargainingUnitRequired = true;
+        newCommittee.TenureRequired = false;
+        DatabaseEntities.NHibernateHelper.UpdateDatabase(session, newCommittee);
+
+        newCommittee = new Committee();
+        newCommittee.Name = "Promotion Committee";
+        newCommittee.Description = "The University Promotion Committee reviews recommendations for promotion from Departmental Promotion Committees and recommends candidates for promotion to the University President. During the spring semester, members spend 4-6 hours per week in meetings.";
+        newCommittee.PositionCount = 7;
+        newCommittee.BargainingUnitRequired = true;
+        newCommittee.TenureRequired = true;
+        DatabaseEntities.NHibernateHelper.UpdateDatabase(session, newCommittee);
+
+        newCommittee = new Committee();
+        newCommittee.Name = "Tenure Committee";
+        newCommittee.Description = "The University Tenure Committee reviews recommendations for tenure from Departmental Tenure Committees and recommends candidates for tenure to the University President. These activities take several hours per week during those periods when candidates are under active review.";
+        newCommittee.PositionCount = 7;
+        newCommittee.BargainingUnitRequired = true;
+        newCommittee.TenureRequired = true;
+        DatabaseEntities.NHibernateHelper.UpdateDatabase(session, newCommittee);
+
+        DatabaseEntities.NHibernateHelper.Finished(transaction);
 
         createSchemaStatus.Visible = true;
         createScheme.Enabled = false;
