@@ -164,7 +164,7 @@ namespace DatabaseEntities
                 List<User> userList = User.GetAllUsers(session);
                 userList.RemoveAll(x => (!(!com.TenureRequired || x.IsTenured) ||
                                         !(!com.BargainingUnitRequired || x.IsBargainingUnit)));
-
+                userList.RemoveAll(x => (x.CurrentCommittee == com.ID));
                 nEmailHandler emailHandler = new nEmailHandler();
                 emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseWTS");
             }
