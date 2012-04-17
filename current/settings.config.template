@@ -2,6 +2,8 @@
 <appSettings>
     <!-- Access with System.Configuration.ConfigurationManager.AppSettings["key"]; -->
 
+    <add key="required_nec_certs" value="3" />
+
     <!-- URL Configuration -->
     <add key="baseUrl" value=""/>
 

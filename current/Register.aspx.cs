@@ -43,15 +43,17 @@ public partial class Account_Register : System.Web.UI.Page
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
                 SuccessPanel.Visible = false;
                 ConflictPanel.Visible = false;
-            }
-            else if (committee != null &&
-                     Committee.DepartmentRepresented(session, committee, (DepartmentType)Enum.Parse(typeof(DepartmentType), DeptDropDown.SelectedValue)))
+            } else if(committee != null &&
+                      Committee.DepartmentRepresented(session, committee, (DepartmentType)Enum.Parse(typeof(DepartmentType), DeptDropDown.SelectedValue)))
             {
                 ConflictPanel.Visible = true;
+                InElectionPanel.Visible = false;
                 SuccessPanel.Visible = false;
-            }
-            else
-            {
+            } else if(committee != null && committee.InElection(session)) {
+                InElectionPanel.Visible = true;
+                ConflictPanel.Visible = false;
+                SuccessPanel.Visible = false;
+            } else {
                 string user = Email.Text;
 
                 User nUser = CreateUser(Email.Text, FirstName.Text, LastName.Text, DeptDropDown.SelectedValue);

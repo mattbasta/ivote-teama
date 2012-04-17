@@ -51,68 +51,69 @@ public partial class committee_election : System.Web.UI.Page
 
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
 
-        // If the user isn't an admin or nec...
-        if (user.CanVote)
+        // expose the pertinent panel based on the state of the election.
+        switch (election.Phase)
         {
-            // expose the pertinent panel based on the state of the election.
-            switch (election.Phase)
-            {
-                case ElectionPhase.WTSPhase:
-                    //*******************************
-                    //****** Faculty WTS Load *******
-                    //*******************************
-                    //Check if WTS already exists
-                    List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
-                    bool wtsAlreadySubmitted = false;
-                    foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
-                    {
-                        if (wts.Election == election.ID && wts.User == user.ID &&
-                            (!committee.TenureRequired || user.IsTenured) &&
-                            (!committee.BargainingUnitRequired || user.IsBargainingUnit))
-                            wtsAlreadySubmitted = true;
-                    }
-
-                    if(user.CurrentCommittee == committee.ID) {
-                        wtsPanelServing.Visible = true;
-                        wtsPanelNew.Visible = false;
-                    } else if (wtsAlreadySubmitted &&
-                       (!committee.TenureRequired || user.IsTenured) &&
-                       (!committee.BargainingUnitRequired || user.IsBargainingUnit))
-                    {
-                        wtsPanelExisting.Visible = true;
-                        wtsPanelNew.Visible = false;
-                    }
-                    if ((!committee.TenureRequired || user.IsTenured) &&
+            case ElectionPhase.WTSPhase:
+                //*******************************
+                //****** Faculty WTS Load *******
+                //*******************************
+                //Check if WTS already exists
+                List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
+                bool wtsAlreadySubmitted = false;
+                foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
+                {
+                    if (wts.Election == election.ID && wts.User == user.ID &&
+                        (!committee.TenureRequired || user.IsTenured) &&
                         (!committee.BargainingUnitRequired || user.IsBargainingUnit))
-                        FacultyWTS.Visible = true;
+                        wtsAlreadySubmitted = true;
+                }
 
-                    break;
-                case ElectionPhase.NominationPhase:
-                    if (CommitteeWTSNomination.FindCommitteeWTSNomination(session,
-                        election.ID, user.ID).Count == 0)
-                    {
-                        FacultyNomination.Visible = true;
-                        BuildUserNominationOptions();
-                    }
-                    else
-                        FacultyNominationComplete.Visible = true;
-                    break;
-                case ElectionPhase.VotePhase:
-                    if (BallotFlag.FindBallotFlag(session, election.ID, user.ID) ==
-                        null)
-                    {
-                        FacultyVote.Visible = true;
-                        BuildUserVoteOptions();
-                    }
-                    else
-                        FacultyVoteComplete.Visible = true;
-                    break;
-                case ElectionPhase.ClosedPhase:
-                    if (!user.IsNEC && !user.IsAdmin)
-                        FacultyClosed.Visible = true;
-                    break;
-            }
+                if(user.CurrentCommittee == committee.ID) {
+                    wtsPanelServing.Visible = true;
+                    wtsPanelNew.Visible = false;
+                } else if (wtsAlreadySubmitted &&
+                   (!committee.TenureRequired || user.IsTenured) &&
+                   (!committee.BargainingUnitRequired || user.IsBargainingUnit))
+                {
+                    wtsPanelExisting.Visible = true;
+                    wtsPanelNew.Visible = false;
+                }
+                if ((!committee.TenureRequired || user.IsTenured) &&
+                    (!committee.BargainingUnitRequired || user.IsBargainingUnit))
+                    FacultyWTS.Visible = true;
 
+                break;
+            case ElectionPhase.NominationPhase:
+                if(!user.CanVote)
+                    break;
+                
+                if (CommitteeWTSNomination.FindCommitteeWTSNomination(session,
+                    election.ID, user.ID).Count == 0)
+                {
+                    FacultyNomination.Visible = true;
+                    BuildUserNominationOptions();
+                }
+                else
+                    FacultyNominationComplete.Visible = true;
+                break;
+            case ElectionPhase.VotePhase:
+                if(!user.CanVote)
+                    break;
+                
+                if (BallotFlag.FindBallotFlag(session, election.ID, user.ID) ==
+                    null)
+                {
+                    FacultyVote.Visible = true;
+                    BuildUserVoteOptions();
+                }
+                else
+                    FacultyVoteComplete.Visible = true;
+                break;
+            case ElectionPhase.ClosedPhase:
+                if (!user.IsNEC && !user.IsAdmin)
+                    FacultyClosed.Visible = true;
+                break;
         }
         
         JulioButtonHider.Visible = user.IsAdmin;
@@ -167,7 +168,7 @@ public partial class committee_election : System.Web.UI.Page
 
             if(election.Phase >= ElectionPhase.ClosedPhase)
                 closed_tab.Visible = true;
-            if (election.Phase >= ElectionPhase.ConflictPhase)
+            if (election.Phase == ElectionPhase.ConflictPhase)
             {
                 List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, election.ID);
                 foreach (ElectionConflict conflict in conflicts)
@@ -184,22 +185,30 @@ public partial class committee_election : System.Web.UI.Page
                             conflictUser2, conflictUser2.Department, conflict.ID);
                     }
                 }
+                JulioButtonHider.Visible = conflicts.Count == 0;
                 if (conflicts.Count == 0)
                     AdminNoConflicts.Visible = true;
+                else
+                    DaysRemaining.Text = "The election cannot be closed while conflicts are present.";
+                
                 conflicts_tab.Visible = true;
             }
+            
             if (election.Phase >= ElectionPhase.CertificationPhase)
             {
                 int numberCertifications = Certification.FindCertifications(session, election.ID).Count;
+                string req_certs = System.Configuration.ConfigurationManager.AppSettings["required_nec_certs"];
+                int nec_certs = req_certs != null ? int.Parse(req_certs) : 3;
+                
                 AdminCertCount.Text = "There are currently " + numberCertifications.ToString();
-                if (numberCertifications >= 3) // TODO: Add a button to advance to the next phase.
+                if (numberCertifications >= nec_certs) // TODO: Add a button to advance to the next phase.
                     AdminCertCount.Text += " certifications, which is enough to proceed to the next stage.";
                 else
                     AdminCertCount.Text += " certification(s).  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
-                necprogressbar.Attributes.Add("style", "width: " + Math.Min(100, numberCertifications * 33.33).ToString() + "%");
+                necprogressbar.Attributes.Add("style", "width: " + Math.Min(100, numberCertifications * (100 / nec_certs)).ToString() + "%");
 
-                if(numberCertifications < 3) {
+                if(numberCertifications < nec_certs) {
                     HtmlGenericControl pretext = new HtmlGenericControl("span");
                     pretext.InnerText = certifications_tab_link.Text;
                     certifications_tab_link.Controls.Add(pretext);
@@ -223,7 +232,8 @@ public partial class committee_election : System.Web.UI.Page
                 nominations_tab.Visible = true;
                 BuildAdminNominationTable();
             }
-            if(election.Phase >= ElectionPhase.WTSPhase)
+            if(election.Phase >= ElectionPhase.WTSPhase &&
+               election.Phase < ElectionPhase.ClosedPhase)
                 wts_tab.Visible = true;
 
             //*******************************
