@@ -173,6 +173,7 @@ namespace DatabaseEntities
                 List<User> userList = User.GetAllUsers(session);
 
                 nEmailHandler emailHandler = new nEmailHandler();
+                userList.RemoveAll(x => (!x.CanVote));
                 emailHandler.sendGenericCommitteePhase(this, userList, "committeePhaseNomination");
             }
             else if (electionPhase == ElectionPhase.VotePhase)
