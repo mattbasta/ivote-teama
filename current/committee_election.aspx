@@ -18,7 +18,7 @@
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p>
             <asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" />
-            <a href="javascript:$('#MainContent_phasedelta').toggle();" runat="server" id="phasedeltaedit" Visible="false">(edit)</a>
+            <a href="#" onclick="$('#MainContent_phasedelta').toggle();return false;" runat="server" id="phasedeltaedit" Visible="false">(edit)</a>
         </p>
         <p id="phasedelta" style="display:none" runat="server" Visible="false">
             <asp:TextBox ID="DeltaText" runat="server" TextMode="SingleLine" MaxLength="2"  />

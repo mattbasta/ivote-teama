@@ -280,7 +280,7 @@ public partial class committee_election : System.Web.UI.Page
     protected void Page_PreRender(object sender, EventArgs e)
     {
         if(user.IsAdmin)
-            DeltaText.Text = (election.PhaseEndDelta + num_days_remaining()).ToString();
+            DeltaText.Text = num_days_remaining().ToString();
         
         if(user.IsAdmin && election.Phase != ElectionPhase.ClosedPhase) {
             phasedelta.Visible = true;

@@ -71,6 +71,7 @@ footer
 #MainContent_phasedelta div {
     top: -20px;
     left: 10px;
+    vertical-align: middle;
 }
 
 .make_block {display: block;}
