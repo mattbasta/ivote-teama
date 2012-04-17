@@ -30,9 +30,15 @@ $(document).ready(function() {
         <strong>User Created Successfully</strong>
         The user should recieve a validation email within the next 10 minutes.
     </asp:Panel>
+    
     <asp:Panel ID="ConflictPanel" runat="server" Visible="false" CssClass="alert">
         <strong>Conflict</strong>
         Adding this user to the specified committee would cause a conflict within that committee.
+    </asp:Panel>
+
+    <asp:Panel ID="InElectionPanel" runat="server" Visible="false" CssClass="alert alert-error">
+        <strong>User was not updated.</strong>
+        You cannot add users to a committee that is currently in an election cycle.
     </asp:Panel>
 
     <p>Use the form below to create a new account.</p>

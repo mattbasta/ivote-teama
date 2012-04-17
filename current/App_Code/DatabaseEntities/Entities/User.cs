@@ -349,16 +349,13 @@ namespace DatabaseEntities
         /// <param name="user">A reference to the user to be added</param>
         /// <param name="committee">The name of the committee the user is to be added to.</param>
         /// <returns>True if the operation was successful.</returns>
-        public virtual bool AddToCommittee(ISession session, string committee)
+        public virtual bool AddToCommittee(ISession session, Committee com)
         {
-            Committee com = Committee.FindCommittee(session, committee);
             if (com != null)
             {
                 // Note that the logical if then (A -> B) binary operation
                 // is equivalent to (~A v B) 
-                if ((this.CurrentCommittee == NoCommittee ||
-                    this.CurrentCommittee == com.ID) &&
-                    (!com.TenureRequired || this.IsTenured) && // logical if then
+                if ((!com.TenureRequired || this.IsTenured) && // logical if then
                     (!com.BargainingUnitRequired || this.IsBargainingUnit) && // logical if then
                     com.NumberOfVacancies(session) > 0)
                 {
