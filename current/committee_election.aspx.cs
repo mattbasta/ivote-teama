@@ -185,10 +185,15 @@ public partial class committee_election : System.Web.UI.Page
                             conflictUser2, conflictUser2.Department, conflict.ID);
                     }
                 }
+                JulioButtonHider.Visible = conflicts.Count == 0;
                 if (conflicts.Count == 0)
                     AdminNoConflicts.Visible = true;
+                else
+                    DaysRemaining.Text = "The election cannot be closed while conflicts are present.";
+                
                 conflicts_tab.Visible = true;
             }
+            
             if (election.Phase >= ElectionPhase.CertificationPhase)
             {
                 int numberCertifications = Certification.FindCertifications(session, election.ID).Count;
