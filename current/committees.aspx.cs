@@ -53,7 +53,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
             string toAdd = "";
             for(int j = 0; j < users.Count; j++)
             {
-                toAdd += users[j].FirstName + " " + users[j].LastName + ((j != users.Count - 1) ? (", "):(""));
+                toAdd += users[j].FirstName + " " + users[j].LastName + ((j != users.Count - 1) ? ("<br />"):(""));
             }
             members = new TableCell();
             members.Controls.Add(new LiteralControl(toAdd));
