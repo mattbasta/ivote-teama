@@ -47,7 +47,7 @@
         <asp:Panel ID="OfficerStateless" Visible="false" runat="server" CssClass="election">
             <strong>No Active Officer Election</strong>
             <p>There are currently no active election phases. This could mean that there is no election running, or that there is no action required on your part at this time.</p>
-            <a class="btn" href="/initiate.aspx" id="initiate_new_officer_election" runat="server" Visible="false">Initiate New Election</a>
+            <p><a class="btn" href="/initiate.aspx" id="initiate_new_officer_election" runat="server" Visible="false">Initiate New Election</a></p>
         </asp:Panel>
         
         <asp:Panel ID="OfficerNominate" Visible="false" runat="server" CssClass="election">
