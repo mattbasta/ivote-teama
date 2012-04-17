@@ -24,20 +24,18 @@
         <strong>User was not updated.</strong>
         The user is either ineligible for this committee, or the committee is full.
     </asp:Panel>
+
+    <asp:Panel ID="InElectionPanel" runat="server" Visible="false" CssClass="alert alert-error">
+        <strong>User was not updated.</strong>
+        You cannot add users to a committee that is currently in an election cycle.
+    </asp:Panel>
     
     <fieldset class="form form-horizontal">
         <legend>Account Information</legend>
         <div class="control-group">
             <asp:Label CssClass="control-label" ID="EmailLabel" runat="server" AssociatedControlID="Email">E-mail:</asp:Label>
             <div class="controls">
-                <asp:TextBox ID="Email" runat="server" CssClass="textEntry"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="EmailRequired" runat="server" ControlToValidate="Email"
-                     CssClass="red" Display="Dynamic" ErrorMessage="Please enter the new user's e-mail address." ToolTip="E-mail is required."
-                     ValidationGroup="RegisterUserValidationGroup">*</asp:RequiredFieldValidator>
-                <asp:RegularExpressionValidator runat="server"
-                    ValidationExpression="^([\w\-\.]+)@((\[([0-9]{1,3}\.){3}[0-9]{1,3}\])|(([\w\-]+\.)+)([a-zA-Z]{2,4}))$"
-                    CssClass="red" ControlToValidate="Email" ValidationGroup="RegisterUserValidationGroup" Display="Dynamic"
-                    ErrorMessage="Please enter a valid e-mail address.">*</asp:RegularExpressionValidator>
+                <asp:TextBox ID="Email" runat="server" CssClass="textEntry" Enabled="false"></asp:TextBox>
             </div>
         </div>
         <div class="control-group">

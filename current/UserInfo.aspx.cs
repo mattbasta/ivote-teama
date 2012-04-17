@@ -87,6 +87,8 @@ public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
     //ADD CHECK AGAINST EMAIL IN THE DATABASE
     protected void ButtonSave_Clicked(object sender, EventArgs e)
     {
+        SuccessPanel.Visible = false;
+        
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
@@ -94,18 +96,7 @@ public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
 
         user.FirstName = FirstName.Text;
         user.LastName = LastName.Text;
-        user.Email = Email.Text;
         
-        if (CurrentCommittee.SelectedValue != "-1" &&
-            !user.AddToCommittee(session, Committee.FindCommittee(session, int.Parse(CurrentCommittee.SelectedValue)).Name))
-        {
-            FailurePanel.Visible = true;
-            return;
-        }
-        else {
-            FailurePanel.Visible = false;
-            user.CurrentCommittee = int.Parse(CurrentCommittee.SelectedValue);
-        }
         user.Department = (DatabaseEntities.DepartmentType)Enum.Parse(typeof(DatabaseEntities.DepartmentType), DeptDropDown.SelectedValue);
 
         user.IsAdmin = IsAdmin.Checked;
@@ -118,11 +109,28 @@ public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
         user.CanVote = CanVote.Checked;
 
         session.SaveOrUpdate(user);
-
-        SuccessPanel.Visible = true;
+        
+        if(CurrentCommittee.SelectedValue != user.CurrentCommittee.ToString()) {
+            Committee c = CurrentCommittee.SelectedValue != "-1" ?
+                              Committee.FindCommittee(session, int.Parse(CurrentCommittee.SelectedValue)) :
+                              null;
+            bool is_in_election = c != null && c.InElection(session);
+            if (c != null && (is_in_election || !user.AddToCommittee(session, c))) {
+                if(is_in_election)
+                    InElectionPanel.Visible = true;
+                else
+                    FailurePanel.Visible = true;
+                return;
+            } else {
+                InElectionPanel.Visible = false;
+                FailurePanel.Visible = false;
+                SuccessPanel.Visible = true;
+                user.CurrentCommittee = int.Parse(CurrentCommittee.SelectedValue);
+                session.SaveOrUpdate(user);
+            }
+        }
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
-
     }
 
     protected void ButtonDelete_Clicked(object sender, EventArgs e)

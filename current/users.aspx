@@ -36,7 +36,7 @@
                 <asp:HiddenField ID="Sort" runat="server" />
                 
                 <div style="margin-left: auto; width:95%; margin-right: auto">
-                <asp:GridView ID="GridViewUsers" runat="server" OnRowCommand="GridViewUsers_RowCommand" CssClass="table table-bordered" AutoGenerateColumns="False" AllowSorting="true" OnSorting="sorting">
+                <asp:GridView GridLines="none" ID="GridViewUsers" runat="server" OnRowCommand="GridViewUsers_RowCommand" CssClass="table table-bordered" AutoGenerateColumns="False" AllowSorting="true" OnSorting="sorting">
                     <Columns>        
                         <asp:TemplateField HeaderText="Full Name" SortExpression="LastName">
                             <ItemTemplate>

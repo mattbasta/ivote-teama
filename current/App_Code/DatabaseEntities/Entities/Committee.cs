@@ -95,6 +95,19 @@ namespace DatabaseEntities
         }
 
         /// <summary>
+        /// Returns whether the committee has an ongoing election.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <returns>A bool of whether the committee is in an election</returns>
+        public virtual bool InElection(ISession session)
+        {
+            return session.CreateCriteria(typeof(CommitteeElection))
+                                   .Add(Restrictions.Eq("PertinentCommittee", ID))
+                                   .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
+                                   .List().Count > 0;
+        }
+
+        /// <summary>
         /// This function calculates the number of vancies in a given committee.
         /// </summary>
         /// <param name="session">A valid sesssion.</param>
