@@ -192,15 +192,18 @@ public partial class committee_election : System.Web.UI.Page
             if (election.Phase >= ElectionPhase.CertificationPhase)
             {
                 int numberCertifications = Certification.FindCertifications(session, election.ID).Count;
+                string req_certs = System.Configuration.ConfigurationManager.AppSettings["required_nec_certs"];
+                int nec_certs = req_certs != null ? int.Parse(req_certs) : 3;
+                
                 AdminCertCount.Text = "There are currently " + numberCertifications.ToString();
-                if (numberCertifications >= 3) // TODO: Add a button to advance to the next phase.
+                if (numberCertifications >= nec_certs) // TODO: Add a button to advance to the next phase.
                     AdminCertCount.Text += " certifications, which is enough to proceed to the next stage.";
                 else
                     AdminCertCount.Text += " certification(s).  More NEC members must certify the results before proceeding.";
                 certifications_tab.Visible = true;
-                necprogressbar.Attributes.Add("style", "width: " + Math.Min(100, numberCertifications * 33.33).ToString() + "%");
+                necprogressbar.Attributes.Add("style", "width: " + Math.Min(100, numberCertifications * (100 / nec_certs)).ToString() + "%");
 
-                if(numberCertifications < 3) {
+                if(numberCertifications < nec_certs) {
                     HtmlGenericControl pretext = new HtmlGenericControl("span");
                     pretext.InnerText = certifications_tab_link.Text;
                     certifications_tab_link.Controls.Add(pretext);
