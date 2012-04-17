@@ -19,6 +19,7 @@ public partial class install_Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         CheckConfiguration();
+        baseUrlStatus.Text = Server.MapPath("Faculty.accdb");
     }
 
     private void CheckConfiguration()
@@ -166,7 +167,6 @@ public partial class install_Default : System.Web.UI.Page
             smtpEnableSSLStatus.Text = smtpEnableSSL;
             smtpEnableSSLStatus.CssClass = "bad";
         }
-            
 
     }
     protected void checkSettings_Click(object sender, EventArgs e)
@@ -213,6 +213,11 @@ public partial class install_Default : System.Web.UI.Page
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
 
+        databaseLogic dbLogic = new databaseLogic();
+        dbLogic.createSchema();
+
+        DatabaseEntities.NHibernateHelper.CreateSessionFactoryAndGenerateSchema();
+
         createSchemaStatus.Visible = true;
         createScheme.Enabled = false;
     }
@@ -221,7 +226,6 @@ public partial class install_Default : System.Web.UI.Page
     {
         if (!Page.IsValid)
             return;
-        
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         ITransaction transaction = session.BeginTransaction();
 
@@ -248,5 +252,14 @@ public partial class install_Default : System.Web.UI.Page
 
         createUserStatus.Visible = true;
         createUser.Enabled = false;
+    }
+
+    protected void importUsers_Click(object sender, EventArgs e)
+    {
+        ISession session = NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User.ImportUsers(session, Server.MapPath("Faculty.accdb"));
+        session.Flush();
+        importUsers.Enabled = false;
+        importUserStatus.Visible = true;
     }
 }

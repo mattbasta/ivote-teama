@@ -568,7 +568,7 @@ namespace DatabaseEntities
                 Chunk sigLine = new Chunk("                                                  \n");
                 sigLine.SetUnderline(0.5f, -1.5f);
                 Phrase signatureArea = new Phrase();
-                signatureArea.Add("I hereby certify the results of this election: ");
+                signatureArea.Add("I hereby certify the results of this election:\n");
                 signatureArea.Add(sigLine);
                 signatureArea.Add(certifyingUser.FirstName + " " + certifyingUser.LastName + "\n\n");
                 doc.Add(signatureArea);

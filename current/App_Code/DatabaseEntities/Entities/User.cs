@@ -19,6 +19,9 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 
+using System.Data.OleDb;
+using System.Data;
+
 namespace DatabaseEntities
 {
     /// <summary>
@@ -27,12 +30,12 @@ namespace DatabaseEntities
     public enum DepartmentType
     {
         None, Staff, Other, ACC, AER, AMS, ANT, ARA, ART, ARC, ARU,
-        ARH, ASE, AST, AVC, BTE, BIO, BUS, CHM, CHI, CDE, CDH, CSC,
+        ARH, ASE, AST, AVC, BTE, BIO, BUS, CHM, CHI, CDE, CDH, COU, CSC,
         CPY, CFT, CRJ, DAN, DVE, DVR, ECO, EDU, EDW, ELU, EGR, ENG, ENU,
         ENV, FIN, FAR, FAS, FLA, FRE, FRS, GEE, GEG, GEL, GER, HEA, HIS,
         HPD, HUM, ITC, INT, IST, LIB, MGM, MAR, MAT, MKT, MAU, MED,
         MIC, MIL, MLS, MCS, MUS, MUU, MUP, NSE, NUR, PLG, PHI, PED,
-        PHY, POL, PRO, PSY, RAR, RSS, RUS, SCI, SCU, SEU, SSC, SSE,
+        PHY, POL, PRO, PSY, RAR, RSS, RUS, SCI, SCU, SEU, SSC, SSE, SPT,
         SSU, SWK, SWL, SOC, SPA, SPU, SPE, THE, TVR, UST, WRI, WST
     };
 
@@ -53,6 +56,13 @@ namespace DatabaseEntities
     public class User
     {
         // Parameters
+        /// <summary>
+        /// The default password for imported users.
+        /// </summary>
+        public static string DefaultPassword = "ivoteteamaisawesome";
+        /// <summary>
+        /// The value to assign to User.CurrentCommittee if the user is not in a committee.
+        /// </summary>
         public static int NoCommittee = -1;
         /// <summary>
         /// The self-incrementing, unique ID number for this user.
@@ -390,7 +400,7 @@ namespace DatabaseEntities
         /// </summary>
         /// <param name="session">A valid session.</param>
         /// <param name="email">Email</param>
-        /// <returns></returns>
+        /// <returns>True if the email is found, false otherwise.</returns>
         public static bool CheckIfEmailExists(ISession session, string email)
         {
             // pull a list of all the users from the database.
@@ -403,6 +413,200 @@ namespace DatabaseEntities
             }
             // otherwise, return false
             return false;
+        }
+
+        /// <summary>
+        /// Returns the DepartmentType enum which corresponds to the department
+        /// name written in full in a string.
+        /// </summary>
+        /// <param name="name">The name of the department.</param>
+        /// <returns>The enum value for the department.</returns>
+        private static DepartmentType GetDepartment(string name)
+        {
+            // these strings come right out of the outlook database.
+            switch (name)
+            {
+                case "ACADEMIC ADVISEMENT":
+                    return DepartmentType.Other;
+                case "ACADEMIC ENRICHMENT":
+                    return DepartmentType.Other;
+                case "ANTH/SOC":
+                    return DepartmentType.ANT;
+                case "ANTH/SOCIOLOGY":
+                    return DepartmentType.ANT;
+                case "ANTHROPOLOGY/SOC":
+                    return DepartmentType.ANT;
+                case "ANTHROPOLOGY/SOCIOLOGY":
+                    return DepartmentType.ANT;
+                case "ART ED/CRAFTS":
+                    return DepartmentType.ARU;
+                case "ATHLETICS":
+                    return DepartmentType.PED;
+                case "BIOLOGY":
+                    return DepartmentType.BIO;
+                case "BUSINESS ADMINISTRATION":
+                    return DepartmentType.ACC;
+                case "BUSINESS ADMINISTRATOIN": // typo is in the database
+                    return DepartmentType.ACC;
+                case "BUSINESS ADMINISTRATON": // typo is in the database
+                    return DepartmentType.ACC;
+                case "COMM STUDIES & THEATRE":
+                    return DepartmentType.THE;
+                case "COMMIUNICATION STUDIES": // this is how it is written in the database.
+                    return DepartmentType.SPE;
+                case "COMMUNICATIN STUDIES": // this error is present as well.
+                    return DepartmentType.SPE;
+                case "COMMUNICATION DESIGN":
+                    return DepartmentType.CDE;
+                case "COMMUNICATION SUDIES": // another spelling error
+                    return DepartmentType.SPE;
+                case "COMMUNICATIONS STUDIES":
+                    return DepartmentType.SPE;
+                case "COMMUNICTION STUDIES": // another spelling error
+                    return DepartmentType.SPE;
+                case "COMPUTER SCIENCE":
+                    return DepartmentType.CSC;
+                case "COUNS/HUM SERV":
+                    return DepartmentType.COU;
+                case "COUNSELING/HUM SERV":
+                    return DepartmentType.COU;
+                case"CRIMINAL JUSTICE":
+                    return DepartmentType.CRJ;
+                case "CRIMINAL JUSTICS":
+                    return DepartmentType.CRJ; 
+                case "COUNS/PSYCH SERV":
+                    return DepartmentType.CPY;
+                case "COUNS/PSYCH/SERV":
+                    return DepartmentType.CPY;
+                case "ELECTRONIC MEDIA":
+                    return DepartmentType.TVR;
+                case "ELEMENTARY ED":
+                    return DepartmentType.ELU;
+                case "ENGLISH":
+                    return DepartmentType.ENG;
+                case "FINE ARTS":
+                    return DepartmentType.FAR;
+                case "GEOGRAPHY":
+                    return DepartmentType.GEG;
+                case "HISTORY":
+                    return DepartmentType.HIS;
+                case "LIB SCI/INST TECH":
+                    return DepartmentType.LIB;
+                case "LIBRARY":
+                    return DepartmentType.LIB;
+                case "LIBRARY SCI/INST TECH":
+                    return DepartmentType.LIB;
+                case "LIBRARY SCIENCE/INST TECH":
+                    return DepartmentType.LIB;
+                case "MATHEMATICS":
+                    return DepartmentType.MAT;
+                case "MODERN LANGUAGE  STUDIES":
+                    return DepartmentType.MLS;
+                case "MODERN LANGUAGE STUDIES":
+                    return DepartmentType.MLS;
+                case "MUSIC":
+                    return DepartmentType.MUS;
+                case "NURSING":
+                    return DepartmentType.NUR;
+                case "PHILOSOPHY":
+                    return DepartmentType.PHI;
+                case "PHYSICAL  SCIENCES": // two spaces on purpose
+                    return DepartmentType.PHY;
+                case "PHYSICAL SCIENCE":
+                    return DepartmentType.PHY;
+                case "PHYSICAL SCIENCES":
+                    return DepartmentType.PHY;
+                case "POLITICAL SCIENCE":
+                    return DepartmentType.POL;
+                case "PROFESSIONAL STUDIES":
+                    return DepartmentType.PRO;
+                case "PSYCHOLOGY":
+                    return DepartmentType.PSY;
+                case "PYSCHOLOGY":
+                    return DepartmentType.PSY;
+                case "SECONDARY ED":
+                    return DepartmentType.SEU;
+                case "SOCIAL WORK":
+                    return DepartmentType.SWK;
+                case "SPECIAL ED":
+                    return DepartmentType.SPU;
+                case "SPECIAL EDUCATION":
+                    return DepartmentType.SPU;
+                case "SPORT MANAGEMENT":
+                    return DepartmentType.SPT;
+                default:
+                    return DepartmentType.None;
+            }
+        }
+
+        /// <summary>
+        /// This function imports all the the users in a .accdb file which is
+        /// formatted like the example file Karen gave to us.  The .accdb
+        /// will just be on the server.
+        /// </summary>
+        /// <param name="session">A valid session.</param>
+        /// <param name="filePath"></param>
+        /// <returns>True if the import was successful, false otherwise.</returns>
+        public static bool ImportUsers(ISession session, string filePath)
+        {
+            DataSet data = new DataSet();
+            using (OleDbConnection connection =
+                new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath + ";Persist Security Info=False;"))
+            {
+                OleDbCommand command = new OleDbCommand("SELECT * FROM Faculty",connection);
+                OleDbDataAdapter adapter = new OleDbDataAdapter(command);
+
+                try
+                {
+                    connection.Open();
+                    adapter.Fill(data, "Faculty");
+                }
+                catch(Exception e)
+                {
+                    return false;
+                }
+                connection.Close();
+            }
+            DataRowCollection rows = data.Tables["Faculty"].Rows;
+            foreach (DataRow row in rows)
+            {
+                User user = new User();
+                user.LastName = row.Field<string>("Last");
+                user.FirstName = row.Field<string>("First");
+                
+                user.Department = User.GetDepartment(row.Field<string>("Department"));
+                if (user.Department == DepartmentType.None)
+                    return false;
+
+
+                // Im assuming N = not tenured
+                // T = tenured
+                // O = I don't know but im marking it in as not tenured for now.
+                string tenured = row.Field<string>("Tenure");
+                user.IsTenured = (tenured == "T") ? true : false;
+                // this field is either 1 or 2.  Im assuming 2 means they aren't tenured
+                user.IsUnion = (row.Field<Int16?>("Union") == 1) ? true : false;
+
+                user.Email = row.Field<string>("Email");
+                if(string.IsNullOrEmpty(user.Email))
+                    user.Email = "Please retrieve the email for this user.";
+
+                user.Password = User.Hash(User.DefaultPassword);
+                user.PasswordHint = "Please see the email you recieved in regards to signing up on the iVote system.";
+                user.LastLogin = DateTime.Now;
+                user.OfficerPosition = OfficerPositionType.None;
+                user.IsFaculty = true;
+                user.IsAdmin = false;
+                user.IsBargainingUnit = false;
+                user.IsNEC = false;
+                user.CanVote = true;
+                user.CurrentCommittee = User.NoCommittee;
+
+
+                session.SaveOrUpdate(user);
+            }
+            session.Flush();
+            return true;
         }
     }
 }

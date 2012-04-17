@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
+<head id="Head1" runat="server">
     <title>iVote System Installation</title>
     
     <style type="text/css">
@@ -96,6 +96,17 @@
         <asp:Label ID="createUserStatus" runat="server" 
             Text="Initial admin user created. You may now use the system." CssClass="good" 
             Visible="False"></asp:Label>
+        <br />
+        <hr />
+        <br />
+        <strong>Import users:</strong><br />
+        This option will import users from the outlook database and insert them into 
+        the user table with all the information provided.  All accounts will have the 
+        default password 'ivoteteamaisawesome' and users will be required to change 
+        this password upon their initial login.  <br /><br />
+        <asp:Button ID="importUsers" runat="server" OnClick="importUsers_Click"
+            Text="Import Users" />
+            <asp:Label ID="importUserStatus" runat="server" Text="Done" CssClass="good" Visible="false"></asp:Label>
         </div>
     </form>
 </body>
