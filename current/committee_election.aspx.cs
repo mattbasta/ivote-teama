@@ -168,7 +168,7 @@ public partial class committee_election : System.Web.UI.Page
 
             if(election.Phase >= ElectionPhase.ClosedPhase)
                 closed_tab.Visible = true;
-            if (election.Phase >= ElectionPhase.ConflictPhase)
+            if (election.Phase == ElectionPhase.ConflictPhase)
             {
                 List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, election.ID);
                 foreach (ElectionConflict conflict in conflicts)
@@ -227,7 +227,8 @@ public partial class committee_election : System.Web.UI.Page
                 nominations_tab.Visible = true;
                 BuildAdminNominationTable();
             }
-            if(election.Phase >= ElectionPhase.WTSPhase)
+            if(election.Phase >= ElectionPhase.WTSPhase &&
+               election.Phase < ElectionPhase.ClosedPhase)
                 wts_tab.Visible = true;
 
             //*******************************
