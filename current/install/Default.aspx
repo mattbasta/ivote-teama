@@ -59,7 +59,7 @@
         <br />
         <br />
         <asp:Button ID="checkSettings" runat="server" onclick="checkSettings_Click" 
-            Text="Recheck Settings" />
+            Text="Recheck Settings" CausesValidation="False" />
         <br />
         <hr />
         <br />
@@ -67,7 +67,7 @@
         This option will generate the initial database schema. This will completely 
         clear and reset the database.<br /><br />
         <asp:Button ID="createScheme" runat="server" onclick="createScheme_Click" 
-            Text="Create Schema" />
+            Text="Create Schema" CausesValidation="False" />
         <asp:Label ID="createSchemaStatus" runat="server" Text="Done" CssClass="good" Visible="False"></asp:Label>
         <br />
         <hr />

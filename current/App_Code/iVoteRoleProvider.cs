@@ -94,6 +94,14 @@ public class iVoteRoleProvider : RoleProvider
 
         List<string> userRoles = new List<string>();
 
+        if (nUser == null)
+        {
+            HttpContext.Current.Session.Abandon();
+            FormsAuthentication.SignOut();
+            FormsAuthentication.RedirectToLoginPage();
+            return userRoles.ToArray<string>();
+        }
+
         if (nUser.IsAdmin)
             userRoles.Add("admin");
         if (nUser.IsNEC)
@@ -132,10 +140,15 @@ public class iVoteRoleProvider : RoleProvider
         return usersInRole.ToArray<string>();
     }
 
-    public override Boolean IsUserInRole(string user, string role)
+    public override bool IsUserInRole(string user, string role)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         DatabaseEntities.User nUser = DatabaseEntities.User.FindUser(session, user);
+
+        if (nUser == null)
+        {
+            return false;
+        }
 
         if (role == "admin" && nUser.IsAdmin)
             return true;
