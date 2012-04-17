@@ -42,7 +42,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
             tr.Cells.Add(name);
             
             positions = new TableCell();
-            positions.Controls.Add(new LiteralControl(committee.PositionCount + " Positions"));
+            positions.Controls.Add(new LiteralControl(committee.PositionCount + " Members"));
             tr.Cells.Add(positions);
             
             vacancies = new TableCell();
@@ -53,18 +53,15 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
             string toAdd = "";
             for(int j = 0; j < users.Count; j++)
             {
-                toAdd += users[j].FirstName + " " + users[j].LastName + ((j != users.Count - 1) ? (", "):(""));
+                toAdd += users[j].FirstName + " " + users[j].LastName + ((j != users.Count - 1) ? ("<br />"):(""));
             }
             members = new TableCell();
             members.Controls.Add(new LiteralControl(toAdd));
             tr.Cells.Add(members);
             
             status = new TableCell();
-
-            if(vacancy_count == 0)
-                status.Controls.Add(new LiteralControl("Too few vacancies for election."));
-            else
-            {
+            
+            if(vacancy_count > 0) {
                 if(active_election.Count == 0)
                 {
                     Button start_election_button = new Button();
@@ -89,6 +86,15 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
                     status.Controls.Add(visit_election);
                 }
             }
+
+            if(active_election.Count == 0 && vacancy_count < committee.PositionCount) {
+                HyperLink manage_committee_btn = new HyperLink();
+                manage_committee_btn.Text = "Manage Membership";
+                manage_committee_btn.ID = "manage_committee_" + committee.ID;
+                manage_committee_btn.NavigateUrl = "/committee_election_manage.aspx?id=" + committee.ID;
+                status.Controls.Add(manage_committee_btn);
+            } else if(vacancy_count == 0)
+                status.Controls.Add(new LiteralControl("Too few vacancies for election"));
 
             List<string> conflicts = Committee.FindConflicts(session, committee);
             foreach (string j in conflicts)
