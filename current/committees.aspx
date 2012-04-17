@@ -22,8 +22,8 @@
     <asp:Table ID="CommitteeTable" CssClass="table table-bordered" runat="server">
         <asp:TableHeaderRow>
             <asp:TableHeaderCell>Committee Name</asp:TableHeaderCell>
-            <asp:TableHeaderCell>Positions</asp:TableHeaderCell>
-            <asp:TableHeaderCell>Vacancy Count</asp:TableHeaderCell>
+            <asp:TableHeaderCell>Capacity</asp:TableHeaderCell>
+            <asp:TableHeaderCell>Vacancies</asp:TableHeaderCell>
             <asp:TableHeaderCell>Members</asp:TableHeaderCell>
             <asp:TableHeaderCell>Actions/Status</asp:TableHeaderCell>
         </asp:TableHeaderRow>

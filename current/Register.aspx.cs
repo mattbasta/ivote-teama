@@ -42,11 +42,12 @@ public partial class Account_Register : System.Web.UI.Page
                 //checks if new user's email address already exists
                 LabelFeedback.Text = "Email Address/User already exists in dabase records.";
                 SuccessPanel.Visible = false;
+                ConflictPanel.Visible = false;
             }
             else if (committee != null &&
                      Committee.DepartmentRepresented(session, committee, (DepartmentType)Enum.Parse(typeof(DepartmentType), DeptDropDown.SelectedValue)))
             {
-                LabelFeedback.Text = "Cannot add user: adding this user to the specified committee would cause a conflict within that committee.";
+                ConflictPanel.Visible = true;
                 SuccessPanel.Visible = false;
             }
             else
@@ -67,7 +68,6 @@ public partial class Account_Register : System.Web.UI.Page
 
                 DatabaseEntities.NHibernateHelper.UpdateDatabase(session, nUser);
                
-
                 User testUser = DatabaseEntities.User.FindUser(session, nUser.Email);
 
                 nEmailHandler emailer = new nEmailHandler();
@@ -76,6 +76,12 @@ public partial class Account_Register : System.Web.UI.Page
                 NHibernateHelper.Finished(transaction);
 
                 SuccessPanel.Visible = true;
+                ConflictPanel.Visible = false;
+                
+                FirstName.Text = "";
+                LastName.Text = "";
+                Email.Text = "";
+                
             }
         }
     }

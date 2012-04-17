@@ -97,13 +97,15 @@ public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
         user.Email = Email.Text;
         
         if (CurrentCommittee.SelectedValue != "-1" &&
-            !user.AddToCommittee(session, Committee.FindCommittee(session, Convert.ToInt32(CurrentCommittee.SelectedValue)).Name))
+            !user.AddToCommittee(session, Committee.FindCommittee(session, int.Parse(CurrentCommittee.SelectedValue)).Name))
         {
             FailurePanel.Visible = true;
             return;
         }
-        else
+        else {
             FailurePanel.Visible = false;
+            user.CurrentCommittee = int.Parse(CurrentCommittee.SelectedValue);
+        }
         user.Department = (DatabaseEntities.DepartmentType)Enum.Parse(typeof(DatabaseEntities.DepartmentType), DeptDropDown.SelectedValue);
 
         user.IsAdmin = IsAdmin.Checked;
