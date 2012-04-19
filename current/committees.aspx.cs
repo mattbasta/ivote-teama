@@ -67,7 +67,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
                     Button start_election_button = new Button();
                     start_election_button.Text = "Initiate Election";
                     start_election_button.ID = "initiate_election_" + committee.ID;
-                    start_election_button.CssClass = "btn btn-small btn-success";
+                    start_election_button.CssClass = "btn btn-success";
                     start_election_button.OnClientClick =
                             "window.location.href = \"/committee_election_confirminit.aspx?id=" +
                             committee.ID +
@@ -78,7 +78,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
                 else
                 {
                     Button visit_election = new Button();
-                    visit_election.CssClass = "btn btn-small";
+                    visit_election.CssClass = "btn";
                     visit_election.Text = "Visit Election";
                     visit_election.OnClientClick = "window.location.href = \"/committee_election.aspx?id=" +
                                                    active_election[0].ID + "\";return false;";
@@ -89,6 +89,7 @@ public partial class wwwroot_phase1aSite_committees : System.Web.UI.Page
 
             if(active_election.Count == 0 && vacancy_count < committee.PositionCount) {
                 HyperLink manage_committee_btn = new HyperLink();
+                manage_committee_btn.CssClass = "btn";
                 manage_committee_btn.Text = "Manage Membership";
                 manage_committee_btn.ID = "manage_committee_" + committee.ID;
                 manage_committee_btn.NavigateUrl = "/committee_election_manage.aspx?id=" + committee.ID;

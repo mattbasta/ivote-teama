@@ -36,12 +36,27 @@ public partial class wwwroot_phase1aSite_committee_election_confirminit : System
         } catch {
             throw new System.Web.HttpException(400, "Invalid committee ID");
         }
+        
+        CheckForExistingElection(session);
 
+    }
+    
+    public bool CheckForExistingElection(ISession session) {
+        if(committee.InElection(session)) {
+            Response.Redirect("/committee_election.aspx?id=" + committee.GetElection(session).ID.ToString());
+            return false;
+        }
+        return true;
     }
 
     protected void StartElection_Clicked(object sender, EventArgs e)
     {
         ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        
+        if(!CheckForExistingElection(session))
+            return;
+        
+        
         ITransaction transaction = session.BeginTransaction();
         
         DatabaseEntities.CommitteeElection election =

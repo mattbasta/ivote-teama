@@ -69,11 +69,8 @@ namespace DatabaseEntities
         /// </summary>
         public virtual int PhaseEndDelta { get; set; }
 
-        /// <summary>
-        /// The time that the delta was changed.
-        /// </summary>
-
         // Methods
+        
         /// <summary>
         /// Returns the election which is running for the specified committee.
         /// </summary>

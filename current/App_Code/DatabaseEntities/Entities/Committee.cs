@@ -93,6 +93,21 @@ namespace DatabaseEntities
                                    .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
                                    .List().Count;
         }
+        
+        /// <summary>
+        /// Returns the election which is running for the committee.
+        /// </summary>
+        /// <param name="session">A valid session</param>
+        /// <param name="c">The committee that the requested election is runnign for.</param>
+        /// <returns>The CommitteeElection which is running for the committee</returns>
+        public virtual CommitteeElection GetElection(ISession session)
+        {
+            // now make a query for the election based off that committee's id
+            return session.CreateCriteria(typeof(CommitteeElection))
+                .Add(Restrictions.Eq("PertinentCommittee", ID))
+                .Add(Restrictions.Not(Restrictions.Eq("Phase", ElectionPhase.ClosedPhase)))
+                .UniqueResult<CommitteeElection>();
+        }
 
         /// <summary>
         /// Returns whether the committee has an ongoing election.

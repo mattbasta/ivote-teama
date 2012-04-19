@@ -44,6 +44,10 @@ footer
 #MainContent_positionsList {
     margin-top: 18px;
 }
+#MainContent_CommitteeTable .btn-success {
+    display:block;
+    margin-bottom: 0.25em;
+}
 
 .nomination_user {
     padding: 0 0 0.75em 2em;
