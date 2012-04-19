@@ -29,7 +29,7 @@
         <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox" Visible="false">
             <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
                     CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
-            or switch to
+            <asp:Literal runat="server" Text="or switch to " ID="JulioButtonSpacerText" Visible="true" />
             <asp:DropDownList runat="server" ID="JulioButtonPhase">
                 <asp:ListItem Value="WTSPhase">WTS</asp:ListItem>
                 <asp:ListItem Value="NominationPhase">Primary Election</asp:ListItem>

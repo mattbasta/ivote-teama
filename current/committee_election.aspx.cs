@@ -166,6 +166,8 @@ public partial class committee_election : System.Web.UI.Page
 
             ActivateTab(election.Phase.ToString());
 
+            JulioButton.Visible = true;
+            JulioButtonSpacerText.Visible = true;
             if(election.Phase >= ElectionPhase.ClosedPhase)
                 closed_tab.Visible = true;
             if (election.Phase == ElectionPhase.ConflictPhase)
@@ -185,7 +187,8 @@ public partial class committee_election : System.Web.UI.Page
                             conflictUser2, conflictUser2.Department, conflict.ID);
                     }
                 }
-                JulioButtonHider.Visible = conflicts.Count == 0;
+                JulioButton.Visible = conflicts.Count == 0;
+                JulioButtonSpacerText.Visible = conflicts.Count == 0;
                 if (conflicts.Count == 0)
                     AdminNoConflicts.Visible = true;
                 else

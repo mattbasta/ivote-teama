@@ -201,6 +201,7 @@ namespace DatabaseEntities
             }
             else if (electionPhase == ElectionPhase.CertificationPhase)
             {
+                ConflictLogic(session); // Get an idea of what the conflicts will be.
                 List<User> userList = User.GetAllUsers(session);
                 userList.RemoveAll(x => (!(x.IsNEC || x.IsAdmin)));
 
@@ -209,7 +210,7 @@ namespace DatabaseEntities
             }
             else if (electionPhase == ElectionPhase.ConflictPhase)
             {
-                ConflictLogic(session);
+                ConflictLogic(session); // Re-calculate in case the admin fixed it up.
                 // maybe send out emails telling admins / NEC that there are conflicts?
                 List<User> userList = User.GetAllUsers(session);
                 userList.RemoveAll(x => (!(x.IsNEC || x.IsAdmin)));
