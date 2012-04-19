@@ -31,6 +31,11 @@ $(document).ready(function() {
         The user should recieve a validation email within the next 10 minutes.
     </asp:Panel>
     
+    <asp:Panel ID="EmailExistsPanel" runat="server" Visible="false" CssClass="alert">
+        <strong>Database Conflict</strong>
+        That email address is already in use by a user.
+    </asp:Panel>
+    
     <asp:Panel ID="ConflictPanel" runat="server" Visible="false" CssClass="alert">
         <strong>Conflict</strong>
         Adding this user to the specified committee would cause a conflict within that committee.
@@ -42,14 +47,6 @@ $(document).ready(function() {
     </asp:Panel>
 
     <p>Use the form below to create a new account.</p>
-
-    <!--Feedback label for admin if this user is already in the database -->
-    <asp:ScriptManager runat="server" />
-    <asp:UpdatePanel runat="server">
-        <ContentTemplate>
-            <asp:Label ID="LabelFeedback" CssClass="red" runat="server" Text="" />
-        </ContentTemplate>
-    </asp:UpdatePanel>
 
     <div class="accountInfo">
         <fieldset class="form form-horizontal">

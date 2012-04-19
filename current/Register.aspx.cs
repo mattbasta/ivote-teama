@@ -40,17 +40,19 @@ public partial class Account_Register : System.Web.UI.Page
 
             if (DatabaseEntities.User.CheckIfEmailExists(session, Email.Text)) {
                 //checks if new user's email address already exists
-                LabelFeedback.Text = "Email Address/User already exists in dabase records.";
+                EmailExistsPanel.Visible = true;
                 SuccessPanel.Visible = false;
                 ConflictPanel.Visible = false;
             } else if(committee != null &&
                       Committee.DepartmentRepresented(session, committee, (DepartmentType)Enum.Parse(typeof(DepartmentType), DeptDropDown.SelectedValue)))
             {
                 ConflictPanel.Visible = true;
+                EmailExistsPanel.Visible = false;
                 InElectionPanel.Visible = false;
                 SuccessPanel.Visible = false;
             } else if(committee != null && committee.InElection(session)) {
                 InElectionPanel.Visible = true;
+                EmailExistsPanel.Visible = false;
                 ConflictPanel.Visible = false;
                 SuccessPanel.Visible = false;
             } else {
