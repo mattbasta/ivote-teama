@@ -692,31 +692,37 @@ public partial class committee_election : System.Web.UI.Page
     {
         // create the panel
         Panel panel = new Panel();
+        panel.CssClass = "alert";
         panel.ID = "ConflictPanel" + conflictID.ToString("0000");
 
         // Create a label which explicates the conflict
-        Label message = new Label();
-        message.Text = user1.FirstName + " " + user1.LastName + " and "
+        HtmlGenericControl message = new HtmlGenericControl("p");
+        message.InnerText = user1.FirstName + " " + user1.LastName + " and "
             + user2.FirstName + " " + user2.LastName + " were both elected to the "
             + committee.Name + "but they are both members of the " + user1.Department.ToString()
             + " department.  Only one member of each department may be elected to the committee.";
         panel.Controls.Add(message);
 
+        HtmlGenericControl hp = new HtmlGenericControl("p");
         // add a button which will allow the admin to disqualify the
         // first person in the conflict
         Button first = new Button();
+        first.CssClass = "btn btn-warning";
         first.ID = user1.Email + conflictID.ToString("0000");
         first.Text = "Disqualify " + user1.FirstName + " " + user1.LastName;
         first.Click += new EventHandler(this.Disq_Click);
-        panel.Controls.Add(first);
+        hp.Controls.Add(first);
 
         // add a button which will allow the admin to disqualify the
         // second person in the conflict
         Button second = new Button();
+        second.CssClass = "btn btn-warning";
         second.ID = user2.Email + conflictID.ToString("0000");
         second.Text = "Disqualify " + user2.FirstName + " " + user2.LastName;
         second.Click += new EventHandler(this.Disq_Click);
-        panel.Controls.Add(second);
+        hp.Controls.Add(second);
+        
+        panel.Controls.Add(hp);
 
         AdminConflictPanel.Controls.Add(panel);
     }
@@ -756,7 +762,6 @@ public partial class committee_election : System.Web.UI.Page
         Panel panel = new Panel();
         panel.CssClass = "alert";
         panel.ID = "ConflictPanel" + conflictID.ToString("0000");
-
 
         // Create a label which explicates the conflict
         HtmlGenericControl message = new HtmlGenericControl("p");
