@@ -106,7 +106,7 @@ public partial class home : System.Web.UI.Page
             return output + "progress-info";
         
         // Make the bar red if it's over time.
-        if(election.NextPhaseDate(DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession()) < DateTime.Now)
+        if(election.NextPhaseDate(DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession(), true) < DateTime.Now)
             output += "progress-danger ";
         
         switch(election.Phase) {

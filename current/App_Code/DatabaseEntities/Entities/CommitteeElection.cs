@@ -237,16 +237,17 @@ namespace DatabaseEntities
             session.Flush();
         }
 
-        public virtual DateTime NextPhaseDate(ISession session)
+        public virtual DateTime NextPhaseDate(ISession session, bool real)
         {
+            int delta = real ? 0 : PhaseEndDelta;
             // People have two weeks to submit their WTS
             if (this.Phase == ElectionPhase.WTSPhase)
-                return this.PhaseStarted.AddDays(14 + PhaseEndDelta);
+                return this.PhaseStarted.AddDays(14 + delta);
             else if (this.Phase == ElectionPhase.NominationPhase)
-                return this.PhaseStarted.AddDays(7 + PhaseEndDelta);
+                return this.PhaseStarted.AddDays(7 + delta);
             // The voters have one week to cast their vote
             else if (this.Phase == ElectionPhase.VotePhase)
-                return this.PhaseStarted.AddDays(7 + PhaseEndDelta);
+                return this.PhaseStarted.AddDays(7 + delta);
             else
                 // after that, there are no dead-line restrictions.
                 return DateTime.MaxValue;
@@ -463,7 +464,11 @@ namespace DatabaseEntities
         }
         
         public virtual int DaysRemainingInPhase(ISession session) {
-            return (int)this.NextPhaseDate(session).Subtract(PhaseStarted).TotalDays;
+            return (int)this.NextPhaseDate(session, false).Subtract(PhaseStarted).TotalDays;
+        }
+        
+        public virtual int RealDaysRemainingInPhase(ISession session) {
+            return (int)this.NextPhaseDate(session, true).Subtract(PhaseStarted).TotalDays;
         }
 
         /// <summary>

@@ -657,8 +657,6 @@ public partial class committee_election : System.Web.UI.Page
             FacultyVote.Visible = false;
             FacultyVoteComplete.Visible = true;
         }
-        else
-            ; // There ought to be no way to reach this line, though we could put error handling here if it is a problem.
 
         NHibernateHelper.Finished(transaction);
     }
@@ -666,7 +664,7 @@ public partial class committee_election : System.Web.UI.Page
     protected void DeltaSubmit_Click(Object sender, EventArgs e)
     {
         ITransaction transaction = session.BeginTransaction();
-        election.PhaseEndDelta = int.Parse(DeltaText.Text) - num_days_remaining();
+        election.PhaseEndDelta = int.Parse(DeltaText.Text) - election.RealDaysRemainingInPhase(session);
         session.SaveOrUpdate(election);
         session.Flush();
         NHibernateHelper.Finished(transaction);
