@@ -2,3 +2,4 @@ settings.*config
 TestResult.xml
 current/Bin/Tests*
 *.pdb
+*.accdb
