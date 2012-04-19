@@ -105,7 +105,7 @@
         default password 'ivoteteamaisawesome' and users will be required to change 
         this password upon their initial login.  <br /><br />
         <asp:Button ID="importUsers" runat="server" OnClick="importUsers_Click"
-            Text="Import Users" />
+            Text="Import Users" CausesValidation="False" />
             <asp:Label ID="importUserStatus" runat="server" Text="Done" CssClass="good" Visible="false"></asp:Label>
         </div>
     </form>
