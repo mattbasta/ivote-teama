@@ -213,11 +213,6 @@ public partial class install_Default : System.Web.UI.Page
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
 
-        databaseLogic dbLogic = new databaseLogic();
-        dbLogic.createSchema();
-
-        DatabaseEntities.NHibernateHelper.CreateSessionFactoryAndGenerateSchema();
-
         createSchemaStatus.Visible = true;
         createScheme.Enabled = false;
     }
