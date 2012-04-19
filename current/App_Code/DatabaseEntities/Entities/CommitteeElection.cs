@@ -350,6 +350,10 @@ namespace DatabaseEntities
         /// <param name="session">A valid session.</param>
         protected virtual void ConflictLogic(ISession session)
         {
+            List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, ID);
+            foreach (ElectionConflict conflict in conflicts)
+                NHibernateHelper.Delete(session, conflict);
+            
             ITransaction transaction = session.BeginTransaction();
             // Get the current committee
             Committee committee = Committee.FindCommittee(session, PertinentCommittee);
@@ -513,12 +517,19 @@ namespace DatabaseEntities
                 NHibernateHelper.Delete(session, nomination);
 
             // Find all the BallotEntries
-            List<BallotEntry> ballotEntries = 
-                BallotEntry.FindBallotEntry(session, ID);
+            List<BallotEntry> ballotEntries = BallotEntry.FindBallotEntry(session, ID);
             foreach (BallotEntry entry in ballotEntries)
-            {
                 NHibernateHelper.Delete(session, entry);
-            }
+
+            // Find all the BallotEntries
+            List<BallotFlag> ballotFlags = BallotFlag.FindBallotFlags(session, ID);
+            foreach (BallotFlag flag in ballotFlags)
+                NHibernateHelper.Delete(session, flag);
+            
+            // Find all the conflicts
+            List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, ID);
+            foreach (ElectionConflict conflict in conflicts)
+                NHibernateHelper.Delete(session, conflict);
             
             // Delete the election.
             NHibernateHelper.Delete(session, this);
