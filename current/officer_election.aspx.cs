@@ -641,6 +641,7 @@ public partial class officer_election : System.Web.UI.Page
     protected void adminButton_OnClick(Object sender, EventArgs e)
     {
         //dbLogic.turnOffPhase("result");
+        dbLogic.resetElection();
         Response.Redirect("/officer_election.aspx");
     } 
 }
