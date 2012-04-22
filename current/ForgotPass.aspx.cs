@@ -14,10 +14,7 @@ using NHibernate;
 public partial class phase1aSite_ForgotPass : System.Web.UI.Page
 {
     
-    protected void Page_Load(object sender, EventArgs e)
-    {
-
-    }
+    protected void Page_Load(object sender, EventArgs e) { }
 
     public void submit(object sender, EventArgs e)
     {
@@ -26,33 +23,23 @@ public partial class phase1aSite_ForgotPass : System.Web.UI.Page
             ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
 
             int userID;
-            bool temp_error = false;
-
 
             // check if email exists in union_members table
             if (!DatabaseEntities.User.CheckIfEmailExists(session, email.Text))
             {
                 lblError.Visible = true;
-                temp_error = true;
-               
-            }
-            else
-            {
-                // get userID and from email
-                DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, email.Text);
-
-                // send email to that person if the email exists
-                nEmailHandler emailer = new nEmailHandler();
-                emailer.sendConfirmationEmail(user, "APSCUF iVote System Password Reset", "userForgotPassword");
+                return;
             }
             
-            //make form label invisible
+            // get userID and from email
+            DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, email.Text);
+
+            // send email to that person if the email exists
+            nEmailHandler emailer = new nEmailHandler();
+            emailer.sendConfirmationEmail(user, "APSCUF iVote System Password Reset", "userForgotPassword");
+            lblConfirm.Visible = true;
             lblForgot.Visible = false;
-            //make confirmation message label visible
-            if (!temp_error)
-            {
-                lblConfirm.Visible = true;
-            }
+            lblError.Visible = false;
         }
     }
 }
