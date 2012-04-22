@@ -12,12 +12,12 @@
     <!--Notifications-->
     <asp:Panel ID="PanelNominationPending" Visible="false" runat="server">
         <div id="notifications">
-            <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" Enabled="false" runat="server">
+            <asp:Panel id="nom_pending" class="alert alert-info" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>You have a nomination pending!</p>
                 <a href="/Nominations.aspx" class="btn btn-primary">View Nomination</a>
             </asp:Panel>
-            <asp:Panel ID="elig_pending" class="alert" Visible="false" Enabled="false" runat="server">
+            <asp:Panel ID="elig_pending" class="alert" Visible="false" runat="server">
                 <strong>Notification</strong>
                 <p>There are eligibility forms that must be approved.</p>
                 <a href="/ApproveNominations.aspx" class="btn btn-warning">View Forms</a>

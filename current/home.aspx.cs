@@ -67,6 +67,32 @@ public partial class home : System.Web.UI.Page
                 WaitingCommittees.Text = waiting_committees.ToString();
             }
         }
+        
+        checkForNomination();
+        if(is_admin)
+            checkForEligibility();
+    }
+    
+    //check if the user has a nomination pending
+    protected void checkForNomination()
+    {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
+        DatabaseEntities.User user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
+        if (dbLogic.isUserNominatedPending(user.ID))
+        {
+            PanelNominationPending.Visible = true;
+            nom_pending.Visible = true;
+        }
+    }
+
+    //check to see if there is any pending eligibility
+    protected void checkForEligibility()
+    {
+        if (dbLogic.returnEligibilityCount() > 0)
+        {
+            PanelNominationPending.Visible = true;
+            elig_pending.Visible = true;
+        }
     }
     
     public bool IsAdmin() {return is_admin;}
