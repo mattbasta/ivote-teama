@@ -383,6 +383,23 @@ public class databaseLogic
         }
     }
 
+    public DateTime currentPhaseEndDateTime()
+    {
+        try
+        {
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT datetime_end FROM timeline WHERE iscurrent = 1;", connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            return DateTime.Parse(ds.Tables[0].Rows[0].ItemArray[0].ToString());
+        }
+        catch { return DateTime.Now; }
+        finally
+        {
+            closeConnection();
+        }
+    }
+
     //^^^^^^^^^^nomination_accept^^^^^^^^^^
 
     //inserts nomination into db
