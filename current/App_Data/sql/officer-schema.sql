@@ -30,7 +30,7 @@ CREATE TABLE `election_position` (
   `idelection_position` int(11) NOT NULL AUTO_INCREMENT,
   `idelection` int(11) NOT NULL DEFAULT '1',
   `position` varchar(45) NOT NULL,
-  `tally_type` varchar(9) NOT NULL DEFAULT 'classic',
+  `tally_type` varchar(9) NOT NULL DEFAULT 'Simple',
   `idum_current` int(11) DEFAULT NULL,
   `description` varchar(5000) DEFAULT NULL,
   `slots_plurality` int(11) DEFAULT NULL,
@@ -163,8 +163,7 @@ DROP TABLE IF EXISTS `tally`;
 CREATE TABLE `tally` (
   `id_union` int(11) NOT NULL,
   `position` varchar(20) NOT NULL,
-  `count` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id_union`,`position`)
+  `count` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

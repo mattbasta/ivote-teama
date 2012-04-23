@@ -23,9 +23,6 @@ public class voteCounter
         userIDs = new ArrayList();
         userVotes = new ArrayList();
         totalForPosition = 0;
-
-        dbLogic.selectAllAvailablePositions();
-        dsForElection = dbLogic.getResults();
 	}
 
 
@@ -33,29 +30,33 @@ public class voteCounter
     //      table and use a switch to dictate which way will be used to tally.
     public void tally()
     {
+        dbLogic.selectAllAvailablePositions();
+        dsForElection = dbLogic.getResults();
+        
         int i = 0;    
         while(i < dsForElection.Tables[0].Rows.Count)
         {
-                switch (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString())
-                {
-                    case "Simple":
-                        classic(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
-                        break;
-                    case "Plurality":
-                        plural(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
-                        break;
-                    case "Majority":
-                        majority(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
-                        break;
-                }
-                i++;
+            totalForPosition = 0;
+            switch (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString())
+            {
+                case "Simple":
+                    simple(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
+                    break;
+                case "Plurality":
+                    plural(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
+                    break;
+                case "Majority":
+                    majority(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
+                    break;
+            }
+            i++;
         }
     }
 
 
     // method to invoke a voting process based on the "Simple" voting style
     //      returns userID
-    protected void classic(string position)
+    protected void simple(string position)
     {
         grabTableInfo(position);
         try
@@ -146,7 +147,7 @@ public class voteCounter
         dbLogic.genericQueryDeleter(query);
         query = "DELETE FROM tally WHERE position='" + position + "';";
         dbLogic.genericQueryDeleter(query);
-        query = "DELETE FROM election_position WHERE position<>'" + position + "';";
+        query = "DELETE FROM election_position WHERE position <> '" + position + "';";
         dbLogic.genericQueryDeleter(query);
         query = "DELETE FROM flag_voted";
         dbLogic.genericQueryDeleter(query);
@@ -157,16 +158,5 @@ public class voteCounter
         query = "SELECT * FROM tally WHERE position='" + position + "' ORDER BY count DESC;";
         dbLogic.genericQuerySelector(query);
         ds = dbLogic.getResults();
-    }
-
-    protected DateTime createDateTime(string datetime)
-    {
-        string[] formats = {"M/d/yyyy H:mm:ss tt", "M/d/yyyy HH:mm tt", 
-                           "MM/dd/yyyy HH:mm:ss", "M/d/yyyy H:mm:ss", 
-                           "M/d/yyyy HH:mm tt", "M/d/yyyy HH tt", 
-                           "M/d/yyyy H:mm", "M/d/yyyy H:mm", 
-                           "MM/dd/yyyy HH:mm", "M/dd/yyyy HH:mm", "MM/d/yyyy HH:mm"};
-        DateTime newDate = DateTime.ParseExact(datetime, formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None);
-        return newDate;
     }
 }

@@ -331,6 +331,11 @@ public class databaseLogic
     //^^^^^^^^^^tally methods^^^^^^^^^^
 
     //used to initialize a new tally row
+    public void insertNewVote(int candidate, string position)
+    {
+        genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + candidate + ", '" + CleanInput(position) + "', 1)");
+    }
+    
     public void insertNewTally(string[] votingInfo)
     {
         genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + CleanInput(votingInfo[0]) + ", '" + CleanInput(votingInfo[1]) + "', 0)");
@@ -601,6 +606,10 @@ public class databaseLogic
     {
         genericQuerySelector("SELECT * FROM wts WHERE eligible=1 AND position='" + CleanInput(position) + "';");
     }
+    public void selectAllForPosition(string position)
+    {
+        genericQuerySelector("SELECT T.*, CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM wts T, users UM WHERE T.eligible=1 AND T.position='" + CleanInput(position) + "' AND UM.ID = T.idunion_members;");
+    }
 
     //counts how many people are nominated for a position
     public int countHowManyCandidatesForPosition(string position)
@@ -618,9 +627,7 @@ public class databaseLogic
     //^^^^^^^^^^^^^^adding positions to an election methods^^^^^^^^^^^^^^^^
     public bool IsThereCandidatesForPoisition(string position)
     {
-        return genericQueryCounter("SELECT WTS.idunion_members,  CONCAT(UM.FirstName,' ', UM.LastName) AS fullname " +
-                                   "FROM wts WTS, users UM " +
-                                   "WHERE (WTS.eligible=1 AND wts.idunion_members = UM.ID AND WTS.position='" + CleanInput(position) + "');") > 0;
+        return genericQueryCounter("SELECT * FROM wts WHERE eligible=1;") > 0;
     }
     //adds the positions to positions table
     public void addPos(ArrayList positions, ArrayList vote, ArrayList description, ArrayList num, ArrayList votes)

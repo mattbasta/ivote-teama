@@ -149,15 +149,15 @@ public partial class officer_election : System.Web.UI.Page
                 UpdatePanel3.Visible = user.CanVote;
                 
                 if (dbLogic.isUserNewVoter(user.ID)) {
-                    PanelSlateWrapper.Visible = true;
+                    votehider.Visible = true;
                     dbLogic.selectAllBallotPositions();
-                    ListViewPositions.DataSource = dbLogic.getResults();
-                    ListViewPositions.DataBind();
+                    SlateView.DataSource = dbLogic.getResults();
+                    SlateView.DataBind();
                 }
                 else
                 {
                     LabelFeedbackVote2.Text = "You have already voted for this election.";
-                    PanelSlateWrapper.Visible = false;
+                    votehider.Visible = false;
                     ButtonSubmitVotes.Visible = false;
                 }
                 
@@ -204,14 +204,7 @@ public partial class officer_election : System.Web.UI.Page
             functions_voting.Visible = true;
             //results
             if (phases.currentPhase == "result")
-            {
-                //admin functionality
-                if (dbLogic.checkNecApprove())
-                    //if nec approved, then the admin can end the election
-                    adminButton.Visible = true;
-                else
-                    adminEnd.Visible = true;
-            }
+                adminEnd.Visible = dbLogic.checkNecApprove();
         }
         
         if (User.IsInRole("nec"))
@@ -228,13 +221,8 @@ public partial class officer_election : System.Web.UI.Page
             //results
             else if (phases.currentPhase == "result")
             {
-                adminEnd.Visible = false;
                 //this is for NEC role
-                if (!dbLogic.checkNecApprove())
-                {
-                    necApprove.Visible = true;
-                    necButton.Visible = true;
-                }
+                necApprove.Visible = !dbLogic.checkNecApprove();
             }
         }
     }
@@ -426,134 +414,92 @@ public partial class officer_election : System.Web.UI.Page
      * FUNCTIONALITY
      * *****************************************/
 
-    protected void ListViewPositions_ItemCommand(Object sender, ListViewCommandEventArgs e)
+    protected void SlateView_ItemDataBound(Object sender, ListViewItemEventArgs e)
     {
-        if (String.Equals(e.CommandName, "position"))
-        {
-            dbLogic.selectAllForBallot(e.CommandArgument.ToString());
-            ListViewPeople.DataSource = dbLogic.getResults();
-            ListViewPeople.DataBind();
-            PanelPeople.Visible = true;
-            PanelSelect.Visible = false;
-            HiddenFieldCurrentPosition.Value = e.CommandArgument.ToString();
-            LabelFeedbackVote2.Text = "Select a candidate for this position.";
-
-            //resolves plurality error
-            foreach (ListViewDataItem myItem3 in ListViewPositions.Items)
-            {
-                LinkButton Position = (LinkButton)myItem3.FindControl("LinkButtonPostions");
-                HiddenField number = (HiddenField)myItem3.FindControl("HiddenFieldVoteNumber");
-                if (dbLogic.countHowManyCandidatesForPosition(Position.Text) < Convert.ToInt16(number.Value))
-                    number.Value = dbLogic.countHowManyCandidatesForPosition(Position.Text).ToString();
-            }
-
-            //turns off cadidates in personlistview if they have been selected for plurality
-            foreach (ListViewDataItem myItem in ListViewPeople.Items)
-            {
-                LinkButton Person = (LinkButton)myItem.FindControl("LinkButtonPostions");
-                foreach (ListViewDataItem myItem2 in ListViewPositions.Items)
-                {
-                    LinkButton LinkButtonPosition = (LinkButton)myItem2.FindControl("LinkButtonPostions");
-                    Label votedFor = (Label)myItem2.FindControl("LabelVoted");
-                    HiddenField allCandidates = (HiddenField)myItem2.FindControl("HiddenFieldAllCandidates");
-
-                    if (e.CommandArgument.ToString() == LinkButtonPosition.Text)
-                    {
-                        string[] candidates = allCandidates.Value.Split(new char[] { '%' }); //splits querystring into variable name and value
-                        for (int i = 1; i < candidates.Length; i++)
-                            if (candidates[i] == Person.CommandArgument) {
-                                Person.Enabled = false;
-                            }
-                    }
-                }
-            }
-        }
+        if (e.Item.ItemType != ListViewItemType.DataItem) return;
+        
+        // Fuck everything about this. Seriously, whoever designed the DB is a fucking moron.
+        HiddenField position_id = (HiddenField)e.Item.FindControl("Position");
+        dbLogic.selectAllForPosition(position_id.Value);
+        
+        ListView candidates = (ListView)e.Item.FindControl("candidates");
+        candidates.DataSource = dbLogic.getResults();
+        candidates.DataBind();
+        
     }
-
-    protected void ListViewPeople_ItemCommand(Object sender, ListViewCommandEventArgs e)
-    {
-        if (String.Equals(e.CommandName, "id"))
-        {
-            dbLogic.selectDetailFromWTS(e.CommandArgument.ToString());
-            DataSet infoSet = dbLogic.getResults();
-            DataRow dr = infoSet.Tables["query"].Rows[0];
-
-            string name = GetName(int.Parse(dr["idunion_members"].ToString()));
-            ButtonVote.Text = "Vote for " + name;
-            LabelStatement.Text = "\"" + dr["statement"].ToString() + "\"";
-            ButtonVote.OnClientClick = "return confirm('Are you sure you want to vote for " + name + " for " + HiddenFieldCurrentPosition.Value + "?')";
-            HiddenFieldName.Value = name;
-            HiddenField2.Value = e.CommandArgument.ToString();
-
-            if (LabelStatement.Text == "\"\"")
-                LabelStatement.Text = name + " did not include a personal statement.";
-
-            PanelSelect.Visible = true;
-            LabelFeedbackVote2.Text = "";
-        }
-    }
-
-    protected void ButtonVote_Clicked(object sender, EventArgs e)
+    protected void ButtonSubmitVotes_Clicked(object sender, EventArgs e)
     {
         int votingCounter = 0;
         bool pluralityNotOccuring = true;
-        foreach (ListViewDataItem myItem in ListViewPositions.Items)
+        
+        // Loop once to validate
+        foreach (ListViewDataItem myItem in SlateView.Items)
         {
-            LinkButton LinkButtonPosition = (LinkButton)myItem.FindControl("LinkButtonPostions");
-            Label votedFor = (Label)myItem.FindControl("LabelVoted");
-            Label votedForExtra = (Label)myItem.FindControl("LabelVotedExtra");
-            HiddenField votedId = (HiddenField)myItem.FindControl("HiddenFieldVotedId");
-            HiddenField number = (HiddenField)myItem.FindControl("HiddenFieldVoteNumber");
-            HiddenField allCandidates = (HiddenField)myItem.FindControl("HiddenFieldAllCandidates");
-
-            if (LinkButtonPosition.Text == HiddenFieldCurrentPosition.Value)
-            {
-                //for plurality
-                if (Convert.ToInt16(number.Value) > 1)
-                {
-                    number.Value = (Convert.ToInt16(number.Value) - 1).ToString(); //decrements counter for plurality
-                    LabelFeedbackVote2.Text = "Selection for " + HiddenFieldCurrentPosition.Value + " stored. You can select " + number.Value + " more cadidates for this position (Due to this position being tallied via \"plurality\").";
-                    pluralityNotOccuring = false;
+            HiddenField position = (HiddenField)myItem.FindControl("Position");
+            HiddenField position_type = (HiddenField)myItem.FindControl("PositionType");
+            
+            bool voted = false;
+            
+            if(position_type.Value != "Plurality") {
+                ListView candidates = (ListView)myItem.FindControl("candidates");
+                foreach (ListViewDataItem candidate in candidates.Items) {
+                    RadioButton r = (RadioButton)candidate.FindControl("checker");
+                    if(r.Checked) {
+                        voted = true;
+                        break;
+                    }
                 }
-                else
-                    LinkButtonPosition.Enabled = false;
+                if(!voted)
+                    LabelFeedbackVote2.Text = "You did not cast a vote for " + position.Value;
+            } else {
+                HiddenField votes_allowed_field = (HiddenField)myItem.FindControl("VotesAllowed");
+                int votes_allowed = int.Parse(votes_allowed_field.Value);
+                ListView candidates = (ListView)myItem.FindControl("candidates_plurality");
+                int votes_cast = 0;
+                foreach (ListViewDataItem candidate in candidates.Items) {
+                    CheckBox r = (CheckBox)candidate.FindControl("checker");
+                    if(r.Checked)
+                        votes_cast++;
+                }
+                if(votes_cast < votes_allowed)
+                    LabelFeedbackVote2.Text = "You did not cast enough votes for " + position.Value;
+                else if(votes_cast > votes_allowed)
+                    LabelFeedbackVote2.Text = "You cast too many votes for " + position.Value;
                 
-                votedFor.Text = HiddenFieldName.Value;
-                votedForExtra.Text = "Selected ";
-                votedId.Value = HiddenField2.Value;
-                allCandidates.Value = allCandidates.Value + "%" + HiddenField2.Value;
-                //LinkButtonPosition.Enabled = false;
-                PanelPeople.Visible = false;
-                PanelSelect.Visible = false;
+                voted = votes_cast == votes_allowed;
             }
-
-            if (!LinkButtonPosition.Enabled)
-                votingCounter++;
+            
+            if(!voted)
+                return;
         }
-
-        int numberOfVotesLeft = ListViewPositions.Items.Count - votingCounter;
-
-        if (votingCounter < 1 && pluralityNotOccuring)
-            LabelFeedbackVote2.Text = "Selection for " + HiddenFieldCurrentPosition.Value + " stored. There are " + numberOfVotesLeft.ToString() + " more positions you can vote on before you can submit your ballot.";
-        else
-            ButtonSubmitVotes.Visible = true;
-    }
-
-    protected void ButtonSubmitVotes_Clicked(object sender, EventArgs e)
-    {
-        foreach (ListViewDataItem myItem in ListViewPositions.Items)
+        
+        // Loop again to store
+        foreach (ListViewDataItem myItem in SlateView.Items)
         {
-            LinkButton LinkButtonPosition = (LinkButton)myItem.FindControl("LinkButtonPostions");
-            HiddenField votedId = (HiddenField)myItem.FindControl("HiddenFieldVotedId"); //quick fix, should be changed later (too many hiddenfields)
-            HiddenField allCandidates = (HiddenField)myItem.FindControl("HiddenFieldAllCandidates");
-
-            string[] candidates = allCandidates.Value.Split(new char[] { '%' }); //splits querystring into variable name and value
-
-            for (int i = 1; i < candidates.Length; i++)
-            {
-                string[] votedInfo = { candidates[i], LinkButtonPosition.Text };
-                dbLogic.insertNewTally(votedInfo); //initializes tally row (if already initialized, nothing will occur)
-                dbLogic.updateTally(votedInfo);
+            HiddenField position = (HiddenField)myItem.FindControl("Position");
+            HiddenField position_type = (HiddenField)myItem.FindControl("PositionType");
+            
+            ListView candidates = (ListView)myItem.FindControl(
+                (position_type.Value != "Plurality") ? "candidates" : "candidates_plurality");
+            if(position_type.Value != "Plurality") {
+                foreach (ListViewDataItem candidate in candidates.Items) {
+                    HiddenField cid = (HiddenField)candidate.FindControl("CandidateID");
+                    int candidate_id = int.Parse(cid.Value);
+                    RadioButton r = (RadioButton)candidate.FindControl("checker");
+                    if(r.Checked) {
+                        dbLogic.insertNewVote(candidate_id, position.Value);
+                        break;
+                    }
+                }
+            } else {
+                foreach (ListViewDataItem candidate in candidates.Items) {
+                    CheckBox r = (CheckBox)candidate.FindControl("checker");
+                    if(r.Checked) {
+                        HiddenField cid = (HiddenField)candidate.FindControl("CandidateID");
+                        int candidate_id = int.Parse(cid.Value);
+                        dbLogic.insertNewVote(candidate_id, position.Value);
+                    }
+                }
             }
         }
 
@@ -568,7 +514,7 @@ public partial class officer_election : System.Web.UI.Page
         dbLogic.insertFlagVoted(user.ID, code);
 
         //hide slate
-        PanelSlateWrapper.Visible = false;
+        votehider.Visible = false;
 
         //give feedback
         LabelFeedbackVote2.Text = "Your ballot has been successfully submitted and processed.<br /><br /> Your confirmation code is: <b>" + code + "</b>";
@@ -597,7 +543,7 @@ public partial class officer_election : System.Web.UI.Page
         resultList.DataBind();
 
         //if user is not admin, cannot see "view result detail" row
-        resultList.Columns[2].Visible = !User.IsInRole("admin") && !User.IsInRole("nec");
+        resultList.Columns[2].Visible = User.IsInRole("admin") || User.IsInRole("nec");
     }
 
     //sends user to 

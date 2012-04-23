@@ -81,7 +81,7 @@
                 <asp:GridView GridLines="none" ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
                      <Columns>
                         <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
-                        <asp:BoundField HeaderText="Description" DataField="description" NullDisplayText="Unknown" />
+                        <asp:BoundField HeaderText="Description" DataField="description" NullDisplayText="None Provided" />
                         <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
                                 <asp:LinkButton ID="ButtonNomMe" runat="server" CommandName='nom_me'
@@ -315,76 +315,85 @@
             <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
     
-        <!--The voting functionality will be available for this phase-->
+        <!--The voting functionality will be available for this phase
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
-            <ContentTemplate>
-                <div>
-                    <asp:Literal ID="LabelFeedbackVote2" runat="server" /> <asp:Button ID="ButtonSubmitVotes" Visible="false" runat="server" OnClick="ButtonSubmitVotes_Clicked" Text="Submit Final Ballot" CssClass="btn btn-primary" />
+            <ContentTemplate>-->
+            <div runat="server" id="feedbackhider">
+                <asp:Literal ID="LabelFeedbackVote2" runat="server" />
+            </div>
+            <div runat="server" id="votehider" class="form form-horizontal">
+                <asp:ListView ID="SlateView" OnItemDataBound="SlateView_ItemDataBound" runat="server">
+                    <LayoutTemplate>
+                        <fieldset>
+                            <legend>General Election Ballot</legend>
+                            <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                        </fieldset>
+                    </LayoutTemplate>
+                    <ItemTemplate>
+                        <div class="control-group candidategroup">
+                            <div class="control-label">
+                                <asp:Literal runat="server" Text='<%#Eval("position")%>' />
+                            </div>
+                            <div class="controls">
+                                <asp:ListView ID="candidates" runat="server" Visible='<%#DataBinder.Eval(Container.DataItem,"tally_type") != "Plurality"%>'>
+                                    <LayoutTemplate>
+                                        <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                                    </LayoutTemplate>
+                                    <ItemTemplate>
+                                        <div>
+                                            <label class="radio">
+                                                <asp:RadioButton runat="server" ID="checker" />
+                                                <asp:Literal runat="server" Text='<%#Eval("fullname")%>' />
+                                            </label>
+                                            <p style="padding-left:1.5em;"><%#Eval("statement")%></p>
+                                        </div>
+                                        <asp:HiddenField ID="CandidateID" runat="server" Value='<%#Eval("idunion_members")%>' />
+                                    </ItemTemplate>
+                                </asp:ListView>
+                                <asp:ListView ID="candidates_plurality" runat="server" Visible='<%#DataBinder.Eval(Container.DataItem,"tally_type") == "Plurality"%>'>
+                                    <LayoutTemplate>
+                                        <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
+                                    </LayoutTemplate>
+                                    <ItemTemplate>
+                                        <div>
+                                            <label class="checkbox">
+                                                <asp:CheckBox runat="server" ID="checker" />
+                                                <asp:Literal runat="server" Text='<%#Eval("fullname")%>' />
+                                            </label>
+                                            <p style="padding-left:1.5em;"><%#Eval("statement")%></p>
+                                        </div>
+                                        <asp:HiddenField ID="CandidateID" runat="server" Value='<%#Eval("idunion_members")%>' />
+                                    </ItemTemplate>
+                                </asp:ListView>
+                            </div>
+                        </div>
+                        <asp:HiddenField ID="Position" runat="server" Value='<%#Eval("position")%>' />
+                        <asp:HiddenField ID="PositionType" runat="server" Value='<%#Eval("tally_type")%>' />
+                        <asp:HiddenField ID="VotesAllowed" runat="server" Value='<%#Eval("votes_allowed")%>' />
+                    </ItemTemplate>
+                </asp:ListView>
+                <div class="form-actions">
+                    <asp:Button ID="ButtonSubmitVotes" runat="server" OnClick="ButtonSubmitVotes_Clicked" Text="Cast Ballot" CssClass="btn btn-primary" />
                 </div>
-                <asp:Panel ID="PanelSlateWrapper" runat="server" CssClass="well">
-                    <p>
-                        Select each of the officer positions below. It will show
-                        you a list of candidates for each position. Clicking each
-                        candidate will show his or her statement. When you have
-                        made your choice, press the <b>Vote</b> button under the
-                        candidate's name. Repeat this process for each officer
-                        position.
-                    </p>
-                    <p>When you have finished voting, press the Submit button.</p>
-                <div class="row-fluid">
-                    <!-- Holds the positions in the election -->
-                    <asp:Panel ID="PanelPositions" CssClass="span4" runat="server">
-                        <asp:ListView ID="ListViewPositions" OnItemCommand="ListViewPositions_ItemCommand" runat="server">
-                            <LayoutTemplate>
-                                <ul class="nav nav-list">
-                                    <li class="nav-header">Positions</li>
-                                    <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
-                                </ul>
-                            </LayoutTemplate>
-                            <ItemTemplate>
-                                <li>
-                                    <asp:LinkButton ID="LinkButtonPostions" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' />
-                                    <asp:Label ID="LabelVotedExtra" runat="server" Text=""></asp:Label>
-                                    <asp:Label ID="LabelVoted" runat="server" Text=""></asp:Label>
-                                </li>
-                                <asp:HiddenField ID="HiddenFieldVotedId" runat="server" />
-                                <asp:HiddenField ID="HiddenFieldVoteNumber" Value='<%#Eval("votes_allowed")%>' runat="server" />
-                                <asp:HiddenField ID="HiddenFieldAllCandidates" Value="" runat="server" />
-                            </ItemTemplate>
-                        </asp:ListView>
-                    </asp:Panel>
-                    <!-- Holds the people nominated for each position -->
-                    <asp:Panel ID="PanelPeople" CssClass="span4" Visible="false" runat="server">
-                        <asp:ListView ID="ListViewPeople" OnItemCommand="ListViewPeople_ItemCommand" runat="server">
-                            <LayoutTemplate>
-                                <ul class="nav nav-list">
-                                    <li class="nav-header">Candidates for Position</li>
-                                    <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
-                                </ul>
-                            </LayoutTemplate>
-                            <ItemTemplate>
-                                <li>
-                                    <asp:LinkButton ID="LinkButtonPostions" runat="server" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' />
-                                </li>
-                            </ItemTemplate>
-                        </asp:ListView>
-                    </asp:Panel>
-                    <!-- Holds submit button and the info that belows to that persion -->
-                    <asp:Panel ID="PanelSelect" CssClass="span4 form form-horizontal" Visible="false" runat="server">
-                        <h4>Candidate's Statement</h4>
-                        <p><asp:Literal ID="LabelStatement" runat="server" Text="" /></p>
-                        <p>
-                            <asp:Button ID="ButtonVote" OnClick="ButtonVote_Clicked" runat="server" Text="Vote for This Person" CssClass="btn btn-primary" />
-                        </p>
-                        
-                        <asp:HiddenField ID="HiddenField2" runat="server" />
-                        <asp:HiddenField ID="HiddenField3" runat="server" />
-                    </asp:Panel>
-                    <asp:HiddenField ID="HiddenFieldCurrentPosition" runat="server" />
-                </div>
-                </asp:Panel>
-            </ContentTemplate>
-        </asp:UpdatePanel>
+                <script type="text/javascript">
+                <!--
+                $(".candidategroup").each(function() {
+                    var radios = $(this).find(":radio");
+                    radios.change(function() {
+                        var t = this;
+                        var checked = radios.filter(":checked");
+                        checked.each(function(tt) {
+                            if(checked[tt] == t)
+                                return;
+                            checked[tt].checked = false;
+                        });
+                    });
+                });
+                -->
+                </script>
+            </div>
+            <!--</ContentTemplate>
+        </asp:UpdatePanel>-->
     </asp:Panel>   
     <!--End Voting-->
 
@@ -392,24 +401,32 @@
     <asp:Panel ID="OfficerResults" Visible="false" style="text-align: center;" runat="server">
         <h1>Results of the Election</h1><br />
         
-        <asp:GridView ID="resultList" CssClass="simpleGrid" OnRowCommand="resultList_RowCommand" style="margin-left: auto; margin-right: auto;" AutoGenerateColumns="false" runat="server">
+        <asp:GridView GridLines="none" ID="resultList" CssClass="table table-bordered" OnRowCommand="resultList_RowCommand" AutoGenerateColumns="false" runat="server">
         <Columns>
             <asp:BoundField HeaderText="Position" DataField="position" />
-            <asp:BoundField HeaderText="Winner" DataField="idunion_members" />
+            <asp:TemplateField HeaderText="Winner Name" >
+                <ItemTemplate>
+                    <asp:Literal Text='<%#GetName((int)Eval("id_union")) %>' runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
             <asp:TemplateField HeaderText="" >
                 <ItemTemplate>
-                    <asp:LinkButton ID="LinkButtonPositionDetail" commandname="position"  commandargument='<%#Eval("idelection_position") %>' text="View Position Result Data" runat="server" />
+                    <asp:LinkButton ID="LinkButtonPositionDetail" commandname="position"  commandargument='<%#Eval("position") %>' text="View Position Result Data" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>
         </asp:GridView>
 
-        <center><br />
-        <asp:Label ID="necApprove" runat="server" Text="<b>Please approve the results above from this past election.</b>" Enabled="false" Visible="false" /><br />
-        <asp:Button ID="necButton" runat="server" Text="Approve" Visible="false" OnClick="necButton_OnClick" />
-        <asp:Label ID="adminEnd" runat="server" Text="<b>The NEC must approve the election results before you can end the current election.</b>" Enabled="false" Visible="false" /><br />
-        <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" Visible="false" OnClick="adminButton_OnClick" />
-        </center>
+        <asp:Panel runat="server" ID="necApprove" CssClass="alert alert-success" Visible="false">
+            <strong>Approve Results</strong>
+            Please approve the results of the above election.
+            <asp:Button ID="necButton" runat="server" Text="Approve" OnClick="necButton_OnClick" CssClass="btn btn-success" />
+        </asp:Panel>
+        <asp:Panel runat="server" ID="adminEnd" CssClass="alert" Visible="false">
+            <strong>End Election</strong>
+            End the election for good?
+            <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" OnClick="adminButton_OnClick" CssClass="btn btn-warning" />
+        </asp:Panel>
     
     </asp:Panel>
     <!--End Results-->
