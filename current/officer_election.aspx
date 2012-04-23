@@ -315,9 +315,9 @@
             <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
     
-        <!--The voting functionality will be available for this phase
+        <!--The voting functionality will be available for this phase-->
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
-            <ContentTemplate>-->
+            <ContentTemplate>
             <div runat="server" id="feedbackhider">
                 <asp:Literal ID="LabelFeedbackVote2" runat="server" />
             </div>
@@ -392,8 +392,8 @@
                 -->
                 </script>
             </div>
-            <!--</ContentTemplate>
-        </asp:UpdatePanel>-->
+            </ContentTemplate>
+        </asp:UpdatePanel><!---->
     </asp:Panel>   
     <!--End Voting-->
 
