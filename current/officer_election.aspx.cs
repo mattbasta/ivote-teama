@@ -58,11 +58,12 @@ public partial class officer_election : System.Web.UI.Page
     
     private void DaysLeftInPhase()
     {
-        DaysRemaining.Text = "No election is currently in progress.";
         if(phases.currentPhase == "nullphase" ||
            phases.currentPhase == "")
-            return;
-        else if(phases.currentPhase != "results")
+            DaysRemaining.Text = "No election is currently in progress.";
+        else if(phases.currentPhase == "result")
+            DaysRemaining.Text = "The election is closed.";
+        else
         {
             int days_remaining = phases.daysRemaining();
             if(days_remaining > 0)
@@ -608,6 +609,7 @@ public partial class officer_election : System.Web.UI.Page
         DataSet ds = new DataSet();
         dbLogic.genericQuerySelector("SELECT * FROM election_position;");
         ds = dbLogic.getResults();
+        positions.Clear();
         for(int i = 0; i < ds.Tables[0].Rows.Count; i++)
             positions.Add(ds.Tables[0].Rows[i].ItemArray[2]);
 
