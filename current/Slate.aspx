@@ -47,18 +47,16 @@
     <ul class="breadcrumb">
         <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
         <li><a href="/officer_election.aspx">Officer Election</a> <span class="divider">/</span></li>
-        <li class="active">Cast Your Vote</li>
+        <li class="active">Slate Confirmation</li>
     </ul>
     
     <div class="page-header">
-        <h1>Cast Your Vote</h1>
+        <h1>Slate Confirmation</h1>
     </div>
     
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
-            <p><asp:Label ID="LabelFeedback" runat="server" Text="To begin the voting process, please select a position from the list below."></asp:Label></p>
-            
             <asp:Panel ID="PanelSlateWrapper" runat="server">
                 <div id="slateWrapper" class="row">
                     <!-- Holds the positions in the election -->
@@ -71,14 +69,7 @@
                             </LayoutTemplate>
                             <ItemTemplate>
                                 <li>
-                                    <asp:LinkButton ID="LinkButtonPostions" CssClass="bold" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' />
-                                    <span style="font-size: 12px; font-weight: bold; color: #808080">
-                                        <asp:Label ID="LabelVotedExtra" runat="server" Text=""></asp:Label>
-                                        <asp:Label ID="LabelVoted" runat="server" Text=""></asp:Label>
-                                        <asp:HiddenField ID="HiddenFieldVotedId" runat="server" />
-                                        <asp:HiddenField ID="HiddenFieldVoteNumber" Value='<%#Eval("slots_plurality")%>' runat="server" />
-                                        <asp:HiddenField ID="HiddenFieldAllCandidates" Value="" runat="server" />
-                                    </span>
+                                    <asp:LinkButton ID="LinkButtonPostions" runat="server" CommandName="position" CommandArgument='<%#Eval("position")%>' Text='<%#Eval("position")%>' />
                                 </li>
                             </ItemTemplate>
                         </asp:ListView>
@@ -93,7 +84,7 @@
                             </LayoutTemplate>
                             <ItemTemplate>
                                 <li>
-                                <asp:LinkButton ID="LinkButtonPostions" runat="server" CssClass="bold" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#Eval("fullname")%>' />
+                                <asp:LinkButton ID="LinkButtonPostions" runat="server" CommandName="id" CommandArgument='<%#Eval("idunion_members")%>' Text='<%#GetName((int)Eval("idunion_members"))%>' />
                                 </li>
                             </ItemTemplate>
                         </asp:ListView>
@@ -104,14 +95,7 @@
                             <strong>Candidate's Personal Statement:</strong>
                             <p><asp:Label ID="LabelStatement" runat="server" Text="" /></p>
                         </div>
-                        <asp:Button ID="ButtonVote" OnClick="ButtonVote_Clicked" Visible="false" runat="server" Text="Vote for This Person" class="btn btn-primary" />
-                        <asp:HiddenField ID="HiddenFieldName" runat="server" />
-                        <asp:HiddenField ID="HiddenFieldId" runat="server" />
                     </asp:Panel>
-                </div>
-                <br />
-                <div style="width: 100%; text-align:center;">
-                    <asp:Button ID="ButtonSubmitVotes" Visible="false" runat="server" OnClick="ButtonSubmitVotes_Clicked" Text="Submit Your Completed Ballot For Processing" />
                 </div>
                 <br />
                 <asp:HiddenField ID="HiddenFieldCurrentPosition" runat="server" />
