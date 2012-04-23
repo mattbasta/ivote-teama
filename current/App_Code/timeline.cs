@@ -73,9 +73,15 @@ public class timeline
     public bool bumpPhase()
     {
         string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
-        for(int i = 0; i < iter_phases.Length - 1; i++)
-            if(currentPhase == iter_phases[i])
+        for(int i = 0; i < iter_phases.Length - 1; i++) {
+            if(currentPhase == iter_phases[i]) {
+                if((currentPhase == "nominate" && !dbLogic.openNomsExist()) ||
+                   (currentPhase == "petition" && !dbLogic.openNomsExist())) {
+                    return changePhaseToCurrent(iter_phases[i + 2]);
+                }
                 return changePhaseToCurrent(iter_phases[i + 1]);
+            }
+        }
         return false;
     }
 

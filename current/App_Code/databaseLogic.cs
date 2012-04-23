@@ -574,6 +574,10 @@ public class databaseLogic
     {
         genericQuerySelector("SELECT * FROM nomination_accept WHERE idunion_to = " + CleanInput(id) + " AND accepted IS NULL;");
     }
+    public bool openNomsExist()
+    {
+        return genericQueryCounter("SELECT * FROM nomination_accept WHERE accepted IS NULL;") > 0;
+    }
 
     //^^^^^^^^^^^^^^election methods^^^^^^^^^^^^^^^^^^^
     public void insertElection()

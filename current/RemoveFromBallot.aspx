@@ -27,11 +27,10 @@
                 </tr>
                 <asp:ListView ID="ListViewApproval" OnItemCommand="showFullStatement" runat="server">
                     <LayoutTemplate>
-                        <tr>
-                            <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
-                        </tr>
+                        <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
                     </LayoutTemplate>
                     <ItemTemplate>
+                    <tr>
                         <td>
                             <asp:Label ID="LabelFullname" runat="server" Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' />
                             <asp:HiddenField ID="HiddenFieldID" Value='<%#Eval("wts_id")%>' runat="server" />
@@ -46,6 +45,7 @@
                             OnClientClick='Are you sure you want to remove this person from this election? An email will be sent out alerting ALL users.'
                             Text="Remove From Ballot" CssClass="btn btn-danger btn-mini" />
                         </td>
+                    </tr>
                     </ItemTemplate>
                 </asp:ListView>
             </table>

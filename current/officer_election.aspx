@@ -335,7 +335,7 @@
                                 <asp:Literal runat="server" Text='<%#Eval("position")%>' />
                             </div>
                             <div class="controls">
-                                <asp:ListView ID="candidates" runat="server" Visible='<%#DataBinder.Eval(Container.DataItem,"tally_type") != "Plurality"%>'>
+                                <asp:ListView ID="candidates" runat="server" Visible="false">
                                     <LayoutTemplate>
                                         <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
                                     </LayoutTemplate>
@@ -350,7 +350,7 @@
                                         <asp:HiddenField ID="CandidateID" runat="server" Value='<%#Eval("idunion_members")%>' />
                                     </ItemTemplate>
                                 </asp:ListView>
-                                <asp:ListView ID="candidates_plurality" runat="server" Visible='<%#DataBinder.Eval(Container.DataItem,"tally_type") == "Plurality"%>'>
+                                <asp:ListView ID="candidates_plurality" runat="server" Visible="false">
                                     <LayoutTemplate>
                                         <asp:PlaceHolder runat="server" ID="itemPlaceholder"></asp:PlaceHolder>
                                     </LayoutTemplate>

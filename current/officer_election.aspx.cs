@@ -420,11 +420,18 @@ public partial class officer_election : System.Web.UI.Page
         
         // Fuck everything about this. Seriously, whoever designed the DB is a fucking moron.
         HiddenField position_id = (HiddenField)e.Item.FindControl("Position");
+        HiddenField position_type = (HiddenField)e.Item.FindControl("PositionType");
         dbLogic.selectAllForPosition(position_id.Value);
         
-        ListView candidates = (ListView)e.Item.FindControl("candidates");
+        ListView candidates = null;
+        if(position_type.Value != "Plurality") {
+            candidates = (ListView)e.Item.FindControl("candidates");
+        } else {
+            candidates = (ListView)e.Item.FindControl("candidates_plurality");
+        }
         candidates.DataSource = dbLogic.getResults();
         candidates.DataBind();
+        candidates.Visible = true;
         
     }
     protected void ButtonSubmitVotes_Clicked(object sender, EventArgs e)
