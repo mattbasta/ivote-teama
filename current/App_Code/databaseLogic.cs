@@ -172,6 +172,27 @@ public class databaseLogic
         return emails;
     }
 
+    //retrieve only the emails for a NULL accept/reject
+    public string[] getNullEmails()
+    {
+        openConnection();
+        try
+        {
+            string query = "SELECT UM.Email FROM users UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.ID=NA.idunion_to";
+            adapter = new MySqlDataAdapter(query, connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "email");
+            closeConnection();
+            return parseTable();
+        }
+        catch
+        {
+            closeConnection();
+        }
+
+        return null;
+    }
+
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
 
     //insert verification codes
@@ -230,6 +251,28 @@ public class databaseLogic
     {
         return genericQueryCounter("SELECT * FROM petition;");
     }
+
+    //Select the idposition from positions using the position title
+    public string selectIDFromPosition(string position)
+    {
+        openConnection();
+        try
+        {
+            string query = "SELECT idelection_position FROM election_position WHERE position = '" + CleanInput(position) + "';";
+            adapter = new MySqlDataAdapter(query, connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
+            closeConnection();
+            return pictureURL;
+        }
+        catch
+        {
+            closeConnection();
+        }
+        return "";
+    }
+
     
     //^^^^^^^^^^positions methods^^^^^^^^^^
 
@@ -362,6 +405,23 @@ public class databaseLogic
         }
     }
 
+    public DateTime currentPhaseEndDateTime()
+    {
+        try
+        {
+            openConnection();
+            adapter = new MySqlDataAdapter("SELECT datetime_end FROM timeline WHERE iscurrent = 1;", connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            return DateTime.Parse(ds.Tables[0].Rows[0].ItemArray[0].ToString());
+        }
+        catch { return DateTime.Now; }
+        finally
+        {
+            closeConnection();
+        }
+    }
+
     //^^^^^^^^^^nomination_accept^^^^^^^^^^
 
     //inserts nomination into db
@@ -420,6 +480,12 @@ public class databaseLogic
     public void userAcceptedNom(string id, string position)
     {
         genericQueryUpdater("UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
+    }
+
+    //user has rejected nomination
+    public void userRejectedNom(string id, string position)
+    {
+        genericQueryUpdater("UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
     }
 
     //get all nominations that pertain to a user
@@ -505,6 +571,16 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^role and login provider methods (DO NOT MODIFY)^^^^^^^^^^
+
+    private string[] parseTable()
+    {
+        // parse a datatable containing 1 column of data (i.e., 1 column selected for multiple records)
+
+        string[] retVal = new String[ds.Tables[0].Rows.Count];
+        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+            retVal[i] = (string)ds.Tables[0].Rows[i].ItemArray[0];
+        return retVal;
+    }
 
     //check to see if there are any pending eligibility forms to be completed
     public int returnEligibilityCount()
