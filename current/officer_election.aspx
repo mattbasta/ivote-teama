@@ -401,17 +401,12 @@
     <asp:Panel ID="OfficerResults" Visible="false" style="text-align: center;" runat="server">
         <h1>Results of the Election</h1><br />
         
-        <asp:GridView GridLines="none" ID="resultList" CssClass="table table-bordered" OnRowCommand="resultList_RowCommand" AutoGenerateColumns="false" runat="server">
+        <asp:GridView GridLines="none" ID="resultList" CssClass="table table-bordered" AutoGenerateColumns="false" runat="server">
         <Columns>
             <asp:BoundField HeaderText="Position" DataField="position" />
             <asp:TemplateField HeaderText="Winner Name" >
                 <ItemTemplate>
                     <asp:Literal Text='<%#GetName((int)Eval("id_union")) %>' runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
-            <asp:TemplateField HeaderText="" >
-                <ItemTemplate>
-                    <asp:LinkButton ID="LinkButtonPositionDetail" commandname="position"  commandargument='<%#Eval("position") %>' text="View Position Result Data" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>

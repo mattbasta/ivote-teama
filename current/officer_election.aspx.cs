@@ -541,16 +541,6 @@ public partial class officer_election : System.Web.UI.Page
         ds = dbLogic.getResults();
         resultList.DataSource = ds;
         resultList.DataBind();
-
-        //if user is not admin, cannot see "view result detail" row
-        resultList.Columns[2].Visible = User.IsInRole("admin") || User.IsInRole("nec");
-    }
-
-    //sends user to 
-    protected void resultList_RowCommand(Object sender, GridViewCommandEventArgs e)
-    {
-        if (String.Equals(e.CommandName, "position"))
-            Response.Redirect("ResultDetail.aspx/" + e.CommandArgument.ToString());
     }
 
     //nec must approve nomination before use
