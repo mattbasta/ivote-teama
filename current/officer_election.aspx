@@ -78,7 +78,7 @@
                 <p>The following positions are up for election:</p>
                 
                 <!-- List of positions -->
-                <asp:GridView ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
+                <asp:GridView GridLines="none" ID="GridViewPositions" AutoGenerateColumns="false" OnRowCommand="GridViewPositions_RowCommand" CssClass="table table-bordered" runat="server">
                      <Columns>
                         <asp:BoundField HeaderText="Postion Name" DataField="position" NullDisplayText="Unknown" />
                         <asp:BoundField HeaderText="Description" DataField="description" NullDisplayText="Unknown" />
@@ -87,7 +87,7 @@
                                 <asp:LinkButton ID="ButtonNomMe" runat="server" CommandName='nom_me'
                                     Enabled='<%#!(dbLogic.isUserNominated(user.ID, Eval("position").ToString()) || dbLogic.isUserWTS(user.ID, Eval("position").ToString())) %>'
                                     CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Me"
-                                    CssClass="btn btn-primary btn-small" />
+                                    CssClass='<%#"btn btn-primary btn-small" + ((dbLogic.isUserNominated(user.ID, Eval("position").ToString()) || dbLogic.isUserWTS(user.ID, Eval("position").ToString())) ? " disabled" : "") %>' />
                                 <asp:LinkButton ID="ButtonNomOther" runat="server" CommandName='nom_other'
                                     CommandArgument='<%#Eval("idelection_position") %>' Text="Nominate Someone Else"
                                     CssClass="btn btn-small" />
