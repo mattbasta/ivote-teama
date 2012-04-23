@@ -26,7 +26,16 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
             DataSet emailSet = dbLogic.getResults();
             ListViewApproval.DataSource = emailSet;
             ListViewApproval.DataBind();
-            loadApprovalInfo();
+            foreach (ListViewDataItem eachItem in ListViewApproval.Items)
+            {
+                HiddenField eligible = (HiddenField)eachItem.FindControl("HiddenFieldEligible");
+                RadioButton approve = (RadioButton)eachItem.FindControl("RadioButton1");
+                RadioButton deny = (RadioButton)eachItem.FindControl("RadioButton2");
+                if (eligible.Value == "1")
+                    approve.Checked = true;
+                else if(eligible.Value == "0")
+                    deny.Checked = true;
+            }
         }
     }
     
@@ -43,46 +52,27 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
             return statement.Substring(0, 137) + "...";
         return statement;
     }
-
-    protected void loadApprovalInfo()
-    {
-        foreach (ListViewDataItem eachItem in ListViewApproval.Items)
-        {
-            HiddenField eligible = (HiddenField)eachItem.FindControl("HiddenFieldEligible");
-            RadioButton approve = (RadioButton)eachItem.FindControl("RadioButton1");
-            RadioButton deny = (RadioButton)eachItem.FindControl("RadioButton2");
-            if (eligible.Value == "1")
-            {
-                approve.Checked = true;
-            }
-            else if(eligible.Value == "0")
-                deny.Checked = true;
-        }
-    }
     
-    
-
     //saves user changes
     protected void Click_ButtonSave(object sender, EventArgs e)
     {
+        ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
         int count = 0;
         foreach (ListViewDataItem eachItem in ListViewApproval.Items)
         {
             bool changeMade = false;
             HiddenField id = (HiddenField)eachItem.FindControl("HiddenFieldID");
+            HiddenField userid = (HiddenField)eachItem.FindControl("HiddenUserID");
             HiddenField eligible = (HiddenField)eachItem.FindControl("HiddenFieldEligible");
-            Label fullname = (Label)eachItem.FindControl("LabelFullname");
-            Label position = (Label)eachItem.FindControl("LabelPosition");
-            Label statement = (Label)eachItem.FindControl("LabelStatement");
+            
             RadioButton approve = (RadioButton)eachItem.FindControl("RadioButton1");
             RadioButton deny = (RadioButton)eachItem.FindControl("RadioButton2");
 
-            ISession session = DatabaseEntities.NHibernateHelper.CreateSessionFactory().OpenSession();
-            User u = DatabaseEntities.User.FindUser(session, int.Parse(id.Value));
+            User u = DatabaseEntities.User.FindUser(session, int.Parse(userid.Value));
 
             nEmailHandler emailer = new nEmailHandler();
 
-            if (approve.Checked == true && u != null)
+            if (approve.Checked && u != null)
             {
                 dbLogic.updateEligible(id.Value, "1");
                 //email to user saying they were accepted
@@ -94,7 +84,7 @@ public partial class wwwroot_experimental_ApproveNominations : System.Web.UI.Pag
                     eligible.Value = "1";
                 }
             }
-            else if (deny.Checked == true || u == null)
+            else if (deny.Checked || u == null)
             {
                 dbLogic.updateEligible(id.Value, "0");
                 //email to user saying they were rejected

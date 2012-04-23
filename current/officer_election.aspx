@@ -318,11 +318,8 @@
         <!--The voting functionality will be available for this phase-->
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
-                
-                
-                <p><asp:Literal ID="LabelFeedbackVote2" runat="server" /></p>
                 <div>
-                    <asp:Button ID="ButtonSubmitVotes" Visible="false" runat="server" OnClick="ButtonSubmitVotes_Clicked" Text="Submit Final Ballot" CssClass="btn btn-primary" />
+                    <asp:Literal ID="LabelFeedbackVote2" runat="server" /> <asp:Button ID="ButtonSubmitVotes" Visible="false" runat="server" OnClick="ButtonSubmitVotes_Clicked" Text="Submit Final Ballot" CssClass="btn btn-primary" />
                 </div>
                 <asp:Panel ID="PanelSlateWrapper" runat="server" CssClass="well">
                     <p>
@@ -387,7 +384,7 @@
                 </div>
                 </asp:Panel>
             </ContentTemplate>
-        </asp:UpdatePanel><!---->
+        </asp:UpdatePanel>
     </asp:Panel>   
     <!--End Voting-->
 

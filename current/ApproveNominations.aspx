@@ -21,7 +21,7 @@
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
         <ContentTemplate>
             <asp:Panel ID="LabelFeedbackAlert" runat="server" CssClass="alert" Visible="false">
-                <asp:Label ID="LabelFeedback" runat="server" Text="" />
+                <asp:Literal ID="LabelFeedback" runat="server" Text="" />
             </asp:Panel>
             
             <asp:Panel ID="SavedConfirmation" runat="server" CssClass="alert alert-success" Visible="false">
@@ -44,16 +44,17 @@
                     <ItemTemplate>
                         <tr>
                             <td >
-                                <asp:Label ID="LabelFullname" runat="server" Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' />
+                                <asp:Literal ID="LabelFullname" runat="server" Text='<%#GetName(int.Parse(Eval("idunion_members").ToString())) %>' />
                                 <asp:HiddenField ID="HiddenFieldID" Value='<%#Eval("wts_id")%>' runat="server" />
+                                <asp:HiddenField ID="HiddenUserID" Value='<%#Eval("idunion_members")%>' runat="server" />
                                 <asp:HiddenField ID="HiddenFieldEligible" Value='<%#Eval("eligible")%>' runat="server" />
                             </td>
                             <td>
-                                <asp:Label ID="LabelPosition" runat="server" Text='<%#Eval("position") %>' />
+                                <asp:Literal ID="LabelPosition" runat="server" Text='<%#Eval("position") %>' />
                             </td>
                             <td>
-                                <asp:Label ID="LabelStatement" runat="server" Text='<%#GetSummary(Eval("statement").ToString()) %>' />
-                                <asp:LinkButton ID="LinkButtonStatement" CommandName="statement" CommandArgument='<%#Eval("statement") %>' Visible='<%#Eval("statement").ToString().Length > 0 %>' runat="server">Continue</asp:LinkButton>
+                                <asp:Literal ID="LabelStatement" runat="server" Text='<%#GetSummary(Eval("statement").ToString()) %>' />
+                                <asp:LinkButton ID="LinkButtonStatement" CommandName="statement" CommandArgument='<%#Eval("statement") %>' Visible='<%#Eval("statement").ToString().Length > 140 %>' runat="server">Continue</asp:LinkButton>
                             </td>
                             <td>
                                 <asp:RadioButton ID="RadioButton1" GroupName="nomination" runat="server" />

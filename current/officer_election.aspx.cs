@@ -187,9 +187,12 @@ public partial class officer_election : System.Web.UI.Page
         
         DaysLeftInPhase();
         
-        checkForNomination();
-        if(is_admin)
-            checkForEligibility();
+        if(phases.currentPhase != "vote" &&
+           phases.currentPhase != "result") {
+            checkForNomination();
+            if(is_admin)
+                checkForEligibility();
+        }
         
         if (is_admin)
         {
@@ -221,34 +224,6 @@ public partial class officer_election : System.Web.UI.Page
                 
                 btnApprove.Visible = true;
                 
-            } else if (phases.currentPhase == "vote") {
-
-                if (dbLogic.isUserNewVoter(user.ID))
-                {
-                    PanelSlateWrapper.Visible = true;
-                    foreach (ListViewDataItem myItem in ListViewPositions.Items)
-                    {
-                        LinkButton LinkButtonPosition = (LinkButton)myItem.FindControl("LinkButtonPostions");
-                        Label votedFor = (Label)myItem.FindControl("LabelVoted");
-                        Label votedForExtra = (Label)myItem.FindControl("LabelVotedExtra");
-                        HiddenField votedId = (HiddenField)myItem.FindControl("HiddenFieldVotedId");
-
-                        if (!dbLogic.IsThereCandidatesForPoisition(LinkButtonPosition.Text))
-                        {
-                            LinkButtonPosition.Enabled = false;
-                            votedFor.Text = "No candidates available";
-                            votedId.Value = "0";
-                        }
-                    }
-                }
-
-                else
-                {
-                    PanelSlateWrapper.Visible = false;
-                    ButtonSubmitVotes.Visible = false;
-                    LabelFeedbackVote2.Text = "You have already voted for this election.";
-                    LabelFeedback.Text = "You have already voted for this election.";
-                }
             }
             //results
             else if (phases.currentPhase == "result")
@@ -450,7 +425,6 @@ public partial class officer_election : System.Web.UI.Page
      * VOTING
      * FUNCTIONALITY
      * *****************************************/
-    //functionality for voting
 
     protected void ListViewPositions_ItemCommand(Object sender, ListViewCommandEventArgs e)
     {
@@ -487,8 +461,9 @@ public partial class officer_election : System.Web.UI.Page
                     {
                         string[] candidates = allCandidates.Value.Split(new char[] { '%' }); //splits querystring into variable name and value
                         for (int i = 1; i < candidates.Length; i++)
-                            if (candidates[i] == Person.CommandArgument)
+                            if (candidates[i] == Person.CommandArgument) {
                                 Person.Enabled = false;
+                            }
                     }
                 }
             }
