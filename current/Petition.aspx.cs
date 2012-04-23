@@ -96,7 +96,6 @@ public partial class wwwroot_experimental_petition : System.Web.UI.Page
             }
             else
             {
-                //Response.Write("0: " + petitionInfo[0] + " 1: " + petitionInfo[1] + " 2: " + petitionInfo[2]);
                 dbLogic.insertPetition(petitionInfo);
                 if (dbLogic.countPetitionsForPerson(petitionInfo) == 1)
                 {
