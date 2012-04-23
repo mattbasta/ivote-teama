@@ -172,52 +172,12 @@ public class databaseLogic
         return emails;
     }
 
-
-    //retrieve only the emails for a NULL accept/reject
-    public string[] getNullEmails()
-    {
-        openConnection();
-        try
-        {
-            string query = "SELECT UM.Email FROM users UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.ID=NA.idunion_to";
-            adapter = new MySqlDataAdapter(query, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email");
-            closeConnection();
-            return parseTable();
-        }
-        catch
-        {
-            closeConnection();
-        }
-
-        return null;
-    }
-
-
-    //select a users unionID in the user table based on the username 
-    public int selectIDFromEmail(ISession session, String email)
-    {
-        DatabaseEntities.User user =
-                session.CreateCriteria(typeof(DatabaseEntities.User))
-                       .Add(Restrictions.Eq("Email", email))
-                       .UniqueResult<DatabaseEntities.User>();
-        if(user == null)
-            return -1;
-        return user.ID;
-    }
-
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
 
     //insert verification codes
     public void insertCodes(int ID, String code1, String code2)
     {
         genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + ID.ToString() + ", '" + CleanInput(code1) + "', '" + CleanInput(code2) + "', NOW());");
-    }
-
-    public void insertCodes(string[] code)
-    {
-        genericQueryInserter("INSERT INTO email_verification (iduser, code_verified, code_rejected, datetime_sent) VALUES (" + CleanInput(code[0]) + ", '" + CleanInput(code[1]) + "', '" + CleanInput(code[2]) + "', NOW());");
     }
 
     //deletes a code based on the code
@@ -248,12 +208,6 @@ public class databaseLogic
 
     //^^^^^^^^^^petition methods^^^^^^^^^^
 
-    //select all
-    public void selectAllPetitions(String id)
-    {
-        genericQuerySelector("SELECT * FROM petition;");
-    }
-
     //insert
     public void insertPetition(string[] petition)
     {
@@ -276,36 +230,8 @@ public class databaseLogic
     {
         return genericQueryCounter("SELECT * FROM petition;");
     }
-
-    //Select the idposition from positions using the position title
-    public string selectIDFromPosition(string position)
-    {
-        openConnection();
-        try
-        {
-            string query = "SELECT idelection_position FROM election_position WHERE position = '" + CleanInput(position) + "';";
-            adapter = new MySqlDataAdapter(query, connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
-            closeConnection();
-            return pictureURL;
-        }
-        catch
-        {
-            closeConnection();
-        }
-        return "";
-    }
-
-
+    
     //^^^^^^^^^^positions methods^^^^^^^^^^
-
-    //Select all positions
-    public void selectAllPositions()
-    {
-        genericQuerySelector("SELECT * FROM positions");
-    }
 
     //Select all available positions
     public void selectAllAvailablePositions()
@@ -340,22 +266,6 @@ public class databaseLogic
         genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + candidate + ", '" + CleanInput(position) + "', 1)");
     }
     
-    public void insertNewTally(string[] votingInfo)
-    {
-        genericQueryInserter("INSERT INTO tally (id_union, position, count) VALUES (" + CleanInput(votingInfo[0]) + ", '" + CleanInput(votingInfo[1]) + "', 0)");
-    }
-
-    //updates the count for a specified tally row
-    public void updateTally(string[] votingInfo)
-    {
-        genericQueryUpdater("UPDATE tally SET count = count + 1 WHERE id_union = " + CleanInput(votingInfo[0]) + " AND position = '" + CleanInput(votingInfo[1]) + "';");
-    }
-
-    public void selectTallyInfoForPosition(string position)
-    {
-        // TODO: Update this to the new DB stuff.
-        genericQuerySelector("SELECT T.*, CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM tally T, users UM WHERE T.position = '" + CleanInput(position) + "' AND UM.ID = T.id_union;");
-    }
 
     //^^^^^^^^^^flag_voted methods^^^^^^^^^^
     public void insertFlagVoted(int id, string code)
@@ -425,6 +335,7 @@ public class databaseLogic
 
     public void updateVotePhase()
     {
+        turnOnPhase("vote");
         genericQueryInserter("UPDATE timeline SET datetime_end = DATE_ADD(datetime_end,INTERVAL 7 DAY) WHERE name_phase = 'vote';");
     }
 
@@ -445,23 +356,6 @@ public class databaseLogic
             return ds.Tables[0].Rows[0].ItemArray[0].ToString();
         }
         catch { return ""; }
-        finally
-        {
-            closeConnection();
-        }
-    }
-
-    public DateTime currentPhaseEndDateTime()
-    {
-        try
-        {
-            openConnection();
-            adapter = new MySqlDataAdapter("SELECT datetime_end FROM timeline WHERE iscurrent = 1;", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "blah");
-            return DateTime.Parse(ds.Tables[0].Rows[0].ItemArray[0].ToString());
-        }
-        catch { return DateTime.Now; }
         finally
         {
             closeConnection();
@@ -501,25 +395,6 @@ public class databaseLogic
 
     }
 
-    public bool isUserNominatedFromPetitionPending(int id)
-    {
-        try
-        {
-            openConnection();
-            adapter = new MySqlDataAdapter("SELECT * FROM nomination_accept WHERE idunion_to=" + CleanInput(id.ToString()) + " AND from_petition = 1 AND accepted IS NULL;", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email_verification");
-            return ds.Tables[0].Rows[0].ItemArray[0].ToString() != "";
-        }
-        catch
-        { return false; }
-        finally
-        {
-            closeConnection();
-        }
-
-    }
-
     //checks if the user already has an entry for the position
     public bool isUserNominated(int id, string position)
     {
@@ -541,37 +416,11 @@ public class databaseLogic
 
     }
 
-    public string selectDescriptionFromPositionName(string posName)
-    {
-        try
-        {
-            openConnection();
-            adapter = new MySqlDataAdapter("SELECT description FROM election_position WHERE position='" + CleanInput(posName) + "';", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email_verification");
-            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
-        }
-        catch
-        { return ""; }
-        finally
-        {
-            closeConnection();
-        }
-
-    }
-
     //user has accepted nomination
     public void userAcceptedNom(string id, string position)
     {
         genericQueryUpdater("UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
     }
-
-    //user has rejected nomination
-    public void userRejectedNom(string id, string position)
-    {
-        genericQueryUpdater("UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
-    }
-
 
     //get all nominations that pertain to a user
     public void selectAllUserNoms(string id)
@@ -590,23 +439,6 @@ public class databaseLogic
         genericQueryInserter("INSERT INTO flag_NEC values(1,1,0,0)");
     }
 
-    public string returnLatestElectionId()
-    {
-        try
-        {
-            adapter = new MySqlDataAdapter("SELECT idelection FROM election ORDER BY idelection DESC;", connection);
-            ds = new DataSet();
-            adapter.Fill(ds, "email_verification");
-            return ds.Tables[0].Rows[0].ItemArray[0].ToString();
-        }
-        catch
-        { return ""; }
-        finally
-        {
-            closeConnection();
-        }
-    }
-
     //^^^^^^^^^^^ballot methods^^^^^^^^^^^^^^^
 
     //get all the info to populate the ballot
@@ -618,13 +450,6 @@ public class databaseLogic
     {
         genericQuerySelector("SELECT T.*, CONCAT(UM.FirstName,' ', UM.LastName) AS fullname FROM wts T, users UM WHERE T.eligible=1 AND T.position='" + CleanInput(position) + "' AND UM.ID = T.idunion_members;");
     }
-
-    //counts how many people are nominated for a position
-    public int countHowManyCandidatesForPosition(string position)
-    {
-        return genericQueryCounter("SELECT * FROM wts WHERE eligible=1 AND position='" + CleanInput(position) + "';");
-    }
-
     //gets all the current election positions
     public void selectAllBallotPositions()
     {
@@ -633,10 +458,6 @@ public class databaseLogic
 
 
     //^^^^^^^^^^^^^^adding positions to an election methods^^^^^^^^^^^^^^^^
-    public bool IsThereCandidatesForPoisition(string position)
-    {
-        return genericQueryCounter("SELECT * FROM wts WHERE eligible=1;") > 0;
-    }
     //adds the positions to positions table
     public void addPos(ArrayList positions, ArrayList vote, ArrayList description, ArrayList num, ArrayList votes)
     {
@@ -684,17 +505,6 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^role and login provider methods (DO NOT MODIFY)^^^^^^^^^^
-
-    //EXTRA STUFF NEEDED FOR OTHER QUERIES
-    private string[] parseTable()
-    {
-        // parse a datatable containing 1 column of data (i.e., 1 column selected for multiple records)
-
-        string[] retVal = new String[ds.Tables[0].Rows.Count];
-        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-            retVal[i] = (string)ds.Tables[0].Rows[i].ItemArray[0];
-        return retVal;
-    }
 
     //check to see if there are any pending eligibility forms to be completed
     public int returnEligibilityCount()
