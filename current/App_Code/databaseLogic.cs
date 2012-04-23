@@ -251,6 +251,28 @@ public class databaseLogic
     {
         return genericQueryCounter("SELECT * FROM petition;");
     }
+
+    //Select the idposition from positions using the position title
+    public string selectIDFromPosition(string position)
+    {
+        openConnection();
+        try
+        {
+            string query = "SELECT idelection_position FROM election_position WHERE position = '" + CleanInput(position) + "';";
+            adapter = new MySqlDataAdapter(query, connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "blah");
+            string pictureURL = ds.Tables[0].Rows[0].ItemArray[0].ToString();
+            closeConnection();
+            return pictureURL;
+        }
+        catch
+        {
+            closeConnection();
+        }
+        return "";
+    }
+
     
     //^^^^^^^^^^positions methods^^^^^^^^^^
 
@@ -458,6 +480,12 @@ public class databaseLogic
     public void userAcceptedNom(string id, string position)
     {
         genericQueryUpdater("UPDATE nomination_accept SET accepted='1' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
+    }
+
+    //user has rejected nomination
+    public void userRejectedNom(string id, string position)
+    {
+        genericQueryUpdater("UPDATE nomination_accept SET accepted='0' WHERE idunion_to='" + CleanInput(id) + "' AND position='" + CleanInput(position) + "';");
     }
 
     //get all nominations that pertain to a user
