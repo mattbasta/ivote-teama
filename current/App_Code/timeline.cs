@@ -90,14 +90,4 @@ public class timeline
         return false;
     }
 
-    public int daysRemaining()
-    {
-        string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote"};
-        int[] phase_durations = {7, 7, 7, 7, 7, 7, 7};
-        for(int i = 0; i < iter_phases.Length; i++)
-            if(currentPhase == iter_phases[i])
-                return (int)dbLogic.currentPhaseEndDateTime().AddDays(phase_durations[i]).Subtract(DateTime.Now).TotalDays;
-        return 0;
-    }
-
 }

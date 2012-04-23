@@ -172,6 +172,27 @@ public class databaseLogic
         return emails;
     }
 
+    //retrieve only the emails for a NULL accept/reject
+    public string[] getNullEmails()
+    {
+        openConnection();
+        try
+        {
+            string query = "SELECT UM.Email FROM users UM, nomination_accept NA WHERE NA.accepted is NULL AND UM.ID=NA.idunion_to";
+            adapter = new MySqlDataAdapter(query, connection);
+            ds = new DataSet();
+            adapter.Fill(ds, "email");
+            closeConnection();
+            return parseTable();
+        }
+        catch
+        {
+            closeConnection();
+        }
+
+        return null;
+    }
+
     //^^^^^^^^^^email_verification methods^^^^^^^^^^
 
     //insert verification codes
@@ -505,6 +526,16 @@ public class databaseLogic
     }
 
     //^^^^^^^^^^role and login provider methods (DO NOT MODIFY)^^^^^^^^^^
+
+    private string[] parseTable()
+    {
+        // parse a datatable containing 1 column of data (i.e., 1 column selected for multiple records)
+
+        string[] retVal = new String[ds.Tables[0].Rows.Count];
+        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+            retVal[i] = (string)ds.Tables[0].Rows[i].ItemArray[0];
+        return retVal;
+    }
 
     //check to see if there are any pending eligibility forms to be completed
     public int returnEligibilityCount()
