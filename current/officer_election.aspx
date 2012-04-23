@@ -398,31 +398,32 @@
     <!--End Voting-->
 
     <!--Results-->
-    <asp:Panel ID="OfficerResults" Visible="false" style="text-align: center;" runat="server">
-        <h1>Results of the Election</h1><br />
-        
-        <asp:GridView GridLines="none" ID="resultList" CssClass="table table-bordered" AutoGenerateColumns="false" runat="server">
-        <Columns>
-            <asp:BoundField HeaderText="Position" DataField="position" />
-            <asp:TemplateField HeaderText="Winner Name" >
-                <ItemTemplate>
-                    <asp:Literal Text='<%#GetName((int)Eval("id_union")) %>' runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
-        </Columns>
-        </asp:GridView>
+    <asp:Panel ID="OfficerResults" Visible="false" runat="server">
+        <fieldset>
+            <legend>Results of the Election</legend>
+            
+            <asp:GridView GridLines="none" ID="resultList" CssClass="table table-bordered" AutoGenerateColumns="false" runat="server">
+            <Columns>
+                <asp:BoundField HeaderText="Position" DataField="position" />
+                <asp:TemplateField HeaderText="Winner Name" >
+                    <ItemTemplate>
+                        <asp:Literal Text='<%#GetName((int)Eval("id_union")) %>' runat="server" />
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+            </asp:GridView>
 
-        <asp:Panel runat="server" ID="necApprove" CssClass="alert alert-success" Visible="false">
-            <strong>Approve Results</strong>
-            Please approve the results of the above election.
-            <asp:Button ID="necButton" runat="server" Text="Approve" OnClick="necButton_OnClick" CssClass="btn btn-success" />
-        </asp:Panel>
-        <asp:Panel runat="server" ID="adminEnd" CssClass="alert" Visible="false">
-            <strong>End Election</strong>
-            End the election for good?
-            <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" OnClick="adminButton_OnClick" CssClass="btn btn-warning" />
-        </asp:Panel>
-    
+            <asp:Panel runat="server" ID="necApprove" CssClass="alert alert-success" Visible="false">
+                <strong>Approve Results</strong>
+                Please approve the results of the above election.
+                <asp:Button ID="necButton" runat="server" Text="Approve" OnClick="necButton_OnClick" CssClass="btn btn-success" />
+            </asp:Panel>
+            <asp:Panel runat="server" ID="adminEnd" CssClass="alert" Visible="false">
+                <strong>End Election</strong>
+                End the election for good?
+                <asp:LinkButton ID="adminButton" runat="server" Text="Offically End This Election" OnClick="adminButton_OnClick" CssClass="btn btn-warning" />
+            </asp:Panel>
+        </fieldset>
     </asp:Panel>
     <!--End Results-->
 </asp:Content>
