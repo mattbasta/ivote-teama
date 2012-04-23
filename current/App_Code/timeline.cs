@@ -17,7 +17,7 @@ public class timeline
         currentPhase = dbLogic.currentPhase();
 	}
 
-    public bool changePhaseToCurrent(string phase, bool force=false)
+    public bool changePhaseToCurrent(string phase)
     {
         if(dbLogic.currentPhase() == phase)
             return false;
@@ -34,8 +34,6 @@ public class timeline
             }
         }
         
-        if(dbLogic.canSkipPhase() && !force)
-            return changePhaseToCurrent(iter_phases[changed_to + 1]);
         nEmailHandler emailer = new nEmailHandler();
         switch(phase)
         {
@@ -75,8 +73,15 @@ public class timeline
         string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
         for(int i = 0; i < iter_phases.Length - 1; i++) {
             if(currentPhase == iter_phases[i]) {
-                if((currentPhase == "nominate" && !dbLogic.openNomsExist()) ||
-                   (currentPhase == "petition" && !dbLogic.openNomsExist())) {
+                if(currentPhase == "petition") {
+                    bool no_petitions = dbLogic.PetitionCount() == 0;
+                    if(no_petitions) {
+                        if(dbLogic.canSkipAdminPhase())
+                            return changePhaseToCurrent(iter_phases[i + 3]);
+                        return changePhaseToCurrent(iter_phases[i + 2]);
+                    }
+                } else if((currentPhase == "nominate" && !dbLogic.openNomsExist()) ||
+                          (currentPhase == "approval" && dbLogic.canSkipAdminPhase())) {
                     return changePhaseToCurrent(iter_phases[i + 2]);
                 }
                 return changePhaseToCurrent(iter_phases[i + 1]);

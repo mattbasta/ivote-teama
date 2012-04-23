@@ -272,6 +272,10 @@ public class databaseLogic
     {
         return genericQueryCounter("SELECT * FROM petition WHERE idunion_members = " + CleanInput(petition[0]) + " AND positions = '" + CleanInput(petition[1]) + "';");
     }
+    public int PetitionCount()
+    {
+        return genericQueryCounter("SELECT * FROM petition;");
+    }
 
     //Select the idposition from positions using the position title
     public string selectIDFromPosition(string position)
@@ -786,37 +790,12 @@ public class databaseLogic
     }
 
     /*********************************************
-     * canSkipPhase
-     * Returns true if accept phase can be skipped.
-     * ******************************************/
-    public bool canSkipPhase()
-    {
-        string cp = currentPhase();
-        if(cp == "approval")
-            return canSkipAdminPhase();
-        else if(cp != "accept1")
-            return false;
-        
-        openConnection();
-        adapter = new MySqlDataAdapter("select * from nomination_accept where accepted is NULL;", connection);
-        ds = new DataSet();
-        adapter.Fill(ds, "blah");
-        //query to see if any nominations are unaccepted
-        return Convert.ToInt32((ds.Tables[0].Rows.Count)) > 0;
-    }
-
-    /*********************************************
      * canSkipAdminPhase
      * Returns true if approval phase can be skipped.
      * ******************************************/
     public bool canSkipAdminPhase()
     {
-        openConnection();
-        adapter = new MySqlDataAdapter("select * from wts where eligible is NULL;", connection);
-        ds = new DataSet();
-        adapter.Fill(ds, "blah");
-        //query to see if any nominations are unaccepted
-        return Convert.ToInt32((ds.Tables[0].Rows.Count)) > 0;
+        return genericQueryCounter("select * from wts where eligible is NULL;") == 0;
     }
 
     public void createSchema()

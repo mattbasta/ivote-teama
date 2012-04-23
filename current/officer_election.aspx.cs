@@ -235,7 +235,7 @@ public partial class officer_election : System.Web.UI.Page
 
     protected void JulioButtonCustom_Clicked(Object sender, EventArgs e)
     {
-        phases.changePhaseToCurrent(JulioButtonPhase.SelectedValue, true);
+        phases.changePhaseToCurrent(JulioButtonPhase.SelectedValue);
         Response.Redirect("/officer_election.aspx?" + JulioButtonPhase.SelectedValue);
     }
 
@@ -468,12 +468,9 @@ public partial class officer_election : System.Web.UI.Page
                     if(r.Checked)
                         votes_cast++;
                 }
-                if(votes_cast < votes_allowed)
-                    LabelFeedbackVote2.Text = "You did not cast enough votes for " + position.Value;
-                else if(votes_cast > votes_allowed)
+                voted = votes_cast <= votes_allowed;
+                if(!voted)
                     LabelFeedbackVote2.Text = "You cast too many votes for " + position.Value;
-                
-                voted = votes_cast == votes_allowed;
             }
             
             if(!voted)
