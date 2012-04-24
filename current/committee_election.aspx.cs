@@ -584,6 +584,19 @@ public partial class committee_election : System.Web.UI.Page
         // Add the WTSNomination if this user hasn't already cast one.
         if (CommitteeWTSNomination.FindCommitteeWTSNomination(session, election.ID, user.ID).Count == 0)
         {
+            int count = 0;
+            foreach (ListViewDataItem eachItem in ListViewNom.Items) {
+                CheckBox entry = (CheckBox)eachItem.FindControl("PrimBallotEntry");
+                if(!entry.Checked)
+                    continue;
+                count++;
+            }
+            if(count > election.VacanciesToFill) {
+                TooManyPrimVotes.Visible = true;
+                NumVacancies_Prim1.Text = election.VacanciesToFill.ToString();
+                return;
+            }
+            TooManyPrimVotes.Visible = false;
             foreach (ListViewDataItem eachItem in ListViewNom.Items) {
                 CheckBox entry = (CheckBox)eachItem.FindControl("PrimBallotEntry");
                 if(!entry.Checked)
@@ -637,25 +650,37 @@ public partial class committee_election : System.Web.UI.Page
         // in this election
         if (BallotFlag.FindBallotFlag(session, election.ID, user.ID) == null)
         {
-            // form the ballot entry
-            BallotEntry entry = new BallotEntry();
-            entry.Election = election.ID;
+            int count = 0;
+            foreach (ListViewDataItem eachItem in ListViewVote.Items) {
+                CheckBox entry = (CheckBox)eachItem.FindControl("GenBallotEntry");
+                if(!entry.Checked)
+                    continue;
+                count++;
+            }
+            if(count > election.VacanciesToFill) {
+                TooManyGenVotes.Visible = true;
+                NumVacancies_Gen1.Text = election.VacanciesToFill.ToString();
+                return;
+            }
+            TooManyGenVotes.Visible = false;
             
             foreach(ListViewItem lvi in ListViewVote.Items) {
-                RadioButton r = (RadioButton)lvi.FindControl("GenBallotEntry");
-                if(r.Checked) {
-                    entry.Candidate = int.Parse(((HiddenField)lvi.FindControl("WTS_Candidate")).Value);
-                    break;
-                }
+                CheckBox cbentry = (CheckBox)lvi.FindControl("GenBallotEntry");
+                if(!cbentry.Checked)
+                    continue;
+                // form the ballot entry
+                BallotEntry entry = new BallotEntry();
+                entry.Election = election.ID;
+                entry.Candidate = int.Parse(((HiddenField)lvi.FindControl("WTS_Candidate")).Value);
+                session.SaveOrUpdate(entry);
             }
 
             // form the ballot flag
             BallotFlag flag = new BallotFlag();
             flag.Election = election.ID;
             flag.User = user.ID;
-
-            session.SaveOrUpdate(entry);
             session.SaveOrUpdate(flag);
+            
             session.Flush();
 
             FacultyVote.Visible = false;

@@ -243,6 +243,10 @@
     <asp:Panel ID="FacultyNomination" runat="server" Visible="false" CssClass="form form-horizontal">
         <fieldset>
             <legend>Primary Election</legend>
+            <asp:Panel runat="server" id="TooManyPrimVotes" Visible="false" CssClass="alert alert-warning">
+                <strong>Too Many Votes</strong>
+                You may only vote for up to <asp:Literal runat="server" id="NumVacancies_Prim1" /> nominees(s).
+            </asp:Panel>
             <p>Please cast your vote in the primary election for one of the following candidates.</p>
             <div class="control-group">
                 <label class="control-label">Candidates</label>
@@ -279,9 +283,13 @@
     <asp:Panel ID="FacultyVote" runat="server" Visible="false" CssClass="form form-horizontal">
         <fieldset>
             <legend>General Election</legend>
+            <asp:Panel runat="server" id="TooManyGenVotes" Visible="false" CssClass="alert alert-warning">
+                <strong>Too Many Votes</strong>
+                You may only vote for up to <asp:Literal runat="server" id="NumVacancies_Gen1" /> candidates(s).
+            </asp:Panel>
             <p>Please cast your vote in the final election for one of the following nominees:</p>
             <div class="control-group">
-                <label class="control-label">Nominees</label>
+                <label class="control-label">Candidates</label>
                 <div class="controls">
                     <asp:ListView ID="ListViewVote" runat="server">
                         <LayoutTemplate>
@@ -291,7 +299,7 @@
                             <div class="nomination_user">
                                 <asp:HiddenField id="WTS_ID" Value='<%#Eval("ID") %>' runat="server" />
                                 <asp:HiddenField id="WTS_Candidate" Value='<%#Eval("User") %>' runat="server" />
-                                <asp:RadioButton id="GenBallotEntry" runat="server" />
+                                <asp:CheckBox id="GenBallotEntry" runat="server" />
                                 <strong><asp:Literal Text='<%#GetName(int.Parse(Eval("User").ToString())) %>' runat="server" /></strong>
                                 <p><asp:Literal Text='<%#Eval("Statement") %>' runat="server" /></p>
                             </div>
