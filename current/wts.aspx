@@ -20,17 +20,16 @@
     <asp:Panel CssClass="alert alert-success" ID="Confirm" runat="server" Visible="false">
         Your Willingness to Serve application has been completed!
     </asp:Panel>
-    
-    <asp:ValidationSummary ID="ValidationSummary" CssClass="failureNotification" 
-                                      ValidationGroup="WTSValidationGroup" runat="server" />
-
+    <asp:Panel ID="wtsPanelLength" runat="server" Visible="false" CssClass="alert alert-warning">
+        <strong>Not Submitted</strong>
+        Your statement is too long. You are limited to 1000 characters (about two paragraphs).
+    </asp:Panel>
     <fieldset id="Fieldset2" class="form form-horizontal" runat="server">
         <legend>Willingness To Serve Application</legend>
         <div class="control-group">
             <label class="control-label">Statement</label>
             <div class="controls">
                 <asp:TextBox ID="Statement" runat="server" TextMode="MultiLine" CssClass="input-xlarge"></asp:TextBox>
-                <asp:RegularExpressionValidator ID="RegularExpressionValidator1" ValidationGroup="check" ControlToValidate="Statement" ValidationExpression="^[a-zA-Z0-9\s.\-'!?]+$" Display="Dynamic" CssClass="error help-block" runat="server" ErrorMessage="Please only use alphanumeric characters and normal punctuation in your statement." />
             </div>
         </div>
         <div class="control-group">
