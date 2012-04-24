@@ -343,7 +343,7 @@
                                         <div>
                                             <label class="radio">
                                                 <asp:RadioButton runat="server" ID="checker" />
-                                                <asp:Literal runat="server" Text='<%#Eval("fullname")%>' />
+                                                <strong><asp:Literal runat="server" Text='<%#Eval("fullname")%>' /></strong>
                                             </label>
                                             <p style="padding-left:1.5em;"><%#Eval("statement")%></p>
                                         </div>
@@ -358,7 +358,7 @@
                                         <div>
                                             <label class="checkbox">
                                                 <asp:CheckBox runat="server" ID="checker" />
-                                                <asp:Literal runat="server" Text='<%#Eval("fullname")%>' />
+                                                <strong><asp:Literal runat="server" Text='<%#Eval("fullname")%>' /></strong>
                                             </label>
                                             <p style="padding-left:1.5em;"><%#Eval("statement")%></p>
                                         </div>
