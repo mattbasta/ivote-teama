@@ -429,7 +429,8 @@ namespace DatabaseEntities
 
             // Count nominations for each user.
             foreach (DatabaseEntities.User aUser in users)
-                nomCount.Add(aUser.ID, 0);
+                if(aUser != null)
+                    nomCount.Add(aUser.ID, 0);
 
             List<CommitteeWTSNomination> nominations =
                 CommitteeWTSNomination.FindCommitteeWTSNominations(session, ID);
@@ -457,6 +458,8 @@ namespace DatabaseEntities
             List<User> ret = new List<User>();
             foreach (User user in users)
             {
+                if(user == null)
+                    continue;
                 if (nomCount[user.ID] >= cutOff)
                     ret.Add(user);
             }
@@ -600,12 +603,16 @@ namespace DatabaseEntities
         public virtual List<CommitteeWTS> Nominees(ISession session)
         {
             // pull a list of all the Committee WTS' for the given election from the database.
-            var entries = session.CreateCriteria(typeof(CommitteeWTS))
-                .Add(Restrictions.Eq("Election", ID))
-                .List<CommitteeWTS>();
-
+            List<CommitteeWTS> wtses = session.CreateCriteria(typeof(CommitteeWTS))
+                            .Add(Restrictions.Eq("Election", ID))
+                            .List<CommitteeWTS>().ToList<CommitteeWTS>();
+            List<CommitteeWTS> final_wtses = new List<CommitteeWTS>();
+            foreach(CommitteeWTS wts in wtses)
+                if(User.FindUser(session, wts.User) != null)
+                    final_wtses.Add(wts);
+            
             // return that list
-            return entries.ToList<CommitteeWTS>();
+            return final_wtses;
         }
 
     }

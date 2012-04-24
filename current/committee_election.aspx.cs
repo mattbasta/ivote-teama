@@ -305,6 +305,8 @@ public partial class committee_election : System.Web.UI.Page
     
     protected string GetName(int UserID) {
         User u = DatabaseEntities.User.FindUser(session, UserID);
+        if(u == null)
+            return "(deleted)";
         return u.FirstName + " " + u.LastName;
     }
     

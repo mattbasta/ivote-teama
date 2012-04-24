@@ -287,7 +287,10 @@ namespace DatabaseEntities
             List<User> users = new List<User>();
             foreach (CommitteeWTS cwts in wts)
             {
-                users.Add(User.FindUser(session, cwts.User));
+                User u = User.FindUser(session, cwts.User);
+                if(u == null)
+                    continue;
+                users.Add(u);
             }
             return users;
         }
