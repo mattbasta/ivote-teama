@@ -44,6 +44,7 @@ public partial class committee_election : System.Web.UI.Page
         if (committee == null)
             Response.Redirect("home.aspx#committee_not_found");
         
+        VacancyCount.Text = election.VacanciesToFill.ToString();
         CommitteeNameLiteral.Text = committee.Name;
         CommitteeNameLiteral2.Text = committee.Name;
         CommitteeDescription.Text = committee.Description;

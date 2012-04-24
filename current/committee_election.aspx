@@ -52,6 +52,11 @@
             </script>
         </asp:Panel>
     </asp:Panel>
+    
+    <div class="well">
+        <big><b><asp:Literal runat="server" id="VacancyCount" /></b> position(s) are being voted on in this election.</big>
+    </div>
+    
     <asp:ToolkitScriptManager ID="AJAXManager" runat="Server" />
 
     <asp:Panel ID="AdminTabs" runat="server" Visible="false">
@@ -256,7 +261,7 @@
             <legend>Primary Election</legend>
             <asp:Panel runat="server" id="TooManyPrimVotes" Visible="false" CssClass="alert alert-warning">
                 <strong>Too Many Votes</strong>
-                You may only vote for up to <asp:Literal runat="server" id="NumVacancies_Prim1" /> nominees(s).
+                You may vote for up to <asp:Literal runat="server" id="NumVacancies_Prim1" /> nominees(s).
             </asp:Panel>
             <p>Please cast your vote in the primary election for one of the following candidates.</p>
             <div class="control-group">
@@ -296,7 +301,7 @@
             <legend>General Election</legend>
             <asp:Panel runat="server" id="TooManyGenVotes" Visible="false" CssClass="alert alert-warning">
                 <strong>Too Many Votes</strong>
-                You may only vote for up to <asp:Literal runat="server" id="NumVacancies_Gen1" /> candidates(s).
+                You may vote for up to <asp:Literal runat="server" id="NumVacancies_Gen1" /> candidates(s).
             </asp:Panel>
             <p>Please cast your vote in the final election for one of the following nominees:</p>
             <div class="control-group">
