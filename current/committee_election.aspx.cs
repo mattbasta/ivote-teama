@@ -909,6 +909,11 @@ public partial class committee_election : System.Web.UI.Page
         if (!Page.IsValid)
             return;
         
+        if(wtsStatement.Text.Length > 1000) {
+            wtsPanelLength.Visible = true;
+            return;
+        }
+        
         // Check to make sure that the user hasn't already submitted a WTS.
         List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
         foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
@@ -924,6 +929,7 @@ public partial class committee_election : System.Web.UI.Page
         DatabaseEntities.CommitteeElection.WillingToServe(session, user.ID, election.ID, wtsStatement.Text);
         DatabaseEntities.NHibernateHelper.Finished(transaction);
 
+        wtsPanelLength.Visible = false;
         wtsPanelNew.Visible = false;
         wtsPanelDone.Visible = true;
 

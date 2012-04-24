@@ -212,7 +212,11 @@
             </asp:Panel>
             <asp:Panel ID="wtsPanelDone" runat="server" Visible="false" CssClass="alert alert-success">
                 <strong>Willingness to Serve Submitted</strong>
-                Your willingness to server has been successfully registered.
+                Your willingness to serve has been successfully registered.
+            </asp:Panel>
+            <asp:Panel ID="wtsPanelLength" runat="server" Visible="false" CssClass="alert alert-warning">
+                <strong>Not Submitted</strong>
+                Your statement is too long. You are limited to 1000 characters (about two paragraphs).
             </asp:Panel>
             <p><asp:Literal ID="CommitteeDescription" runat="server" /></p>
             <ol>
