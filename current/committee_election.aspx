@@ -39,6 +39,17 @@
             </asp:DropDownList>
             <asp:Button runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
+            <script type="text/javascript">
+            <!--
+            $("#MainContent_JulioButton").click(function() {
+                var t = $(this);
+                if(t.hasClass("disabled"))
+                    t.attr("href", "#");
+                t.attr("disabled", "disabled");
+                t.addClass("disabled");
+            });
+            -->
+            </script>
         </asp:Panel>
     </asp:Panel>
     <asp:ToolkitScriptManager ID="AJAXManager" runat="Server" />
