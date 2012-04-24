@@ -815,8 +815,7 @@ public partial class committee_election : System.Web.UI.Page
         election.RevokeWTS(session, transaction, user.ID);
 
         // remove the panel that represented this now resolved conflict
-        string idToFind = sendButton.ID.Substring(sendButton.ID.Length - 4,
-            4);
+        string idToFind = sendButton.ID.Substring(sendButton.ID.Length - 4, 4);
 
         for (int i = 0; i < AdminConflictPanel.Controls.Count; i++)
         {
@@ -879,7 +878,17 @@ public partial class committee_election : System.Web.UI.Page
         Page.Validate("wts");
         if (!Page.IsValid)
             return;
-
+        
+        // Check to make sure that the user hasn't already submitted a WTS.
+        List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
+        foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
+        {
+            if (wts.Election == election.ID && wts.User == user.ID &&
+                (!committee.TenureRequired || user.IsTenured) &&
+                (!committee.BargainingUnitRequired || user.IsBargainingUnit))
+                return;
+        }
+        
         ITransaction transaction = session.BeginTransaction();
 
         DatabaseEntities.CommitteeElection.WillingToServe(session, user.ID, election.ID, wtsStatement.Text);
