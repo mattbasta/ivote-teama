@@ -227,7 +227,7 @@
                             I confirm that I am willing to serve as an APSCUF Official.
                         </label>
                         <asp:CustomValidator ID="wtsAcceptValidator" runat="server" 
-                            ErrorMessage="Please confirm your willingness to server by checking the box above." 
+                            ErrorMessage="Please confirm your willingness to serve by checking the box above." 
                             onservervalidate="wtsAcceptValidator_ServerValidate"
                             CssClass="help-block error"/>
                     </div>
