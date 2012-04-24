@@ -248,6 +248,8 @@ public partial class committee_election : System.Web.UI.Page
             foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
             {
                 DatabaseEntities.User wtsUser = DatabaseEntities.User.FindUser(session, wts.User);
+                if(wtsUser == null)
+                    continue;
 
                 TableRow tr = new TableRow();
 
