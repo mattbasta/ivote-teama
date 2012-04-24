@@ -90,6 +90,7 @@ public partial class officer_election : System.Web.UI.Page
         OfficerResults.Visible = false;
         OfficerStateless.Visible = false;
         
+        CancelElection.Visible = is_admin;
         JulioButtonHider.Visible = is_admin;
         JulioButton.Visible = true;
         
