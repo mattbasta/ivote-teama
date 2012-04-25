@@ -51,6 +51,8 @@ public partial class committee_election : System.Web.UI.Page
         must_be_tenured.Visible = committee.TenureRequired;
 
         user = DatabaseEntities.User.FindUser(session, User.Identity.Name);
+        
+        MakeElectionSpecial.Visible = user.IsAdmin;
 
         // expose the pertinent panel based on the state of the election.
         switch (election.Phase)
@@ -302,6 +304,13 @@ public partial class committee_election : System.Web.UI.Page
             phasedelta.Visible = true;
             JulioButtonPhase.SelectedValue = election.Phase.ToString();
         }
+        
+        IsSpecial.Visible = election.SpecialElection;
+        specialelection.Visible = election.SpecialElection;
+        if(election.SpecialElection)
+            MakeElectionSpecial.Text = "Not Special";
+        else
+            MakeElectionSpecial.Text = "Make Special Election";
     }
     
     protected string GetName(int UserID) {
@@ -702,6 +711,15 @@ public partial class committee_election : System.Web.UI.Page
         Response.Redirect("/committee_election.aspx?id=" + election.ID.ToString());
     }
 
+    protected void MakeElectionSpecial_Click(Object sender, EventArgs e)
+    {
+        ITransaction transaction = session.BeginTransaction();
+        election.SpecialElection = election.SpecialElection ? false : true;
+        session.SaveOrUpdate(election);
+        session.Flush();
+        NHibernateHelper.Finished(transaction);
+    }
+    
     protected void CancelElection_Click(Object sender, EventArgs e)
     {
         ITransaction transaction = session.BeginTransaction();
@@ -909,6 +927,11 @@ public partial class committee_election : System.Web.UI.Page
         if (!Page.IsValid)
             return;
         
+        if(wtsStatement.Text.Length > 1000) {
+            wtsPanelLength.Visible = true;
+            return;
+        }
+        
         // Check to make sure that the user hasn't already submitted a WTS.
         List<DatabaseEntities.CommitteeWTS> wtsList = DatabaseEntities.CommitteeWTS.FindCommitteeWTS(session, election.ID);
         foreach (DatabaseEntities.CommitteeWTS wts in wtsList)
@@ -924,6 +947,7 @@ public partial class committee_election : System.Web.UI.Page
         DatabaseEntities.CommitteeElection.WillingToServe(session, user.ID, election.ID, wtsStatement.Text);
         DatabaseEntities.NHibernateHelper.Finished(transaction);
 
+        wtsPanelLength.Visible = false;
         wtsPanelNew.Visible = false;
         wtsPanelDone.Visible = true;
 

@@ -38,6 +38,8 @@ namespace DatabaseEntities
                 .Not.Nullable();
             Map(x => x.PhaseEndDelta)
                 .Not.Nullable();
+            Map(x => x.SpecialElection)
+                .Not.Nullable();
         }
     }
 }

@@ -1,2 +1,2 @@
 Hello and greetings from the APSCUF-KU iVote System! <br /><br />
-This is an automated message from the APSCUF-KU iVote system. The slate has been formed and awaiting your approval. Please follow the link to approve the slate of nominated users: <a href="http://##BASEURL##"> link</a>
+This is an automated message from the APSCUF-KU iVote system. The slate has been formed awaits your approval. Please follow the link to approve the slate of nominated users: <a href="http://##BASEURL##">##BASEURL##</a>
