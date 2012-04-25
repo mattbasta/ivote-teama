@@ -3,6 +3,7 @@
     <!-- Access with System.Configuration.ConfigurationManager.AppSettings["key"]; -->
 
     <add key="required_nec_certs" value="3" />
+    <add key="show_officer_petitionphase" value="false" />
 
     <!-- URL Configuration -->
     <add key="baseUrl" value=""/>

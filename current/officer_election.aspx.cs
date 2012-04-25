@@ -90,6 +90,7 @@ public partial class officer_election : System.Web.UI.Page
         OfficerResults.Visible = false;
         OfficerStateless.Visible = false;
         
+        CancelElection.Visible = is_admin;
         JulioButtonHider.Visible = is_admin;
         JulioButton.Visible = true;
         
@@ -124,7 +125,15 @@ public partial class officer_election : System.Web.UI.Page
                 
                 break;
             case "petition":
-                OfficerPetition.Visible = true;
+                if (System.Configuration.ConfigurationManager.AppSettings["show_officer_petitionphase"] == "true")
+                {
+                    OfficerPetition.Visible = true;
+                }
+                else
+                {
+                    OfficerPetitionManual.Visible = true;
+                }
+                    
                 PhaseLiteral.Text = "Petition Phase";
                 
                 dbLogic.selectAllAvailablePositions();
@@ -148,17 +157,17 @@ public partial class officer_election : System.Web.UI.Page
                 
                 UpdatePanel3.Visible = user.CanVote;
                 
-                if (dbLogic.isUserNewVoter(user.ID)) {
-                    votehider.Visible = true;
-                    dbLogic.selectAllBallotPositions();
-                    SlateView.DataSource = dbLogic.getResults();
-                    SlateView.DataBind();
-                }
-                else
-                {
-                    LabelFeedbackVote2.Text = "You have already voted for this election.";
-                    votehider.Visible = false;
-                    ButtonSubmitVotes.Visible = false;
+                if(user.CanVote) {
+                    if(dbLogic.isUserNewVoter(user.ID)) {
+                        votehider.Visible = true;
+                        dbLogic.selectAllBallotPositions();
+                        SlateView.DataSource = dbLogic.getResults();
+                        SlateView.DataBind();
+                    } else {
+                        LabelFeedbackVote2.Text = "You have voted for this election.";
+                        votehider.Visible = false;
+                        ButtonSubmitVotes.Visible = false;
+                    }
                 }
                 
                 break;
@@ -200,6 +209,7 @@ public partial class officer_election : System.Web.UI.Page
             functions_accept1.Visible = true;
             functions_approval.Visible = true;
             functions_petition.Visible = true;
+            functions_petition_slate.Visible = false;
             functions_accept2.Visible = true;
             functions_voting.Visible = true;
             //results

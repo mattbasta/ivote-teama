@@ -49,6 +49,17 @@
             </asp:DropDownList>
             <asp:LinkButton runat="server" ID="JulioButtonCustom" Text="Switch"
                     CssClass="btn" OnClick="JulioButtonCustom_Clicked" />
+            <script type="text/javascript">
+            <!--
+            $("#MainContent_JulioButton").click(function() {
+                var t = $(this);
+                if(t.hasClass("disabled"))
+                    t.attr("href", "#");
+                t.attr("disabled", "disabled");
+                t.addClass("disabled");
+            });
+            -->
+            </script>
         </asp:Panel>
         <asp:Panel ID="FunctionsStateless" Visible="false" runat="server" CssClass="juliobuttonbox">
             <a class="btn btn-primary" href="/initiate.aspx">Initiate Officer Election</a>
@@ -115,6 +126,7 @@
             <p>This is a special phase where the NEC must approve the slate. The phase will automatically be switched when the certification has taken place.</p>
             <div class="btn-group">
                 <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/Slate.aspx">View the Slate</a>
                 <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
             </div>
         </asp:Panel>
@@ -180,6 +192,14 @@
     <!--End Slate Approval-->
 
     <!--Petition-->
+    <asp:Panel ID="OfficerPetitionManual" Visible="false" runat="server">
+        <p>If you wish to start a petition for a person that is currently not on the slate, 
+    please contact the APSCUF-KU secretary.</p>
+            <div class="btn-group">
+                <a class="btn" href="/Slate.aspx">View the Slate</a>
+            </div>
+    </asp:Panel>
+
     <asp:Panel ID="OfficerPetition" Visible="false" runat="server">
         <p>The election is in the <b>petition phase</b>. You can petition yourself or other faculty members for a position.</p>
 
@@ -188,6 +208,11 @@
                 <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
                 <a class="btn" href="/Slate.aspx">View current Slate</a>
                 <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
+            </div>
+        </asp:Panel>
+        <asp:Panel id="functions_petition_slate" style="margin-top:10px;" visible="true" runat="server">
+            <div class="btn-group">
+                <a class="btn" href="/Slate.aspx">View the Slate</a>
             </div>
         </asp:Panel>
         <div class="clear"></div>
@@ -312,6 +337,7 @@
         <p>The election is in the <b>voting phase</b>. You must vote for the candidate you feel will best serve in each position.</p>
 
         <asp:Panel id="functions_voting" style="margin-top:10px;" visible="false" runat="server">
+            <a class="btn" href="/Slate.aspx">View the Slate</a>
             <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
     
@@ -343,7 +369,7 @@
                                         <div>
                                             <label class="radio">
                                                 <asp:RadioButton runat="server" ID="checker" />
-                                                <asp:Literal runat="server" Text='<%#Eval("fullname")%>' />
+                                                <strong><asp:Literal runat="server" Text='<%#Eval("fullname")%>' /></strong>
                                             </label>
                                             <p style="padding-left:1.5em;"><%#Eval("statement")%></p>
                                         </div>
@@ -358,7 +384,7 @@
                                         <div>
                                             <label class="checkbox">
                                                 <asp:CheckBox runat="server" ID="checker" />
-                                                <asp:Literal runat="server" Text='<%#Eval("fullname")%>' />
+                                                <strong><asp:Literal runat="server" Text='<%#Eval("fullname")%>' /></strong>
                                             </label>
                                             <p style="padding-left:1.5em;"><%#Eval("statement")%></p>
                                         </div>
