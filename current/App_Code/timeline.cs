@@ -71,18 +71,27 @@ public class timeline
     public bool bumpPhase()
     {
         string[] iter_phases = {"nominate", "accept1", "slate", "petition", "accept2", "approval", "vote", "result"};
+        // Search for the current phase in this fantastic ordered array of
+        // phase names.
         for(int i = 0; i < iter_phases.Length - 1; i++) {
             if(currentPhase == iter_phases[i]) {
                 if(currentPhase == "petition") {
+                    // If we're in the petition phase and there are no open petitions
+                    // and we can skip the approval phase, go right to voting.
+                    
+                    // Otherwise, if we're in the petition phase and there's no open
+                    // petitions, go to the approval phase to wait for nomination
+                    // approvals.
                     bool no_petitions = dbLogic.PetitionCount() == 0;
-                    if(no_petitions) {
-                        if(dbLogic.canSkipAdminPhase())
-                            return changePhaseToCurrent(iter_phases[i + 3]);
-                        return changePhaseToCurrent(iter_phases[i + 2]);
-                    }
-                } else if((currentPhase == "nominate" && !dbLogic.openNomsExist()) ||
-                          (currentPhase == "approval" && dbLogic.canSkipAdminPhase())) {
-                    return changePhaseToCurrent(iter_phases[i + 2]);
+                    if(no_petitions && dbLogic.canSkipAdminPhase())
+                        return changePhaseToCurrent("vote");
+                    else if(no_petitions)
+                        return changePhaseToCurrent("approval");
+                     
+                } else if(currentPhase == "nominate" && !dbLogic.openNomsExist()) {
+                    // Skip the nomination approval phase if there are no open
+                    // nomination approvals.
+                    return changePhaseToCurrent("slate");
                 }
                 return changePhaseToCurrent(iter_phases[i + 1]);
             }
