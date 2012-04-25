@@ -47,12 +47,14 @@
     <ul class="breadcrumb">
         <li><a href="/home.aspx">Home</a> <span class="divider">/</span></li>
         <li><a href="/officer_election.aspx">Officer Election</a> <span class="divider">/</span></li>
-        <li class="active">Slate Confirmation</li>
+        <li class="active">Slate</li>
     </ul>
     
     <div class="page-header">
-        <h1>Slate Confirmation</h1>
+        <h1>Slate</h1>
     </div>
+    
+    <p>Select the position you would like to view from the list below, then select a canidate to view their willingness to serve statement.</p>
     
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="UpdatePanel1" runat="server">

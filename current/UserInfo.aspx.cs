@@ -128,7 +128,12 @@ public partial class wwwroot_phase1aSite_UserInfo : System.Web.UI.Page
                 user.CurrentCommittee = int.Parse(CurrentCommittee.SelectedValue);
                 session.SaveOrUpdate(user);
             }
+        } else {
+            InElectionPanel.Visible = false;
+            FailurePanel.Visible = false;
+            SuccessPanel.Visible = true;
         }
+            
 
         DatabaseEntities.NHibernateHelper.Finished(transaction);
     }
