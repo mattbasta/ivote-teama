@@ -306,7 +306,7 @@ public partial class committee_election : System.Web.UI.Page
         }
         
         IsSpecial.Visible = election.SpecialElection;
-        specialelection.Visible = election.SpecialElection;
+        specialelection.Visible = election.SpecialElection && election.Phase != ElectionPhase.ClosedPhase;
         if(election.SpecialElection)
             MakeElectionSpecial.Text = "Not Special";
         else
