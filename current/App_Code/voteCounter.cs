@@ -142,14 +142,7 @@ public class voteCounter
                     setParalellArrays();
                     setTotalVotesForPosition();
 
-                    if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5);
                 }
                 catch
                 { }
