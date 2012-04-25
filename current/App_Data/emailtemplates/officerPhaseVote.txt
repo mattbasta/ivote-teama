@@ -1,2 +1,2 @@
 Hello and greetings from the APSCUF-KU iVote System! <br /><br />
-This is an automated message from the APSCUF-KU iVote system.  The Petition phase has ended.  It is now the voting phase of the election process. You are able to log in and vote on the candidates for each position.  You may follow this URL to do so: <a href="http://##BASEURL##"> link</a>
+This is an automated message from the APSCUF-KU iVote system. The Petition phase of the election process has ended and the voting phase has begun. You are able to log in and vote on the candidates for each position. You may follow this URL to do so: <a href="http://##BASEURL##">##BASEURL##</a>

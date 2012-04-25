@@ -23,7 +23,6 @@ public partial class experimental_WTS : System.Web.UI.Page
     string query = "";
     string id;
     string[] info;
-    DatabaseEntities.CommitteeElection electionObject;
     DatabaseEntities.User userObject;
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -59,28 +58,31 @@ public partial class experimental_WTS : System.Web.UI.Page
 
     protected void submit(object sender, EventArgs e)
     {
-        if (Accept.Checked)
-        {
-            if (electionObject == null)
-            {
-                //Handle legacy WTS
-                if (!dbLogic.isUserWTS(int.Parse(id), HiddenFieldPosition.Value))
-                {
-                    dbLogic.insertIntoWTS(id, Statement.Text, HiddenFieldPosition.Value);
-                    if (!dbLogic.isUserNominated(int.Parse(id), HiddenFieldPosition.Value))
-                        dbLogic.insertNominationAccept(info);
-                    
-                    dbLogic.userAcceptedNom(id, HiddenFieldPosition.Value);
-                    AcceptError.Visible = false;
-                }
-                Fieldset2.Visible = false;
-                Confirm.Visible = true;
-            }
-
-        }
-        else
-        {
+        AcceptError.Visible = false;
+        wtsPanelLength.Visible = false;
+        
+        if (!Accept.Checked) {
             AcceptError.Visible = true;
+            return;
         }
+            
+        if(Statement.Text.Length > 1000) {
+            wtsPanelLength.Visible = true;
+            return;
+        }
+        
+        //Handle legacy WTS
+        if (!dbLogic.isUserWTS(int.Parse(id), HiddenFieldPosition.Value))
+        {
+            dbLogic.insertIntoWTS(id, Statement.Text, HiddenFieldPosition.Value);
+            if (!dbLogic.isUserNominated(int.Parse(id), HiddenFieldPosition.Value))
+                dbLogic.insertNominationAccept(info);
+            
+            dbLogic.userAcceptedNom(id, HiddenFieldPosition.Value);
+            AcceptError.Visible = false;
+        }
+        
+        Fieldset2.Visible = false;
+        Confirm.Visible = true;
     }
 }
