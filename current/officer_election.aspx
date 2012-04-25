@@ -126,6 +126,7 @@
             <p>This is a special phase where the NEC must approve the slate. The phase will automatically be switched when the certification has taken place.</p>
             <div class="btn-group">
                 <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
+                <a class="btn" href="/Slate.aspx">View the Slate</a>
                 <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
             </div>
         </asp:Panel>
@@ -191,6 +192,14 @@
     <!--End Slate Approval-->
 
     <!--Petition-->
+    <asp:Panel ID="OfficerPetitionManual" Visible="false" runat="server">
+        <p>If you wish to start a petition for a person that is currently not on the slate, 
+    please contact the APSCUF-KU secretary.</p>
+            <div class="btn-group">
+                <a class="btn" href="/Slate.aspx">View the Slate</a>
+            </div>
+    </asp:Panel>
+
     <asp:Panel ID="OfficerPetition" Visible="false" runat="server">
         <p>The election is in the <b>petition phase</b>. You can petition yourself or other faculty members for a position.</p>
 
@@ -199,6 +208,11 @@
                 <a class="btn" href="/ApproveNominations.aspx">Approve Eligibility</a>
                 <a class="btn" href="/Slate.aspx">View current Slate</a>
                 <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
+            </div>
+        </asp:Panel>
+        <asp:Panel id="functions_petition_slate" style="margin-top:10px;" visible="true" runat="server">
+            <div class="btn-group">
+                <a class="btn" href="/Slate.aspx">View the Slate</a>
             </div>
         </asp:Panel>
         <div class="clear"></div>
@@ -323,6 +337,7 @@
         <p>The election is in the <b>voting phase</b>. You must vote for the candidate you feel will best serve in each position.</p>
 
         <asp:Panel id="functions_voting" style="margin-top:10px;" visible="false" runat="server">
+            <a class="btn" href="/Slate.aspx">View the Slate</a>
             <a class="btn" href="/RemoveFromBallot.aspx">Remove Candidate(s) From Slate</a>
         </asp:Panel>
     
