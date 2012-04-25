@@ -69,6 +69,12 @@ namespace DatabaseEntities
         /// </summary>
         public virtual int PhaseEndDelta { get; set; }
 
+        /// <summary>
+        /// A boolean value representing whether the election is a special
+        /// election.
+        /// </summary>
+        public virtual bool SpecialElection { get; set; }
+
         // Methods
         
         /// <summary>

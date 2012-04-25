@@ -15,6 +15,8 @@
     <asp:Panel runat="server" ID="JulioButtonPanel" CssClass="well">
         <asp:LinkButton ID="CancelElection" Visible="true" Text="Cancel Election"
                 OnClick="CancelElection_Click" runat="server" CssClass="btn btn-danger pull-right" />
+        <asp:LinkButton ID="MakeElectionSpecial" Visible="true" Text="Make Special Election"
+                OnClick="MakeElectionSpecial_Click" runat="server" CssClass="btn pull-right" />
         <p><big><strong>Current Phase:</strong> <asp:Literal ID="PhaseLiteral" Text="Inactive" runat="server" /></big></p>
         <p>
             <asp:Literal ID="DaysRemaining" Text="No election is currently in progress." runat="server" />
@@ -26,8 +28,11 @@
             days remain in this phase.
             <asp:Button ID="DeltaSubmit" Text="Set Days Remaining" runat="server" CssClass="btn btn-small" OnClick="DeltaSubmit_Click" />
         </p>
+        <p id="specialelection" runat="server" Visible="false">
+            This is a <b>special election</b>.
+        </p>
         <asp:Panel runat="server" ID="JulioButtonHider" CssClass="form form-inline juliobuttonbox" Visible="false">
-            <asp:Button runat="server" ID="JulioButton" Text="Switch to Next Phase"
+            <asp:LinkButton runat="server" ID="JulioButton" Text="Switch to Next Phase"
                     CssClass="btn btn-primary btn-small" OnClick="JulioButton_Clicked" />
             <asp:Literal runat="server" Text="or switch to " ID="JulioButtonSpacerText" Visible="true" />
             <asp:DropDownList runat="server" ID="JulioButtonPhase">
@@ -54,7 +59,7 @@
     </asp:Panel>
     
     <div class="well">
-        <big><b><asp:Literal runat="server" id="VacancyCount" /></b> position(s) are being voted on in this election.</big>
+        <big><b><asp:Literal runat="server" id="VacancyCount" /></b> position(s) are being voted on in this <asp:Literal runat="server" id="IsSpecial" Visible="false" Text="special " />election.</big>
     </div>
     
     <asp:ToolkitScriptManager ID="AJAXManager" runat="Server" />
