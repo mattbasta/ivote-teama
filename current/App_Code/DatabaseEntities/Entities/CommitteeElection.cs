@@ -457,7 +457,7 @@ namespace DatabaseEntities
                 if(num_vacs >= count.Count)
                     cutOff = -1;
                 else
-                    cutOff = count[num_vacs];
+                    cutOff = count[Math.Min(num_vacs, count.Count - 1)];
             }
             
             // Only add users to the list of nominees if they surpass the cutoff value
