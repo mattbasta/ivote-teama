@@ -93,7 +93,7 @@ public partial class officer_election : System.Web.UI.Page
         CancelElection.Visible = is_admin;
         JulioButtonHider.Visible = is_admin;
         JulioButton.Visible = true;
-        
+       
         switch(phases.currentPhase) {
             case "nominate":
                 OfficerNominate.Visible = true;
@@ -178,6 +178,10 @@ public partial class officer_election : System.Web.UI.Page
                 CancelElection.Visible = false;
                 JulioButtonHider.Visible = false;
                 InitiateNewElection.Visible = true;
+
+                if (vc.checkIfMajorityNotMet())
+                    majorityNotification.Visible = true;
+                    
                 
                 bindPositions();
                 
@@ -229,7 +233,7 @@ public partial class officer_election : System.Web.UI.Page
                 
             }
             //results
-            else if (phases.currentPhase == "result")
+            else if (phases.currentPhase == "result" && !majorityNotification.Visible)
             {
                 //this is for NEC role
                 necApprove.Visible = !dbLogic.checkNecApprove();
