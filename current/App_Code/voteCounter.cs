@@ -119,6 +119,39 @@ public class voteCounter
         { }
 
     }
+
+    public bool checkIfMajorityNotMet()
+    {
+        dbLogic.selectAllAvailablePositions();
+        dsForElection = dbLogic.getResults();
+
+        int i = 0;
+        while (i < dsForElection.Tables[0].Rows.Count)
+        {
+            totalForPosition = 0;
+            if (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString() != "Majority")
+            {
+                return false;
+            }
+            else
+            {
+                string position = dsForElection.Tables[0].Rows[i].ItemArray[2].ToString();
+                grabTableInfo(position);
+                try
+                {
+                    setParalellArrays();
+                    setTotalVotesForPosition();
+
+                    return ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5);
+                }
+                catch
+                { }
+            }
+            i++;
+        }
+
+        return false;
+    }
     
     /************* Helper methods **************/
 
