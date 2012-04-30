@@ -582,7 +582,24 @@ namespace DatabaseEntities
             }
 
             doc.Open();
-            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + "."));
+            Font header = FontFactory.GetFont("Arial", 24, BaseColor.BLACK);
+            doc.Add(new Phrase("APSCUF-KU Election Results\n", header));
+            
+            // The semester the election was started during
+            string semester = "nothing";
+
+            // The fall semester is between august 27 and december 17
+            if (Started >= new DateTime(Started.Year, 8, 27) &&
+                Started <= new DateTime(Started.Year, 12, 17))
+                semester = " held during the Fall " + Started.Year.ToString() + " semester.";
+            // The spring semester is between january 22 and may 12
+            else if (Started >= new DateTime(Started.Year, 1, 22) &&
+                Started <= new DateTime(Started.Year, 5, 12))
+                semester = " held during the Spring " + Started.Year.ToString() + " semester.";
+            else // otherwise just say what date it started.
+                semester = " started on " + Started.ToString("d") + "."; 
+
+            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + semester));
             doc.Add(table);
 
             foreach(Certification i in certifications)
@@ -593,7 +610,10 @@ namespace DatabaseEntities
                 Phrase signatureArea = new Phrase();
                 signatureArea.Add("I hereby certify the results of this election:\n");
                 signatureArea.Add(sigLine);
-                signatureArea.Add(certifyingUser.FirstName + " " + certifyingUser.LastName + "\n\n");
+                signatureArea.Add(certifyingUser.FirstName + " " + certifyingUser.LastName + "\n");
+                signatureArea.Add(sigLine);
+                signatureArea.Add("Date\n\n");
+
                 doc.Add(signatureArea);
             }
             doc.Close();
