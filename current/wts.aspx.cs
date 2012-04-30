@@ -66,7 +66,7 @@ public partial class experimental_WTS : System.Web.UI.Page
             return;
         }
             
-        if(Statement.Text.Length > 1000) {
+        if(Statement.Text.Length > 10000) {
             wtsPanelLength.Visible = true;
             return;
         }

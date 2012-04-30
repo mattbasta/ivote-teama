@@ -22,7 +22,7 @@
     </asp:Panel>
     <asp:Panel ID="wtsPanelLength" runat="server" Visible="false" CssClass="alert alert-warning">
         <strong>Not Submitted</strong>
-        Your statement is too long. You are limited to 1000 characters (about two paragraphs).
+        Your statement is too long. You are limited to 10,000 characters.
     </asp:Panel>
     <fieldset id="Fieldset2" class="form form-horizontal" runat="server">
         <legend>Willingness To Serve Application</legend>
