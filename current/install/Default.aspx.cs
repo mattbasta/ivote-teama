@@ -19,7 +19,6 @@ public partial class install_Default : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         CheckConfiguration();
-        baseUrlStatus.Text = Server.MapPath("Faculty.accdb");
     }
 
     private void CheckConfiguration()
