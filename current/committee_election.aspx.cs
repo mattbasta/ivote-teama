@@ -85,6 +85,9 @@ public partial class committee_election : System.Web.UI.Page
                 if ((!committee.TenureRequired || user.IsTenured) &&
                     (!committee.BargainingUnitRequired || user.IsBargainingUnit))
                     FacultyWTS.Visible = true;
+                //Prevent a user from submitting a WTS if a member from their department is on the committee
+                if(DatabaseEntities.Committee.DepartmentRepresented(session, committee, user.Department))
+                    FacultyWTS.Visible = false;
 
                 break;
             case ElectionPhase.NominationPhase:
