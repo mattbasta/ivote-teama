@@ -621,7 +621,7 @@ namespace DatabaseEntities
             else // otherwise just say what date it started.
                 semester = " started on " + Started.ToString("d") + "."; 
 
-            doc.Add(new Paragraph("The following results were collected during an election held to fill " + committee.NumberOfVacancies(session).ToString() + " vacancies in the " + committee.Name + semester));
+            doc.Add(new Paragraph("The following results were collected during an election held to fill " + users.Count.ToString() + " vacancies in the " + committee.Name + semester));
             doc.Add(table);
 
             foreach(Certification i in certifications)
