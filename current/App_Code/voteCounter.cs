@@ -126,7 +126,7 @@ public class voteCounter
     {
         dbLogic.selectAllAvailablePositions();
         dsForElection = dbLogic.getResults();
-
+        
         int i = 0;
         while (i < dsForElection.Tables[0].Rows.Count)
         {
@@ -144,7 +144,8 @@ public class voteCounter
                 setParalellArrays();
                 setTotalVotesForPosition();
 
-                return (Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5;
+                if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5)
+                    return true;
             }
             catch
             { }
