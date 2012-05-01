@@ -882,6 +882,9 @@ public partial class committee_election : System.Web.UI.Page
 
         ElectionConflict conflict = ElectionConflict.FindElectionConflict(session, id);
         NHibernateHelper.Delete(session, conflict);
+        
+        // Refresh the conflicts.
+        election.ConflictLogic(session);
 
         // Check if we should display there are no more conflicts.
         if (ElectionConflict.FindElectionConflicts(session, election.ID).Count == 0) {

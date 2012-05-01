@@ -356,7 +356,7 @@ namespace DatabaseEntities
         /// Adds conflicts to the database depending upon the current state of the election.
         /// </summary>
         /// <param name="session">A valid session.</param>
-        protected virtual void ConflictLogic(ISession session)
+        public virtual void ConflictLogic(ISession session)
         {
             List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, ID);
             foreach (ElectionConflict conflict in conflicts)
