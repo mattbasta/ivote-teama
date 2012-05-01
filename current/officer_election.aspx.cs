@@ -179,9 +179,9 @@ public partial class officer_election : System.Web.UI.Page
                 JulioButtonHider.Visible = false;
                 InitiateNewElection.Visible = true;
 
+                majorityNotification.Visible = false;
                 if (vc.checkIfMajorityNotMet())
                     majorityNotification.Visible = true;
-                    
                 
                 bindPositions();
                 
@@ -546,7 +546,7 @@ public partial class officer_election : System.Web.UI.Page
     {
         
         DataSet ds = new DataSet();
-        dbLogic.genericQuerySelector("SELECT * FROM election_position;");
+        dbLogic.selectAllAvailablePositions();
         ds = dbLogic.getResults();
         positions.Clear();
         for(int i = 0; i < ds.Tables[0].Rows.Count; i++)

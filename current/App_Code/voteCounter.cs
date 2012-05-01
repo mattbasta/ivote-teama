@@ -9,7 +9,6 @@ using System.Web;
 public class voteCounter
 {
     databaseLogic dbLogic = new databaseLogic();
-    timeline phases = new timeline();
 
     DataSet ds;                   // DataSet that is meant to contain all of the information from the table
     DataSet dsForElection;        // DataSet that will hold the positions for this election
@@ -93,30 +92,23 @@ public class voteCounter
 
     // method to invoke a voting process based on the Majority voting style
     //      returns userID
-    //
-    // NOTE: need clarification from Karen on how Majority will work
-    //
     protected void majority(string position)
     {
         grabTableInfo(position);
-        try
-        {
-            setParalellArrays();
-            setTotalVotesForPosition();
+        setParalellArrays();
+        setTotalVotesForPosition();
 
-            if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5)
-            {
-                int lowestVoteID = (userVotes.Count - 1);
-                clearForMajority((int)userIDs[lowestVoteID], position);
-                dbLogic.updateVotePhase();
-            }
-            else
-            {
-                dbLogic.insertWinners(position, (int)userIDs[0]);
-            }
+        // If there are no votes for this position, don't fail hard.
+        if(userVotes.Count == 0)
+            return;
+
+        if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5)
+        {
+            clearForMajority((int)userIDs[userVotes.Count - 1], position);
+            dbLogic.updateVotePhase();
         }
-        catch
-        { }
+        else
+            dbLogic.insertWinners(position, (int)userIDs[0]);
 
     }
 
@@ -124,30 +116,19 @@ public class voteCounter
     {
         dbLogic.selectAllAvailablePositions();
         dsForElection = dbLogic.getResults();
-
-        int i = 0;
-        while (i < dsForElection.Tables[0].Rows.Count)
+        
+        for(int i = 0; i < dsForElection.Tables[0].Rows.Count; i++)
         {
             totalForPosition = 0;
+            // Ignore positions that aren't majorities
             if (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString() != "Majority")
-            {
-                return false;
-            }
-            else
-            {
-                string position = dsForElection.Tables[0].Rows[i].ItemArray[2].ToString();
-                grabTableInfo(position);
-                try
-                {
-                    setParalellArrays();
-                    setTotalVotesForPosition();
+                continue;
 
-                    return ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5);
-                }
-                catch
-                { }
-            }
-            i++;
+            grabTableInfo(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
+            setParalellArrays();
+            setTotalVotesForPosition();
+            if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5)
+                return true;
         }
 
         return false;
@@ -159,9 +140,7 @@ public class voteCounter
     protected void setTotalVotesForPosition()
     {
         for(int i = 0; i < ds.Tables[0].Rows.Count; i++)
-        {
-            totalForPosition += (int)ds.Tables[0].Rows[i].ItemArray[2];
-        }
+            totalForPosition += Convert.ToInt32(ds.Tables[0].Rows[i].ItemArray[2]);
     }
 
     protected void setParalellArrays()
@@ -176,11 +155,11 @@ public class voteCounter
 
     protected void clearForMajority(int id, string position)
     {
-        string query = "DELETE FROM wts WHERE idunion_members=" + id + " AND position='" + position + "';";
+        string query = "DELETE FROM wts WHERE idunion_members=" + id + " AND position='" + dbLogic.CleanInput(position) + "';";
         dbLogic.genericQueryDeleter(query);
         query = "DELETE FROM tally WHERE true;";
         dbLogic.genericQueryDeleter(query);
-        query = "DELETE FROM election_position WHERE position != '" + position + "';";
+        query = "DELETE FROM election_position WHERE position != '" + dbLogic.CleanInput(position) + "';";
         dbLogic.genericQueryDeleter(query);
         query = "DELETE FROM flag_voted WHERE true";
         dbLogic.genericQueryDeleter(query);
@@ -188,7 +167,7 @@ public class voteCounter
 
     protected void grabTableInfo(string position)
     {
-        query = "SELECT * FROM tally WHERE position='" + position + "' ORDER BY count DESC;";
+        query = "SELECT id_union, position, SUM(tally.count) as count FROM tally WHERE position='" + dbLogic.CleanInput(position) + "' GROUP BY id_union ORDER BY count DESC;";
         dbLogic.genericQuerySelector(query);
         ds = dbLogic.getResults();
     }
