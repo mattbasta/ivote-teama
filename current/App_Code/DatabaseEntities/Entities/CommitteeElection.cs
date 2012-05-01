@@ -476,10 +476,12 @@ namespace DatabaseEntities
             if (count.Count != 0) // vacancies times 2 minus 1 to make it zero based...
             {
                 int num_vacs = committee.NumberOfVacancies(session) * 2 - 1;
-                if(num_vacs >= count.Count)
+                // If there are more vacancies than candidates, there is no cutoff. Keep everyone.
+                // If there are no candidates, there is also no cutoff because nobody got any votes.
+                if(num_vacs >= count.Count || count.Count == 0)
                     cutOff = -1;
                 else
-                    cutOff = count[Math.Max(num_vacs, count.Count - 1)];
+                    cutOff = count[Math.Min(num_vacs, count.Count - 1)];
             }
             
             // Only add users to the list of nominees if they surpass the cutoff value
