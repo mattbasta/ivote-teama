@@ -880,13 +880,16 @@ public partial class committee_election : System.Web.UI.Page
         // remove the election conflict
         int id = int.Parse(idToFind);
 
-        ElectionConflict conflict = ElectionConflict.FindElectionConflict(session,
-            id);
+        ElectionConflict conflict = ElectionConflict.FindElectionConflict(session, id);
         NHibernateHelper.Delete(session, conflict);
 
         // Check if we should display there are no more conflicts.
-        if (ElectionConflict.FindElectionConflicts(session, election.ID).Count == 0)
+        if (ElectionConflict.FindElectionConflicts(session, election.ID).Count == 0) {
             AdminNoConflicts.Visible = true;
+            DaysRemaining.Text = "The election may proceed now that no conflicts exist.";
+            JulioButton.Visible = true;
+            JulioButtonSpacerText.Visible = true;
+        }
 
         NHibernateHelper.Finished(transaction);
     }
