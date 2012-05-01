@@ -16,9 +16,9 @@
                  ValidationGroup="LoginUserValidationGroup" DisplayMode="List"/>
             <div class="row">
                 <div class="offset3 span6 form-horizontal">
-                    <p>Please sign in using your username and password.</p>
+                    <p>Please sign in using your email and password.</p>
                     <div class="control-group">
-                        <asp:Label ID="UserNameLabel" runat="server" AssociatedControlID="UserName" CssClass="control-label">Username:</asp:Label>
+                        <asp:Label ID="UserNameLabel" runat="server" AssociatedControlID="UserName" CssClass="control-label">Email:</asp:Label>
                         <div class="controls">
                             <asp:TextBox ID="UserName" runat="server"></asp:TextBox>
                             <asp:RequiredFieldValidator ID="UserNameRequired" runat="server" ControlToValidate="UserName" 
