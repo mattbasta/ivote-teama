@@ -178,11 +178,11 @@ public class voteCounter
     {
         string query = "DELETE FROM wts WHERE idunion_members=" + id + " AND position='" + position + "';";
         dbLogic.genericQueryDeleter(query);
-        query = "DELETE FROM tally WHERE position='" + position + "';";
+        query = "DELETE FROM tally WHERE true;";
         dbLogic.genericQueryDeleter(query);
-        query = "DELETE FROM election_position WHERE position <> '" + position + "';";
+        query = "DELETE FROM election_position WHERE position != '" + position + "';";
         dbLogic.genericQueryDeleter(query);
-        query = "DELETE FROM flag_voted";
+        query = "DELETE FROM flag_voted WHERE true";
         dbLogic.genericQueryDeleter(query);
     }
 
