@@ -361,7 +361,7 @@ namespace DatabaseEntities
             List<ElectionConflict> conflicts = ElectionConflict.FindElectionConflicts(session, ID);
             foreach (ElectionConflict conflict in conflicts)
                 NHibernateHelper.Delete(session, conflict);
-            
+
             ITransaction transaction = session.BeginTransaction();
             // Get the current committee
             Committee committee = Committee.FindCommittee(session, PertinentCommittee);
@@ -388,6 +388,15 @@ namespace DatabaseEntities
                 secID.Add(i.ID);
             }
 
+            //List departments of nominees
+            List<DepartmentType> departmentsWinning = new List<DepartmentType>();
+            List<int> secIDWinning = new List<int>();
+            foreach (User i in winningUsers)
+            {
+                departmentsWinning.Add(i.Department);
+                secIDWinning.Add(i.ID);
+            }
+
             // For each user who won, add a new conflict if their department
             // is already present on the list. Adding, departments as we go.
             // Also raise conflicts if the winning users hold officer positions,
@@ -407,12 +416,25 @@ namespace DatabaseEntities
                 }
 
                 // check for department-based conflicts
-                if(departments.Contains(i.Department))
+                if (departments.Contains(i.Department))
                 {
                     ElectionConflict conflict = new ElectionConflict();
                     conflict.Election = ID;
                     conflict.FirstUser = i.ID;
                     conflict.SecUser = secID[departments.IndexOf(i.Department)];
+                    conflict.Type = ConflictType.TooManyDeptMembers;
+                    session.SaveOrUpdate(conflict);
+                }
+
+                // check for department-based conflicts - nominees
+                if (departmentsWinning.Contains(i.Department) && i.ID != secIDWinning[departmentsWinning.IndexOf(i.Department)])
+                {
+                    ElectionConflict conflict = new ElectionConflict();
+                    conflict.Election = ID;
+                    conflict.FirstUser = i.ID;
+                    conflict.SecUser = secIDWinning[departmentsWinning.IndexOf(i.Department)];
+                    secIDWinning.Remove(conflict.SecUser);
+                    departmentsWinning.Remove(i.Department);
                     conflict.Type = ConflictType.TooManyDeptMembers;
                     session.SaveOrUpdate(conflict);
                 }
@@ -457,7 +479,7 @@ namespace DatabaseEntities
                 if(num_vacs >= count.Count)
                     cutOff = -1;
                 else
-                    cutOff = count[Math.Min(num_vacs, count.Count - 1)];
+                    cutOff = count[Math.Max(num_vacs, count.Count - 1)];
             }
             
             // Only add users to the list of nominees if they surpass the cutoff value
