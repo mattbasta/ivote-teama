@@ -92,33 +92,23 @@ public class voteCounter
 
     // method to invoke a voting process based on the Majority voting style
     //      returns userID
-    //
-    // NOTE: need clarification from Karen on how Majority will work
-    //
     protected void majority(string position)
     {
         grabTableInfo(position);
-        try
+        setParalellArrays();
+        setTotalVotesForPosition();
+
+        // If there are no votes for this position, don't fail hard.
+        if(userVotes.Count == 0)
+            return;
+
+        if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5)
         {
-            setParalellArrays();
-            setTotalVotesForPosition();
-
-            // If there are no votes for this position, don't fail hard.
-            if(userVotes.Count == 0)
-                return;
-
-            if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5)
-            {
-                clearForMajority((int)userIDs[userVotes.Count - 1], position);
-                dbLogic.updateVotePhase();
-            }
-            else
-            {
-                dbLogic.insertWinners(position, (int)userIDs[0]);
-            }
+            clearForMajority((int)userIDs[userVotes.Count - 1], position);
+            dbLogic.updateVotePhase();
         }
-        catch
-        { }
+        else
+            dbLogic.insertWinners(position, (int)userIDs[0]);
 
     }
 
@@ -127,29 +117,18 @@ public class voteCounter
         dbLogic.selectAllAvailablePositions();
         dsForElection = dbLogic.getResults();
         
-        int i = 0;
-        while (i < dsForElection.Tables[0].Rows.Count)
+        for(int i = 0; i < dsForElection.Tables[0].Rows.Count; i++)
         {
             totalForPosition = 0;
             // Ignore positions that aren't majorities
-            if (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString() != "Majority") {
-                i++;
+            if (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString() != "Majority")
                 continue;
-            }
 
-            string position = dsForElection.Tables[0].Rows[i].ItemArray[2].ToString();
-            grabTableInfo(position);
-            try
-            {
-                setParalellArrays();
-                setTotalVotesForPosition();
-
-                if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5)
-                    return true;
-            }
-            catch
-            { }
-            i++;
+            grabTableInfo(dsForElection.Tables[0].Rows[i].ItemArray[2].ToString());
+            setParalellArrays();
+            setTotalVotesForPosition();
+            if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5)
+                return true;
         }
 
         return false;
@@ -161,9 +140,7 @@ public class voteCounter
     protected void setTotalVotesForPosition()
     {
         for(int i = 0; i < ds.Tables[0].Rows.Count; i++)
-        {
-            totalForPosition += (int)ds.Tables[0].Rows[i].ItemArray[2];
-        }
+            totalForPosition += Convert.ToInt32(ds.Tables[0].Rows[i].ItemArray[2]);
     }
 
     protected void setParalellArrays()
