@@ -9,7 +9,6 @@ using System.Web;
 public class voteCounter
 {
     databaseLogic dbLogic = new databaseLogic();
-    timeline phases = new timeline();
 
     DataSet ds;                   // DataSet that is meant to contain all of the information from the table
     DataSet dsForElection;        // DataSet that will hold the positions for this election
@@ -104,10 +103,13 @@ public class voteCounter
             setParalellArrays();
             setTotalVotesForPosition();
 
+            // If there are no votes for this position, don't fail hard.
+            if(userVotes.Count == 0)
+                return;
+
             if ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5)
             {
-                int lowestVoteID = (userVotes.Count - 1);
-                clearForMajority((int)userIDs[lowestVoteID], position);
+                clearForMajority((int)userIDs[userVotes.Count - 1], position);
                 dbLogic.updateVotePhase();
             }
             else
@@ -129,24 +131,23 @@ public class voteCounter
         while (i < dsForElection.Tables[0].Rows.Count)
         {
             totalForPosition = 0;
-            if (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString() != "Majority")
-            {
-                return false;
+            // Ignore positions that aren't majorities
+            if (dsForElection.Tables[0].Rows[i].ItemArray[3].ToString() != "Majority") {
+                i++;
+                continue;
             }
-            else
-            {
-                string position = dsForElection.Tables[0].Rows[i].ItemArray[2].ToString();
-                grabTableInfo(position);
-                try
-                {
-                    setParalellArrays();
-                    setTotalVotesForPosition();
 
-                    return ((Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= .5);
-                }
-                catch
-                { }
+            string position = dsForElection.Tables[0].Rows[i].ItemArray[2].ToString();
+            grabTableInfo(position);
+            try
+            {
+                setParalellArrays();
+                setTotalVotesForPosition();
+
+                return (Convert.ToDouble(userVotes[0]) / Convert.ToDouble(totalForPosition)) <= 0.5;
             }
+            catch
+            { }
             i++;
         }
 
@@ -176,11 +177,11 @@ public class voteCounter
 
     protected void clearForMajority(int id, string position)
     {
-        string query = "DELETE FROM wts WHERE idunion_members=" + id + " AND position='" + position + "';";
+        string query = "DELETE FROM wts WHERE idunion_members=" + id + " AND position='" + dbLogic.CleanInput(position) + "';";
         dbLogic.genericQueryDeleter(query);
         query = "DELETE FROM tally WHERE true;";
         dbLogic.genericQueryDeleter(query);
-        query = "DELETE FROM election_position WHERE position != '" + position + "';";
+        query = "DELETE FROM election_position WHERE position != '" + dbLogic.CleanInput(position) + "';";
         dbLogic.genericQueryDeleter(query);
         query = "DELETE FROM flag_voted WHERE true";
         dbLogic.genericQueryDeleter(query);
@@ -188,7 +189,7 @@ public class voteCounter
 
     protected void grabTableInfo(string position)
     {
-        query = "SELECT * FROM tally WHERE position='" + position + "' ORDER BY count DESC;";
+        query = "SELECT id_union, position, SUM(tally.count) as count FROM tally WHERE position='" + dbLogic.CleanInput(position) + "' GROUP BY id_union ORDER BY count DESC;";
         dbLogic.genericQuerySelector(query);
         ds = dbLogic.getResults();
     }

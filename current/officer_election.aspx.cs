@@ -181,7 +181,6 @@ public partial class officer_election : System.Web.UI.Page
 
                 if (vc.checkIfMajorityNotMet())
                     majorityNotification.Visible = true;
-                    
                 
                 bindPositions();
                 
