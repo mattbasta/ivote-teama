@@ -430,9 +430,10 @@
 
             <asp:Panel ID="majorityNotification" Visible="false" runat="server">
                 <div class="alert alert-danger">
+                    <strong>Majority Not Met</strong>
                     A majority was not met in this election. You will now be directed back to the voting phase to revote for the position. If there were other positions in this election without conflicts, they are shown below.
+                    <a class="btn" href="/officer_election.aspx">Reload</a>
                 </div>
-                <p><a class="btn btn-success" href="/officer_election.aspx">Reload</a></p>
             </asp:Panel>
 
             <asp:Panel runat="server" ID="necApprove" CssClass="alert alert-success" Visible="false">

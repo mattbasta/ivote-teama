@@ -111,7 +111,7 @@ DROP TABLE IF EXISTS `petition`;
 CREATE TABLE `petition` (
   `idpetition` int(11) NOT NULL AUTO_INCREMENT,
   `idunion_members` int(11) NOT NULL,
-  `positions` varchar(20) NOT NULL,
+  `positions` varchar(45) NOT NULL,
   `idum_signedby` int(11) NOT NULL,
   PRIMARY KEY (`idpetition`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -124,7 +124,7 @@ CREATE TABLE `petition` (
 DROP TABLE IF EXISTS `results`;
 
 CREATE TABLE `results` (
-  `position` varchar(20) NOT NULL,
+  `position` varchar(45) NOT NULL,
   `id_union` int(11) NOT NULL,
   `percent` double DEFAULT NULL,
   `tally` int(11) DEFAULT NULL,
@@ -162,7 +162,7 @@ DROP TABLE IF EXISTS `tally`;
 
 CREATE TABLE `tally` (
   `id_union` int(11) NOT NULL,
-  `position` varchar(20) NOT NULL,
+  `position` varchar(45) NOT NULL,
   `count` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -192,7 +192,7 @@ DROP TABLE IF EXISTS `wts`;
 CREATE TABLE `wts` (
   `wts_id` int(11) NOT NULL AUTO_INCREMENT,
   `idunion_members` int(11) DEFAULT NULL,
-  `position` varchar(20) DEFAULT NULL,
+  `position` varchar(45) DEFAULT NULL,
   `date_applied` datetime DEFAULT NULL,
   `statement` text,
   `eligible` int(11) DEFAULT NULL,
